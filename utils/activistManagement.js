@@ -1,7 +1,13 @@
 const { ethers, wallet } = require("ethers");
+const BigNumber = require('bignumber.js');
+const { newKitFromWeb3 }=  require('@celo/contractkit');
+const Web3 = require("web3");
 const ActivistManagementabi = require("../abi/ActivistManagement.json");
 require('dotenv').config();
+const axios = require("axios");
+
 const { CeloProvider, CeloWallet, StaticCeloProvider } = require("@celo-tools/celo-ethers-wrapper");
+const { consoleLogger } = require("@celo/base");
 
 module.exports = class activistManagement {
 
@@ -15,7 +21,7 @@ module.exports = class activistManagement {
             var provider = new StaticCeloProvider(this.provider);
             await provider.ready;
             const account = new CeloWallet(this.privKey, provider);
-
+            
             const activistContract = new ethers.Contract(this.contractAddr,
                 ActivistManagementabi,
                 account,
@@ -46,9 +52,13 @@ module.exports = class activistManagement {
         }
 
     }
+
     async searchActivistByAddress(activistWallet) {
 
         try {
+            console.log("***********");
+           
+
             var provider = new StaticCeloProvider(this.provider);
             await provider.ready;
             const account = new CeloWallet(this.privKey, provider);
@@ -72,8 +82,40 @@ module.exports = class activistManagement {
             return { error: err };
         }
     }
+    
+
+    async getIndex() {
+        try {
+            const web3 = new Web3("https://alfajores-forno.celo-testnet.org")
+            const kit = newKitFromWeb3(web3);
+            var provider = new StaticCeloProvider(this.provider);
+            await provider.ready;
+            const account = new CeloWallet(this.privKey, provider);
+            const activistContract = new ethers.Contract(this.contractAddr,
+                ActivistManagementabi,
+                account,
+
+            );
+            console.log(account);
+           
+            //let x = new BigNumber(idActivist.toString());
+           
+            const index = await activistContract.index();
+           
+            return {
+               index : parseInt(ethers.utils.formatUnits(index , "ether"))
+            };
+        } catch (err) {
+            console.log(err);
+            return { error: err };
+        }
+
+
+    }
     async searchActivistById(idActivist) {
         try {
+            const web3 = new Web3("https://alfajores-forno.celo-testnet.org")
+            const kit = newKitFromWeb3(web3);
             var provider = new StaticCeloProvider(this.provider);
             await provider.ready;
             const account = new CeloWallet(this.privKey, provider);
@@ -83,14 +125,27 @@ module.exports = class activistManagement {
                 account,
 
             );
-            console.log("*******ok******");
+            //let x = new BigNumber(idActivist.toString());
             const activist = await activistContract.searchActivistById(
-                parseInt(idActivist),
+                idActivist
             );
-            console.log(`looking for activist${idActivist}`);
-            console.log(`activist is ${activist}`);
-            console.log(`Transaction.hash:${activist}`);
-            return activist.toString();
+            const Wallet = await activistContract.ActivistList(
+                idActivist
+            );
+           const response = await axios
+        .get("https://gateway.pinata.cloud/ipfs/"+activist[5]);
+        console.log(response.data);
+        return {
+            ID : parseInt(ethers.utils.formatUnits(activist[0] , "ether")),
+            Wallet:Wallet,
+            Nom : activist[1],
+            Prenom : activist[2],
+            url : activist[5],
+            email : activist[3],
+            numTel : activist[4],
+            autre : response.data
+        };
+           
         } catch (err) {
             console.log(err);
             return { error: err };

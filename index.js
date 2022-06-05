@@ -1,10 +1,11 @@
 const express = require("express");
+const https = require('https');
 
 const Web3 = require("web3");
 const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
-
+const fs = require("fs");
 
 const activistManagement = require("./utils/activistManagement");
 const app = express();
@@ -148,6 +149,15 @@ app.post("/GetIndexActiv", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
-app.listen(process.env.PORT || 8080, () => {
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+app.listen(process.env.PORT || 8000, () => {
   console.log("Serveur à l'écoute on ");
 });
+
+
+
+const server = https.createServer(options,app);
+server.listen(8080);

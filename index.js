@@ -202,9 +202,7 @@ app.post("/CheckPassword", async (req, res) => {
       error :"error"
     }));
     }
-    console.log(resp);
-
-    res.end(JSON.stringify(resp));
+    
   });
 });
 app.post("/GetIndexActiv", async (req, res) => {

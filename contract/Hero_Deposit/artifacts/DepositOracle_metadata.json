@@ -1,0 +1,505 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "ativist",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					}
+				],
+				"name": "activistPayment",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "from",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "to",
+						"type": "address"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "time",
+						"type": "uint256"
+					}
+				],
+				"name": "depositLogs",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "DepositCelo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "totalValueUsd",
+						"type": "uint256"
+					},
+					{
+						"internalType": "int256",
+						"name": "currentCeloUsdPrice",
+						"type": "int256"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "DepositCusd",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "contributer",
+						"type": "address"
+					},
+					{
+						"internalType": "address",
+						"name": "_to",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "DepositCusdCredit",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "EthUsdPrice",
+				"outputs": [
+					{
+						"internalType": "contract IWitnetPriceFeed",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "celoEurPrice",
+				"outputs": [
+					{
+						"internalType": "contract IWitnetPriceFeed",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "celoUsdPrice",
+				"outputs": [
+					{
+						"internalType": "contract IWitnetPriceFeed",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "wallet",
+						"type": "address"
+					}
+				],
+				"name": "checkDepositExist",
+				"outputs": [
+					{
+						"internalType": "bool",
+						"name": "",
+						"type": "bool"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "depositToActivist",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "celoCoin",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "usdcCoin",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "depositersLogs",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "int256",
+						"name": "totalDepositsValue",
+						"type": "int256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "totalDepositTimes",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "userWallet",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "index",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "updateCeloEurPriceFeed",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "updateCeloUSDPriceFeed",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "updateEthUsdPriceFeed",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "withdrowCelo",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address payable",
+						"name": "_to",
+						"type": "address"
+					}
+				],
+				"name": "withdrowCusd",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [],
+				"name": "witnetPriceRouter",
+				"outputs": [
+					{
+						"internalType": "contract IWitnetPriceRouter",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {
+				"constructor": {
+					"notice": "IMPORTANT: replace the address below with the WitnetPriceRouter address of the network you are using! Please find the address here: https://docs.witnet.io/smart-contracts/price-feeds/contract-addresses"
+				},
+				"updateCeloUSDPriceFeed()": {
+					"notice": "Detects if the WitnetPriceRouter is now pointing to a different IWitnetPriceFeed implementation:"
+				}
+			},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/Hero_Deposit/Deposit.sol": "DepositOracle"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts/token/ERC20/IERC20.sol": {
+			"keccak256": "0x9750c6b834f7b43000631af5cc30001c5f547b3ceb3635488f140f60e897ea6b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5a7d5b1ef5d8d5889ad2ed89d8619c09383b80b72ab226e0fe7bde1636481e34",
+				"dweb:/ipfs/QmebXWgtEfumQGBdVeM6c71McLixYXQP5Bk6kKXuoY4Bmr"
+			]
+		},
+		"ado-contracts/contracts/interfaces/IERC2362.sol": {
+			"keccak256": "0x4df66aa83b94d7c3d52aba3522b6eeafc19f2c45299b7c871ef46eb199ee4f6b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://0af92023c38ab97a95fb7e2a196a697cfc1d90bb1b8bfe73e0ba69cbb7a8f5ab",
+				"dweb:/ipfs/QmVSBWxe2QCZvAxiuTfEwprK9MbDtFNptoWeMBbmUcwQnx"
+			]
+		},
+		"contracts/Hero_Deposit/Deposit.sol": {
+			"keccak256": "0x8acd473c6e6ba216f79319ebec0c2ba31a8e1269582c3e374d8ce525066e6693",
+			"urls": [
+				"bzz-raw://f643dda31f3d824c158367dc158e034a1d56eba8cbf6faebe150dc462eded8b4",
+				"dweb:/ipfs/QmPQYS1GyEvokVXnVEwqiVm5RscHgKpF6kgRSjjxim6WzX"
+			]
+		},
+		"witnet-solidity-bridge/contracts/WitnetRequestBoard.sol": {
+			"keccak256": "0xb04deadd6e24568accfcbb7b76f1c03cb925933aee189115b5b23badc5b6e9ab",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://50924d0fcd562da1c706706335f48f6c754a89d209f4f8cabdb088c39b30050a",
+				"dweb:/ipfs/QmW5jiWWMMizaHxfptLnsvbST4CTVa7T1hfPLkDzKPyo6R"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IERC165.sol": {
+			"keccak256": "0x14a404607f920aa7ce19e17a0abce07d317c95b427fd8ca7b4aaf0b2999d4847",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://c77d9a8e0d77524a2d69f3f7b1739273b277ca99023ecfe02a63c1b47019defe",
+				"dweb:/ipfs/QmaLmP6qsWft2VVg6eZznAYsjL11QvThuEazFbnBunaKYn"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetPriceFeed.sol": {
+			"keccak256": "0xde2af6319e5c6ce8302018b2bc6b41ecdef896a3b218de75e00172a3449c4902",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5e67326639453596f52f31594fee6a5deb15b13d035f0353c10648e937b991b6",
+				"dweb:/ipfs/QmZzrQHkwaFUTX3kJJbjBq9Df5c4fqc6WSMqNUcoCesmTp"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetPriceRouter.sol": {
+			"keccak256": "0xeabd84fc5a5676dc88de213245b7199e50bc11af174ebb1a5ef460ba262a7276",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://dc012a3ac758981fd38e08f3727f4e9083e651be231d023077277b9aaddc8794",
+				"dweb:/ipfs/QmeWu2BVad6UPWFqmnLN7r85ANKWBVBs5dKcNy7bqwTJqJ"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetRequest.sol": {
+			"keccak256": "0xb455f625c6db8ce0525cb6ba8b2df2d85b37cfac6e2c5b64876b6f0e5bd22269",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://d977a93f5e3031fa1bfa10f7923c42620e9aa9a32244ef3e9ff29a2dbaa43f84",
+				"dweb:/ipfs/QmWbwT4TkpgyhoT3PJ7x91QA8NwYtKtB3aizGMPvbknsM3"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetRequestBoardEvents.sol": {
+			"keccak256": "0xe2cb1369ba158db394c0380231f99174a88d62a66b0e7f8be14179b8c2fbd12f",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://60397769f50de9e460dd3100e642ee1fad5264bdd185797a118f90f96eebdedb",
+				"dweb:/ipfs/QmapZ93sj1r8wjjqG4c8iwj1x6G6gj1Y4N1Vyi4GaCT4AG"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetRequestBoardReporter.sol": {
+			"keccak256": "0xd00f0923f3b0a40d4c7bed2336293eb4ea261ea546c6d07e37f897bbbf18f513",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://915abd9526225ee904ce701bc727d25ba6271da7a3f439ea71991521ce5ee2b6",
+				"dweb:/ipfs/QmYvQFVd3JzJwSoQst7QDy4jijtbaPHSixDG8xKsqKLgta"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetRequestBoardRequestor.sol": {
+			"keccak256": "0x7c7a991de5f087102b1931d5d8b2e3716d7a90354b3cbafef95d2509a0643453",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5b9364a2d7e4f138b93046f41fa1342e2aa838ca3cf6fdaa0a4b180a1a39e977",
+				"dweb:/ipfs/QmRMuhHdgX19aPVd5Lr3YQXmAmmymzUiy8eDmnb56CyMxr"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetRequestBoardView.sol": {
+			"keccak256": "0x782ec2ff166948f5d097765c0190b352793d8b8887af5f8384d875d63cff4e9b",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://19270bc7b5dc050e31192602ca45be59b47c2d5512983d9fadf504901c60e9ef",
+				"dweb:/ipfs/QmZ3pNiMc3rdrGVH6NKokrdohGw7xbK5mcfH6MnpQktZi6"
+			]
+		},
+		"witnet-solidity-bridge/contracts/interfaces/IWitnetRequestParser.sol": {
+			"keccak256": "0xe7c24475babac7d21172d37d976a97b81053739e81b4697be39decfe2aa90945",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://13355cf087ae02d1bc9d04d435967a2e253f5835d0a3419dddf656e4f4b3b9cb",
+				"dweb:/ipfs/QmVbU94837bUnH89PiuKvNMk7bUFfdLs7bYYPgELYghh52"
+			]
+		},
+		"witnet-solidity-bridge/contracts/libs/Witnet.sol": {
+			"keccak256": "0x7875cbaff083818824bcec302443788fb5723b161952fdf28a0ddd7c4b3a9b3e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://56c28646279cac64abb84751962b774c854aa122c27a7d19c68d99d3622ad053",
+				"dweb:/ipfs/QmVfffZZJRb2naceyAxr8Z5rEQyBkfKgYqqmssobk9qz2h"
+			]
+		}
+	},
+	"version": 1
+}

@@ -104,7 +104,14 @@ contract ActivistsManagement {
     {
         return addressToActivist[walletActivist];
     }
-
+    function getAddressByID(uint256 idAcitivist)
+        public
+        view
+        returns (address)
+    {
+        address wallet = ActivistList[idAcitivist];
+        return wallet;
+    }
     // returns activist searched by id
     function searchActivistById(uint256 idAcitivist)
         public

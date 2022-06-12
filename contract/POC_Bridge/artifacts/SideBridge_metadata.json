@@ -1,0 +1,207 @@
+{
+	"compiler": {
+		"version": "0.8.7+commit.e28d00a7"
+	},
+	"language": "Solidity",
+	"output": {
+		"abi": [
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_gateway",
+						"type": "address"
+					}
+				],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "BridgeInitialized",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "mainDepositHash",
+						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "TokensBridged",
+				"type": "event"
+			},
+			{
+				"anonymous": false,
+				"inputs": [
+					{
+						"indexed": true,
+						"internalType": "address",
+						"name": "requester",
+						"type": "address"
+					},
+					{
+						"indexed": true,
+						"internalType": "bytes32",
+						"name": "sideDepositHash",
+						"type": "bytes32"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"indexed": false,
+						"internalType": "uint256",
+						"name": "timestamp",
+						"type": "uint256"
+					}
+				],
+				"name": "TokensReturned",
+				"type": "event"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_requester",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_bridgedAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_mainDepositHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "bridgeTokens",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_childTokenAddress",
+						"type": "address"
+					}
+				],
+				"name": "initializeBridge",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "_requester",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "_bridgedAmount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes32",
+						"name": "_sideDepositHash",
+						"type": "bytes32"
+					}
+				],
+				"name": "returnTokens",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			}
+		],
+		"devdoc": {
+			"kind": "dev",
+			"methods": {},
+			"version": 1
+		},
+		"userdoc": {
+			"kind": "user",
+			"methods": {},
+			"version": 1
+		}
+	},
+	"settings": {
+		"compilationTarget": {
+			"contracts/POC_Bridge/SideBridge.sol": "SideBridge"
+		},
+		"evmVersion": "london",
+		"libraries": {},
+		"metadata": {
+			"bytecodeHash": "ipfs"
+		},
+		"optimizer": {
+			"enabled": false,
+			"runs": 200
+		},
+		"remappings": []
+	},
+	"sources": {
+		"@openzeppelin/contracts@4.0.0/token/ERC20/IERC20.sol": {
+			"keccak256": "0xf8e8d118a7a8b2e134181f7da655f6266aa3a0f9134b2605747139fcb0c5d835",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://9ec48567e7ad06acb670980d5cdf3fd7f3949bf12894f02d68c3bb43e75aa84f",
+				"dweb:/ipfs/QmaG3R2J9cz92YT77vFjYrjMNU2wHp4ypwYD62HqDUqS5U"
+			]
+		},
+		"contracts/POC_Bridge/IERC20Child.sol": {
+			"keccak256": "0x2482c75f8a4cfea18fb7a441ba4761d1663a25ec3fb56ab47ec9c34e25fa9c58",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://4034023f28c1b1421dc93e4187df1e53c64528039b22ec55671d937dcd0c18db",
+				"dweb:/ipfs/QmQCHMrYdT35kSamWeDViV7dMvfCfZjreuQnqpE2hCTP1Z"
+			]
+		},
+		"contracts/POC_Bridge/SideBridge.sol": {
+			"keccak256": "0x677f320b5e6522223388fac435cf37ccd2a971d74e43c276d942cde231ccdc4e",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://270c756a835db21bed9a6715f4ebee4346294489e61b2e8ef88ebd6bc57d3db5",
+				"dweb:/ipfs/Qme1rp4RrFvQdGeRVrR3g3RzZNsNKvkoj1gbSFkwsXTZjQ"
+			]
+		}
+	},
+	"version": 1
+}

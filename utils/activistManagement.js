@@ -154,7 +154,40 @@ module.exports = class activistManagement {
             return { error: err };
         }
     }
+    async getCofDatafromNumTel(NumTel) {
+        try {
+            const web3 = new Web3("https://alfajores-forno.celo-testnet.org")
+            const kit = newKitFromWeb3(web3);
+            var provider = new StaticCeloProvider(this.provider);
+            await provider.ready;
+            const account = new CeloWallet(this.privKey, provider);
+            console.log(account);
+            const activistContract = new ethers.Contract(this.contractAddr,
+                ActivistManagementabi,
+                account,
 
+            );
+            //let x = new BigNumber(idActivist.toString());
+            const IDactivist = await activistContract.NumTelOfActivists(
+                NumTel
+            );
+            const confid = await activistContract.getConfidFromID(
+                IDactivist
+            );
+           const response = await fetch("https://gateway.pinata.cloud/ipfs/"+confid);
+        if(!response.ok)
+                throw new Error(response.statusText);
+        const json = await response.json();
+
+        return {
+            json
+        };
+           
+        } catch (err) {
+            console.log(err);
+            return { error: err };
+        }
+    }
     async getPrenomActivistById(idActivist) {
         try {
             var provider = new StaticCeloProvider(this.provider);

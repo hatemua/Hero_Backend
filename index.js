@@ -178,6 +178,35 @@ app.post("/GetActivistByID", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/CheckPassword", async (req, res) => {
+  const numeroTel = req.body.numeroTel;
+  const password = req.body.password;
+  const _activistManagement = new activistManagement();
+  _activistManagement.getCofDatafromNumTel(numeroTel).then((resp) => {
+    // convert a currency unit from wei to ether
+    decPassword = resp.password;
+    if (password == AESDecryption(numeroTel+"+-*/",decPassword))
+    {
+      res.end(JSON.stringify(
+        {
+          mnomonic: AESDecryption(numeroTel+"+-*/"+password,resp.mnomonic),
+          address: AESDecryption(numeroTel+"+-*/"+password,resp.mnomonic),
+          autre: AESDecryption(numeroTel+"+-*/"+password,resp.autre),
+          numeroPhone:numeroTel,
+          
+        }
+      ));
+    }
+    else {
+    res.end(JSON.stringify({
+      error :"error"
+    }));
+    }
+    console.log(resp);
+
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/GetIndexActiv", async (req, res) => {
   const _activistManagement = new activistManagement();
   _activistManagement.getIndex().then((resp) => {

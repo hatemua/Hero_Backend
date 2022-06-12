@@ -132,8 +132,8 @@ module.exports = class activistManagement {
             const Wallet = await activistContract.ActivistList(
                 idActivist
             );
-           const response = await axios
-        .get("https://gateway.pinata.cloud/ipfs/"+activist[5]);
+           const response = await fetch
+        ("https://gateway.pinata.cloud/ipfs/"+activist[5]);
         console.log(response.data);
         return {
             ID : parseInt(ethers.utils.formatUnits(activist[0] , "ether")),

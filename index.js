@@ -158,7 +158,6 @@ app.post("/CreateWalletActivist", async (req, res) => {
   });
   console.log("************");
   console.log(temp);
-  console.log(IpfsHash);
   //const toblock = await Inscription(phoneNumber,temp.IpfsHash,pureWallet.address);
   res.end(
     JSON.stringify(
@@ -166,7 +165,7 @@ app.post("/CreateWalletActivist", async (req, res) => {
         mnomonic: pureWallet._mnemonic().phrase,
         address: pureWallet.address,
         autre: pureWallet._signingKey(),
-        IpfsHash :IpfsHash
+        IpfsHash :temp
       })
   );
 });

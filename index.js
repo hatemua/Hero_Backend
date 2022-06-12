@@ -187,19 +187,11 @@ app.post("/GetActivistByID", async (req, res) => {
 app.post("/CheckPassword", async (req, res) => {
   const numeroTel = req.body.numeroTel;
   const password = req.body.password;
-  const web3 = new Web3("https://alfajores-forno.celo-testnet.org")
-  const kit = newKitFromWeb3(web3);
-  var provider = new StaticCeloProvider(this.provider);
-  await provider.ready;
-  const account = new CeloWallet(this.privKey, provider);
-
-
-  const providerMumbai = new ethers.providers.JsonRpcProvider(
-    ProviderNetwork
-  );
+  
   const _activistManagement = new activistManagement();
   _activistManagement.getCofDatafromNumTel(numeroTel).then((resp) => {
     // convert a currency unit from wei to ether
+    console.log(response.data);
     decPassword = resp.password;
     if (password == AESDecryption(numeroTel+"+-*/",decPassword))
     {

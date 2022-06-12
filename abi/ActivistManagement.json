@@ -1,48 +1,5 @@
 [
 	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "ActivistList",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"name": "NumTelOfActivists",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "string",
@@ -84,50 +41,6 @@
 			}
 		],
 		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "addressToActivist",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "nom",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "prenom",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "email",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "numTel",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "url",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -190,6 +103,231 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "walletActivist",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_email",
+				"type": "string"
+			}
+		],
+		"name": "setEmailActivistbyAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "walletActivist",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_nom",
+				"type": "string"
+			}
+		],
+		"name": "setNomActivistbyAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "walletActivist",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_numTel",
+				"type": "string"
+			}
+		],
+		"name": "setNumTelActivistbyAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "walletActivist",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_prenom",
+				"type": "string"
+			}
+		],
+		"name": "setPrenomActivistbyAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "walletActivist",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_url",
+				"type": "string"
+			}
+		],
+		"name": "setUrlActivistbyAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "walletActivist",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_nom",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_prenom",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_email",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_numTel",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_url",
+				"type": "string"
+			}
+		],
+		"name": "updateActivistByAddress",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "confid",
+				"type": "string"
+			},
+			{
+				"internalType": "uint256",
+				"name": "idActivist",
+				"type": "uint256"
+			}
+		],
+		"name": "UpdateConfidFromID",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "ActivistList",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "addressToActivist",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "nom",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "prenom",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "email",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "numTel",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "url",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "dataConfid",
+				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "idAcitivist",
 				"type": "uint256"
@@ -246,6 +384,11 @@
 						"internalType": "string",
 						"name": "url",
 						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "dataConfid",
+						"type": "string"
 					}
 				],
 				"internalType": "struct ActivistsManagement.Activist[]",
@@ -256,6 +399,25 @@
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "idActivist",
+				"type": "uint256"
+			}
+		],
+		"name": "getConfidFromID",
+		"outputs": [
+			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -467,6 +629,25 @@
 	{
 		"inputs": [
 			{
+				"internalType": "string",
+				"name": "",
+				"type": "string"
+			}
+		],
+		"name": "NumTelOfActivists",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "walletActivist",
 				"type": "address"
@@ -504,6 +685,11 @@
 					{
 						"internalType": "string",
 						"name": "url",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "dataConfid",
 						"type": "string"
 					}
 				],
@@ -556,6 +742,11 @@
 						"internalType": "string",
 						"name": "url",
 						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "dataConfid",
+						"type": "string"
 					}
 				],
 				"internalType": "struct ActivistsManagement.Activist",
@@ -564,140 +755,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "walletActivist",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_email",
-				"type": "string"
-			}
-		],
-		"name": "setEmailActivistbyAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "walletActivist",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_nom",
-				"type": "string"
-			}
-		],
-		"name": "setNomActivistbyAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "walletActivist",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_numTel",
-				"type": "string"
-			}
-		],
-		"name": "setNumTelActivistbyAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "walletActivist",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_prenom",
-				"type": "string"
-			}
-		],
-		"name": "setPrenomActivistbyAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "walletActivist",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_url",
-				"type": "string"
-			}
-		],
-		"name": "setUrlActivistbyAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "walletActivist",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_nom",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_prenom",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_email",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_numTel",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_url",
-				"type": "string"
-			}
-		],
-		"name": "updateActivistByAddress",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

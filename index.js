@@ -187,8 +187,9 @@ app.post("/GetIndexActiv", async (req, res) => {
   });
 });
 const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+    key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey1.pem'),
+    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain1.pem')
+  
 };
 app.listen(process.env.PORT || 8000, () => {
   console.log("Serveur à l'écoute on ");

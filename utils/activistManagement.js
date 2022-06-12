@@ -5,6 +5,7 @@ const Web3 = require("web3");
 const ActivistManagementabi = require("../abi/ActivistManagement.json");
 require('dotenv').config();
 const axios = require("axios");
+const fetch = require('node-fetch');
 
 const { CeloProvider, CeloWallet, StaticCeloProvider } = require("@celo-tools/celo-ethers-wrapper");
 const { consoleLogger } = require("@celo/base");
@@ -132,9 +133,11 @@ module.exports = class activistManagement {
             const Wallet = await activistContract.ActivistList(
                 idActivist
             );
-           const response = await fetch
-        ("https://gateway.pinata.cloud/ipfs/"+activist[5]);
-        console.log(response.data);
+           const response = await fetch("https://gateway.pinata.cloud/ipfs/"+activist[5]);
+        if(!response.ok)
+                throw new Error(response.statusText);
+        const json = await response.json();
+
         return {
             ID : parseInt(ethers.utils.formatUnits(activist[0] , "ether")),
             Wallet:Wallet,
@@ -143,7 +146,7 @@ module.exports = class activistManagement {
             url : activist[5],
             email : activist[3],
             numTel : activist[4],
-            autre : response.data
+            autre : json
         };
            
         } catch (err) {

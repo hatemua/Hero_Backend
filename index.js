@@ -132,7 +132,44 @@ app.post("/CreateWallet", async (req, res) => {
       })
   );
 });
+app.post("/CreateWalletActivist", async (req, res) => {
+  // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
+  // A=web3.eth.accounts.create("87h0u74+-*/");
+  // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
+  // res.end( JSON.stringify(A));
+  const phoneNumber = req.body.phoneNumber;
+  const password = req.body.password;
+
+  const providerMumbai = new ethers.providers.JsonRpcProvider(
+    ProviderNetwork
+  );
+
+  const pureWallet = ethers.Wallet.createRandom();
+  
+  const wallet = new Wallet(pureWallet, providerMumbai);
+  console.log(password+"+"+phoneNumber);
+  console.log(AESEncyption(password+"+"+phoneNumber,pureWallet._mnemonic().phrase));
+  const temp = await pinJSONToIPFS("98ec2b41b43bef139ebc","4d443842873fb35c1f2866312fcad6d397a4172a8f08527e3714e35c989365c2",{
+    mnomonic: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase),
+    address: AESEncyption(password+"+-*/"+phoneNumber,pureWallet.address),
+    autre: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey),
+    password:AESEncyption(phoneNumber+"+-*/",password)
+  });
+  console.log("************");
+  console.log(temp);
+  console.log(IpfsHash);
+  //const toblock = await Inscription(phoneNumber,temp.IpfsHash,pureWallet.address);
+  res.end(
+    JSON.stringify(
+      {
+        mnomonic: pureWallet._mnemonic().phrase,
+        address: pureWallet.address,
+        autre: pureWallet._signingKey(),
+        IpfsHash :IpfsHash
+      })
+  );
+});
 app.post("/GetActivistByID", async (req, res) => {
   const ID = req.body.ID;
   const _activistManagement = new activistManagement();

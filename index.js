@@ -198,9 +198,9 @@ app.post("/CheckPassword", async (req, res) => {
     {
       res.end(JSON.stringify(
         {
-          mnomonic: AESDecryption(numeroTel+"+-*/"+password,resp.mnomonic),
-          address: AESDecryption(numeroTel+"+-*/"+password,resp.mnomonic),
-          autre: AESDecryption(numeroTel+"+-*/"+password,resp.autre),
+          mnomonic: AESDecryption(password+"+-*/"+numeroTel,resp.mnomonic),
+          address: AESDecryption(password+"+-*/"+numeroTel,resp.address),
+          autre: AESDecryption(password+"+-*/"+numeroTel, resp.autre),
           numeroPhone:numeroTel,
           
         }

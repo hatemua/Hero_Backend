@@ -16,7 +16,7 @@ const { CeloProvider, CeloWallet, StaticCeloProvider } = require("@celo-tools/ce
 
 const { ethers, Wallet } = require("ethers");
 const ProviderNetwork = "https://alfajores-forno.celo-testnet.org";
-const contractAddress = "0x93312E88e92b31F88a0b4C7400B3c4E90af7b39d";
+const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0eb";
 
 app.use(express.json());

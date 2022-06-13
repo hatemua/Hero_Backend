@@ -67,7 +67,7 @@ const AESEncyption = (key , plainText) => {
     return (encrypted);
   };
 
-  const AESDecryption = async (key , encrypted) => {
+  const AESDecryption =  (key , encrypted) => {
  
   var decrypted = aes256.decrypt(key, encrypted);
 

@@ -15,6 +15,7 @@ const port = process.env.PORT;
 const { CeloProvider, CeloWallet, StaticCeloProvider } = require("@celo-tools/celo-ethers-wrapper");
 
 const { ethers, Wallet } = require("ethers");
+const { Console } = require("console");
 const ProviderNetwork = "https://alfajores-forno.celo-testnet.org";
 const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0eb";
@@ -192,6 +193,7 @@ app.post("/CheckPassword", async (req, res) => {
   _activistManagement.getCofDatafromNumTel(numeroTel).then((resp) => {
     // convert a currency unit from wei to ether
     decPassword = resp.password;
+    console.log = resp;
     if (password == AESDecryption(numeroTel+"+-*/",decPassword))
     {
       res.end(JSON.stringify(

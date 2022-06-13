@@ -191,7 +191,6 @@ app.post("/CheckPassword", async (req, res) => {
   const _activistManagement = new activistManagement();
   _activistManagement.getCofDatafromNumTel(numeroTel).then((resp) => {
     // convert a currency unit from wei to ether
-    console.log(resp);
     decPassword = resp.password;
     if (password == AESDecryption(numeroTel+"+-*/",decPassword))
     {

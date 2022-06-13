@@ -178,6 +178,9 @@ module.exports = class activistManagement {
         if(!response.ok)
                 throw new Error(response.statusText);
         const json = await response.json();
+        console.log("******");
+        console.log(json);
+
         return json;
            
         } catch (err) {

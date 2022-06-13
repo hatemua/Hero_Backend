@@ -102,7 +102,7 @@ module.exports = class activistManagement {
             //let x = new BigNumber(idActivist.toString());
            
             const index = await activistContract.index();
-           
+           console.log(index.toString());
             return {
                index : parseInt(ethers.utils.formatUnits(index , "ether"))
             };

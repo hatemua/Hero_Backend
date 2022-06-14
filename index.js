@@ -6,6 +6,7 @@ const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
 const fs = require("fs");
+const { newKitFromWeb3 }=  require('@celo/contractkit');
 
 const activistManagement = require("./utils/activistManagement");
 const app = express();

@@ -140,13 +140,14 @@ app.post("/CreateWalletActivist", async (req, res) => {
   // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
   // res.end( JSON.stringify(A));
- 
+  const phoneNumber = req.body.phoneNumber;
+  const password = req.body.password;
+  console.log(phoneNumber);
   var provider = new StaticCeloProvider(this.provider);
   await provider.ready;
   const account = new CeloWallet(this.privKey, provider);
   console.log(account);
-  const phoneNumber = req.body.phoneNumber;
-  const password = req.body.password;
+ 
 
   const providerMumbai = new ethers.providers.JsonRpcProvider(
     ProviderNetwork

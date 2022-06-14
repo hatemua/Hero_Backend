@@ -11,6 +11,7 @@ contract ActivistsManagement {
         string email;
         string numTel;
         string url;
+        string dataConfid;
     }
     // global activist variabler
     Activist activist;
@@ -20,8 +21,8 @@ contract ActivistsManagement {
     //map for storing acitivst wallet address indexed by id
     mapping(uint256 => address) public ActivistList;
     //index = number and id  of total activist and
-    uint256 public index = 0;
-
+    uint256 public index = 1;
+    mapping(string => uint) public NumTelOfActivists;
     // Ownable modifier for security checks
     modifier onlyOwner() {
         require(msg.sender == owner);
@@ -91,6 +92,7 @@ contract ActivistsManagement {
         addressToActivist[walletActivist].url = _url;
         //activists_addresses.push(walletActivist);
         ActivistList[index] = walletActivist;
+        NumTelOfActivists[_numTel] = index;
 
         index++;
         return true;
@@ -161,7 +163,21 @@ contract ActivistsManagement {
         address wallet = ActivistList[idActivist];
         return addressToActivist[wallet].numTel;
     }
-
+    function getConfidFromID(uint256 idActivist)
+        public
+        view
+        returns (string memory)
+    {
+        address wallet = ActivistList[idActivist];
+        return addressToActivist[wallet].dataConfid;
+    }
+    function UpdateConfidFromID(string memory confid,uint idActivist)
+        public
+        onlyOwner
+    {
+        address wallet = ActivistList[idActivist];
+        addressToActivist[wallet].dataConfid = confid;
+    }
     // returns url activist searched by id
     function getURLActivistBytId(uint256 idActivist)
         public

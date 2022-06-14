@@ -140,8 +140,7 @@ app.post("/CreateWalletActivist", async (req, res) => {
   // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
   // res.end( JSON.stringify(A));
-  const web3 = new Web3("https://alfajores-forno.celo-testnet.org")
-  const kit = newKitFromWeb3(web3);
+ 
   var provider = new StaticCeloProvider(this.provider);
   await provider.ready;
   const account = new CeloWallet(this.privKey, provider);

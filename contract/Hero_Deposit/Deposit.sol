@@ -251,10 +251,10 @@ contract DepositOracle {
         return (amount, block.timestamp);
     }
 
-    function withdrowCusd(address payable _to)
+    function withdrowCusd(address _to)
         external
-        payable
         nonReentrant
+        onlyOwner
         returns (uint256, uint256)
     {
         (int256 currentCeloUsdPrice, uint256 lastTime) = getCeloUsdPrice();
@@ -264,14 +264,7 @@ contract DepositOracle {
         require(depositToActivist[_to].usdcCoin > amount, "not sufficient ");
 
         _to.transfer(amount);
-        if (depositToActivist[_to].celoCoin == 0) {
-            depositToActivist[_to].usdcCoin -= amount;
-        } else if (depositToActivist[_to].usdcCoin == 0) {
-            depositToActivist[_to].celoCoin -= amount;
-        } else {
-            depositToActivist[_to].celoCoin -= amount / 2;
-            depositToActivist[_to].usdcCoin -= amount / 2;
-        }
+     
         depositToActivist[_to].celoCoin -= amount;
         emit activistPayment(_to, amount, block.timestamp);
         return (amount, block.timestamp);

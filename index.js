@@ -7,7 +7,8 @@ var aes256 = require("aes256");
 const cors = require('cors');
 const fs = require("fs");
 const { newKitFromWeb3 }=  require('@celo/contractkit');
-
+const abiUserContract = require("abi/abiUserContract.json");
+const abiERC20 = require("abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const app = express();
 app.use(cors());
@@ -22,6 +23,52 @@ const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0eb";
 
 app.use(express.json());
+
+
+
+
+const BalanceOf = async (contractAddress,user) => {
+	try {
+	
+	var provider = new StaticCeloProvider(ProviderNetwork);
+  await provider.ready;
+  const account = new CeloWallet(privKey, provider);
+	
+	
+  
+
+
+		
+	
+	
+	const UsersContract = new ethers.Contract(contractAddress,
+    abiERC20
+	,account);
+
+	console.log("****ok*****");
+	
+	const tx = await UsersContract.balanceOf(
+    user
+    ) ;
+	
+
+	
+
+   return {res: ethers.utils.formatUnits(tx, "ether")
+  }
+	} catch (err) {
+    console.log(err);
+   return {error:err};
+  }
+
+};
+
+
+
+
+
+
+
 
 
 const Inscription = async (Phone,URL,Wallet) => {
@@ -180,6 +227,15 @@ app.post("/GetActivistByID", async (req, res) => {
   _activistManagement.searchActivistById(ID).then((resp) => {
     // convert a currency unit from wei to ether
     console.log(resp);
+    res.end(JSON.stringify(resp));
+  });
+});
+app.post("/balanceOf", async (req, res) => {
+  const user = req.body.user;
+  const Token = req.body.Token;
+
+ BalanceOf(Token,user).then((resp) => {
+    // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));
   });
 });

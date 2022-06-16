@@ -263,7 +263,7 @@ contract DepositOracle {
             12;
         require(depositToActivist[_to].usdcCoin > amount, "not sufficient ");
 
-        _to.transfer(amount);
+        CusdERC.transfer(_to,amount);
      
         depositToActivist[_to].celoCoin -= amount;
         emit activistPayment(_to, amount, block.timestamp);

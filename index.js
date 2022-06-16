@@ -230,6 +230,16 @@ app.post("/GetActivistByID", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/widhdraw", async (req, res) => {
+  const activist = req.body.activist;
+  const _activistManagement = new activistManagement();
+  _activistManagement.widhdraw(activist).then((resp) => {
+    // convert a currency unit from wei to ether
+    console.log(resp);
+    res.end(JSON.stringify(resp));
+  });
+});
+
 app.post("/balanceOf", async (req, res) => {
   const user = req.body.user;
   const Token = req.body.Token;

@@ -18,6 +18,7 @@ contract DepositOracle {
     struct ativistBank {
         uint256 celoCoin;
         uint256 usdcCoin;
+        uint SupporterNumber;
     }
     mapping(address => ativistBank) public depositToActivist;
     IERC20 internal CusdERC;
@@ -35,7 +36,7 @@ contract DepositOracle {
         updateCeloUSDPriceFeed();
         CusdERC = IERC20(0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1);
     }
-
+    address HeroToken = 0xD25AB772ba21Da87EC2DFf9bb6b96e1F463f4B54;
     deposit internal dep;
     uint256 public index = 0;
     event depositLogs(
@@ -45,9 +46,10 @@ contract DepositOracle {
         uint256 time
     );
     event activistPayment(address indexed ativist, uint256 value, uint256 time);
-
+    
     mapping(address => deposit) public depositersLogs;
     mapping(address => mapping (address => uint256)) public contribution;
+    mapping(address => mapping (uint => address)) public ActivistsSupporters;
     address owner;
 
     bool internal locked;
@@ -81,7 +83,9 @@ contract DepositOracle {
             celoEurPrice = IWitnetPriceFeed(address(_newPriceFeed));
         }
     }
-
+    function updateToken(address Token) public onlyOwner{
+        HeroToken = Token;
+    }
     function updateEthUsdPriceFeed() public {
         IERC165 _newPriceFeed = witnetPriceRouter.getPriceFeed(
             bytes4(0x3d15f701)
@@ -177,7 +181,7 @@ contract DepositOracle {
         nonReentrant
         returns (bool)
     {
-        
+        require (amount > 0 ,"you need to send > 0");
         int256 currentCeloUsdPrice;
         uint256 lastTime;
         (currentCeloUsdPrice, lastTime) = getCeloUsdPrice();
@@ -187,11 +191,12 @@ contract DepositOracle {
         depositersLogs[contributer].userWallet = address(contributer);
         depositersLogs[contributer].totalDepositTimes += 1;
         depositToActivist[_to].usdcCoin += amount;
+       
         //emit depositLogs(contributer, _to, amount, block.timestamp);
         return true;
     }
     // Deposit CUSD  token address 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1 returns true or error
-    function DepositCusd(uint256 amount,
+    function DepositCusd(uint256 amount,address contributer,
     address[] memory activists,uint256[] memory Arramount)
         external       
         nonReentrant
@@ -204,18 +209,24 @@ contract DepositOracle {
         require(amount >= 1, "Thanks to deposit more cusd");
         index++;
         (int256 currentCeloUsdPrice, uint256 lastTime) = getCeloUsdPrice();
-            depositersLogs[msg.sender].totalDepositsValue +=
+            depositersLogs[contributer].totalDepositsValue +=
                 int256(amount) *
                 currentCeloUsdPrice;
-            depositersLogs[msg.sender].totalDepositTimes++;
+            depositersLogs[contributer].totalDepositTimes++;
             CusdERC.transferFrom(msg.sender, address(this), amount);
             for (uint i; i < activists.length ; i++ )
             {
                 int256 totalValueUSD = int256((Arramount[i])) * (currentCeloUsdPrice);
                 depositToActivist[activists[i]].usdcCoin += uint256(totalValueUSD);
-                contribution[msg.sender][activists[i]] += uint256(totalValueUSD);
-                emit depositLogs(msg.sender, activists[i], amount, block.timestamp);
-
+                contribution[contributer][activists[i]] += uint256(totalValueUSD);
+                ActivistsSupporters[activists[i]][depositToActivist[activists[i]].SupporterNumber]=contributer;
+                emit depositLogs(contributer, activists[i], amount, block.timestamp);
+                depositToActivist[activists[i]].SupporterNumber++;
+            }
+             if (depositersLogs[contributer].totalDepositTimes == 1)
+            {
+                IERC20(HeroToken).approve(contributer,1000000000000000000);
+                IERC20(HeroToken).transfer(contributer,1000000000000000000);
             }
             return true;
         
@@ -264,8 +275,17 @@ contract DepositOracle {
         require(depositToActivist[_to].usdcCoin > amount, "not sufficient ");
 
         CusdERC.transfer(_to,amount);
-     
+            
         depositToActivist[_to].celoCoin -= amount;
+        uint nbr = depositToActivist[_to].SupporterNumber;
+        for (uint i; i<=nbr;i++)
+        {
+            uint256 amountContrib = contribution[ActivistsSupporters[_to][i]][_to] ;
+            uint256 amountOFHero = amountContrib / 12;
+            IERC20(HeroToken).approve(ActivistsSupporters[_to][i],amountOFHero * 10**10);
+            IERC20(HeroToken).transfer(ActivistsSupporters[_to][i],amountOFHero * 10**18);
+            contribution[ActivistsSupporters[_to][i]][_to] -= amountOFHero;
+        }
         emit activistPayment(_to, amount, block.timestamp);
         return (amount, block.timestamp);
     }

@@ -187,6 +187,29 @@ module.exports = class activistManagement {
             return { error: err };
         }
     }
+    async widhdraw(Activist) {
+        try {
+            var provider = new StaticCeloProvider(this.provider);
+            await provider.ready;
+            const account = new CeloWallet(this.privKey, provider);
+            console.log(account);
+            const DepositContract = new ethers.Contract(this.contractDeposit,
+                abiDeposit,
+                account,
+            );
+            console.log("*******ok******");
+            const tx = await DepositContract.withdrowCusd(
+                Activist,
+            );
+            
+            const receipt = await tx.wait();
+            
+            return receipt.toString();
+        } catch (err) {
+            console.log(err);
+            return { error: err };
+        }
+    }
     async getPrenomActivistById(idActivist) {
         try {
             var provider = new StaticCeloProvider(this.provider);

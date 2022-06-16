@@ -203,6 +203,7 @@ module.exports = class activistManagement {
             console.log("*******ok******");
             const tx = await DepositContract.withdrowCusd(
                 Activist,
+                { gasPrice: 1000000000}
             );
             
             const receipt = await tx.wait();

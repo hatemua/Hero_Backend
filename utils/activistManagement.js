@@ -18,6 +18,7 @@ module.exports = class activistManagement {
         this.contractAddr = process.env.ACTIVISTMANGEMENT;
         this.provider = process.env.PROVIDER;
         this.privKey = process.env.PRIVATEKEY;
+        this.contractDeposit = process.env.contractDeposit;
     };
     async addActivist(nom, prenom, email, numTel, url, ActivistAddress) {
         try {

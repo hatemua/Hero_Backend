@@ -3,6 +3,8 @@ const BigNumber = require('bignumber.js');
 const { newKitFromWeb3 }=  require('@celo/contractkit');
 const Web3 = require("web3");
 const ActivistManagementabi = require("../abi/ActivistManagement.json");
+const abiDeposit = require("../abi/abiDeposit.json");
+
 require('dotenv').config();
 const axios = require("axios");
 const fetch = require('node-fetch');

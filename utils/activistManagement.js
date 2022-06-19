@@ -142,6 +142,7 @@ module.exports = class activistManagement {
 
         return {
             ID : parseInt(ethers.utils.formatUnits(activist[0] , "ether")),
+            index:idActivist,
             Wallet:Wallet,
             Nom : activist[1],
             Prenom : activist[2],

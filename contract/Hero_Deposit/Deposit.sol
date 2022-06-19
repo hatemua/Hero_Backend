@@ -105,7 +105,22 @@ contract DepositOracle {
     {
         (_lastPrice, _lastTimestamp, , ) = celoUsdPrice.lastValue();
     }
+    function getWidhdrawl(address _to)
+        public
+        view
+        returns (uint256[] memory)
+    { 
+        uint nbr = depositToActivist[_to].SupporterNumber;
+        uint256[] memory myNumbersArray = new uint256[](nbr);
 
+        for (uint i; i < nbr ;i++)
+        {
+            uint256 amountContrib = contribution[ActivistsSupporters[_to][i]][_to] ;
+            uint256 amountOFHero = amountContrib / 12;
+            myNumbersArray[i] = amountOFHero;
+        }
+        return (myNumbersArray);
+    }
     // Returns the CELO / EUR price (6 decimals), ultimately provided by the Witnet oracle, and
     /// the timestamps at which the price was reported back from the Witnet oracle's sidechain
     /// to Celo Alfajores.
@@ -209,16 +224,17 @@ contract DepositOracle {
         require(amount >= 1, "Thanks to deposit more cusd");
         index++;
         (int256 currentCeloUsdPrice, uint256 lastTime) = getCeloUsdPrice();
-            depositersLogs[contributer].totalDepositsValue +=
-                int256(amount) *
-                currentCeloUsdPrice;
+            uint256 _amountUsd =
+                uint256(int256(amount) *
+                (currentCeloUsdPrice)) / 1e6;
+
             depositersLogs[contributer].totalDepositTimes++;
             CusdERC.transferFrom(msg.sender, address(this), amount);
             for (uint i; i < activists.length ; i++ )
             {
-                int256 totalValueUSD = int256((Arramount[i])) * (currentCeloUsdPrice);
-                depositToActivist[activists[i]].usdcCoin += uint256(totalValueUSD);
-                contribution[contributer][activists[i]] += uint256(totalValueUSD);
+                int256 totalValueUSD = int256(_amountUsd);
+                depositToActivist[activists[i]].usdcCoin += _amountUsd;
+                contribution[contributer][activists[i]] += _amountUsd;
                 ActivistsSupporters[activists[i]][depositToActivist[activists[i]].SupporterNumber]=contributer;
                 emit depositLogs(contributer, activists[i], amount, block.timestamp);
                 depositToActivist[activists[i]].SupporterNumber++;
@@ -269,21 +285,20 @@ contract DepositOracle {
         returns (uint256, uint256)
     {
         (int256 currentCeloUsdPrice, uint256 lastTime) = getCeloUsdPrice();
-        uint256 amount = ((depositToActivist[_to].celoCoin *
-            uint256(currentCeloUsdPrice)) + (depositToActivist[_to].usdcCoin)) /
+        uint256 amount = depositToActivist[_to].usdcCoin /
             12;
         require(depositToActivist[_to].usdcCoin > amount, "not sufficient ");
 
         CusdERC.transfer(_to,amount);
             
-        depositToActivist[_to].celoCoin -= amount;
+        depositToActivist[_to].usdcCoin -= amount;
         uint nbr = depositToActivist[_to].SupporterNumber;
-        for (uint i; i<=nbr;i++)
+        for (uint i; i< nbr;i++)
         {
             uint256 amountContrib = contribution[ActivistsSupporters[_to][i]][_to] ;
             uint256 amountOFHero = amountContrib / 12;
-            IERC20(HeroToken).approve(ActivistsSupporters[_to][i],amountOFHero * 10**10);
-            IERC20(HeroToken).transfer(ActivistsSupporters[_to][i],amountOFHero * 10**18);
+            IERC20(HeroToken).approve(ActivistsSupporters[_to][i],amountOFHero);
+            IERC20(HeroToken).transfer(ActivistsSupporters[_to][i],amountOFHero);
             contribution[ActivistsSupporters[_to][i]][_to] -= amountOFHero;
         }
         emit activistPayment(_to, amount, block.timestamp);

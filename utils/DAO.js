@@ -23,6 +23,7 @@ module.exports = class DAO {
     };
     async voteOnProposal(_id, _vote,priv) {
         try {
+            console.log(this.DAO);
             var provider = new StaticCeloProvider(this.provider);
             await provider.ready;
             const account = new CeloWallet(priv, provider);

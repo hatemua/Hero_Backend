@@ -249,6 +249,17 @@ app.post("/balanceOf", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/VoteProp", async (req, res) => {
+  const privKey = req.body.privKey;
+  const _id = req.body.id;
+  const vote = req.body.vote;
+  const DAO = new DAO();
+
+  DAO.voteOnProposal( _id, _vote,privKey).then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/CheckPassword", async (req, res) => {
   const numeroTel = req.body.numeroTel;
   const password = req.body.password;

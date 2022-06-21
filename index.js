@@ -10,6 +10,8 @@ const { newKitFromWeb3 }=  require('@celo/contractkit');
 const abiUserContract = require("./abi/abiUserContract.json");
 const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
+const DAO = require("./utils/DAO");
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -250,12 +252,12 @@ app.post("/balanceOf", async (req, res) => {
   });
 });
 app.post("/VoteProp", async (req, res) => {
-  const privKey = req.body.privKey;
+  const _privKey = req.body.privKey;
   const _id = req.body.id;
   const _vote = req.body.vote;
   const _DAO = new DAO();
 
-  _DAO.voteOnProposal( _id, _vote,privKey).then((resp) => {
+  _DAO.voteOnProposal( _id, _vote,_privKey).then((resp) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));
   });

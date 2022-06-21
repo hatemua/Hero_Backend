@@ -37,7 +37,6 @@ module.exports = class DAO {
                 this.DAO,
                 (1 * 10**18).toString()
             );
-            console.log("creating Activist");
             console.log(`Transaction.hash:${tx.hash}`);
 
             const receipt = await tx.wait();

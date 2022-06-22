@@ -63,6 +63,32 @@ module.exports = class DAO {
         }
 
     }
+    async printProposalsNumber() {
+        try {
+            console.log(this.DAO);
+            var provider = new StaticCeloProvider(this.provider);
+            await provider.ready;
+            const account = new CeloWallet(this.privKey, provider);
+            
+           
+            const DAO = new ethers.Contract(this.DAO,
+                AbiDAO,
+                account,
+
+            );
+            const txVote = await DAO.nextProposal()
+
+           
+            return txVote ;
+            // return { transaction: tx.hash, block: reciept.blockNumber, projId: tx }
+        }
+        catch (err) {
+            console.log(err);
+            return { error: err };
+        }
+
+    }
+    
     async printProposal(_id) {
         try {
             console.log(this.DAO);

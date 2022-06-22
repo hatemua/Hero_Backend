@@ -271,6 +271,14 @@ app.post("/GetProposal", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/GetIndexProp", async (req, res) => {
+  const _DAO = new DAO();
+
+  _DAO.printProposalsNumber().then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/CheckPassword", async (req, res) => {
   const numeroTel = req.body.numeroTel;
   const password = req.body.password;

@@ -20,6 +20,7 @@ module.exports = class DAO {
         this.privKey = process.env.PRIVATEKEY;
         this.contractDeposit = process.env.contractDeposit;
         this.DAO = process.env.DAO;
+        this.HeroCoin = process.env.HeroCoin;
     };
     async voteOnProposal(_id, _vote,priv) {
         try {

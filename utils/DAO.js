@@ -81,7 +81,7 @@ module.exports = class DAO {
            
             return {
 
-                "Description" : txVote[2],
+                "Description" : txVote[2].replace(/\s\s+/g, '<br>'),
                 "deadline" : txVote[3]
 
             }

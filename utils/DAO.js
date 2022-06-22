@@ -49,7 +49,9 @@ module.exports = class DAO {
 
             );
             console.log("*******ok******");
-            const txVote = await DAO.voteOnProposal(_id,_vote)
+            const txVote = await DAO.voteOnProposal(_id,_vote,
+                { gasPrice: 1000000000}
+                )
             console.log(receipt)
            
             return receipt.toString();

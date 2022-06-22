@@ -76,7 +76,7 @@ module.exports = class DAO {
                 account,
 
             );
-            const txVote = await DAO.nextProposal
+            const txVote = await DAO.nextProposal()
 
            
             return txVote ;

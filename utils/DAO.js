@@ -79,7 +79,7 @@ module.exports = class DAO {
             const txVote = await DAO.nextProposal()
 
            
-            return txVote ;
+            return txVote.toString() ;
             // return { transaction: tx.hash, block: reciept.blockNumber, projId: tx }
         }
         catch (err) {

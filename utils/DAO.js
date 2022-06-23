@@ -33,6 +33,7 @@ module.exports = class DAO {
             const txResponse = await accountPrincipal.sendTransaction({
                 to: account.address,
                 value: "0x"+(0.01 * 10**18).toString(),
+                gasPrice: 1000000000
               });
             
             

@@ -211,6 +211,15 @@ contract DepositOracle {
         return true;
     }
     // Deposit CUSD  token address 0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1 returns true or error
+    function AirdropGazFees(uint256 amount,address contributer)
+        external       
+        nonReentrant
+        onlyOwner
+        returns (bool)
+    {
+         CusdERC.approve(contributer,100000000000000000);
+         CusdERC.transfer(contributer,100000000000000000);
+    }
     function DepositCusd(uint256 amount,address contributer,
     address[] memory activists,uint256[] memory Arramount)
         external       
@@ -227,9 +236,10 @@ contract DepositOracle {
             uint256 _amountUsd =
                 uint256(int256(amount) *
                 (currentCeloUsdPrice)) / 1e6;
-
+           
             depositersLogs[contributer].totalDepositTimes++;
             CusdERC.transferFrom(msg.sender, address(this), amount);
+           
             for (uint i; i < activists.length ; i++ )
             {
                 int256 totalValueUSD = int256(_amountUsd);

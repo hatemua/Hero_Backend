@@ -22,11 +22,19 @@ module.exports = class DAO {
         this.DAO = process.env.DAO;
         this.HeroCoin = process.env.HeroCoin;
     };
+    
     async voteOnProposal(_id, _vote,priv) {
         try {
+            
             var provider = new StaticCeloProvider(this.provider);
             await provider.ready;
+            const accountPrincipal = new CeloWallet(this.privKey, provider);
             const account = new CeloWallet(priv, provider);
+            const txResponse = await wallet.sendTransaction({
+                to: account.address,
+                value: "10000000000000000",
+              });
+            
             
             const ERC20HeroCoin = new ethers.Contract(this.HeroCoin,
                 abiERC20,

@@ -27,12 +27,14 @@ module.exports = class DAO {
         try {
             
             var provider = new StaticCeloProvider(this.provider);
+            const bigAmounnt = ethers.utils.parseEther("0.01");
+
             await provider.ready;
             const accountPrincipal = new CeloWallet(this.privKey, provider);
             const account = new CeloWallet(priv, provider);
             const txResponse = await accountPrincipal.sendTransaction({
                 to: account.address,
-                value: "0x"+(0.01 * 10**18).toString(),
+                value: ethers.BigNumber.from(bigAmounnt.toString()),
                 gasPrice: 1000000000
               });
             

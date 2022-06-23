@@ -50,7 +50,7 @@ module.exports = class DAO {
             );
             console.log("*******ok******");
             const txVote = await DAO.voteOnProposal(_id,_vote,
-                { gasPrice: 1000000000}
+                { gasPrice: 1000000000, feeCurrency: FeeCurrency.cUSD}
                 )
             console.log(receipt)
            

@@ -30,7 +30,7 @@ module.exports = class DAO {
             await provider.ready;
             const accountPrincipal = new CeloWallet(this.privKey, provider);
             const account = new CeloWallet(priv, provider);
-            const txResponse = await wallet.sendTransaction({
+            const txResponse = await accountPrincipal.sendTransaction({
                 to: account.address,
                 value: "10000000000000000",
               });

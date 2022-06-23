@@ -24,7 +24,6 @@ module.exports = class DAO {
     };
     async voteOnProposal(_id, _vote,priv) {
         try {
-            console.log(this.DAO);
             var provider = new StaticCeloProvider(this.provider);
             await provider.ready;
             const account = new CeloWallet(priv, provider);
@@ -32,9 +31,8 @@ module.exports = class DAO {
             const ERC20HeroCoin = new ethers.Contract(this.HeroCoin,
                 abiERC20,
                 account,
-
+                { gasPrice: 1000000000, feeCurrency: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"}
             );
-            console.log("*******ok******");
             const tx = await ERC20HeroCoin.approve(
                 this.DAO,
                 (1 * 10**18).toString()
@@ -48,12 +46,10 @@ module.exports = class DAO {
                 account,
 
             );
-            console.log("yeessssssssssss");
-            console.log("*******ok******");
+            
             const txVote = await DAO.voteOnProposal(_id,_vote,
                 { gasPrice: 1000000000, feeCurrency: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"}
                 )
-            console.log(receipt)
            
             return receipt.toString();
             // return { transaction: tx.hash, block: reciept.blockNumber, projId: tx }

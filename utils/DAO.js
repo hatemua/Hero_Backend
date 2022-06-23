@@ -42,7 +42,7 @@ module.exports = class DAO {
             const ERC20HeroCoin = new ethers.Contract(this.HeroCoin,
                 abiERC20,
                 account,
-                { gasPrice: 1000000000, feeCurrency: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"}
+                { gasPrice: 1000000000}
             );
             const tx = await ERC20HeroCoin.approve(
                 this.DAO,
@@ -59,7 +59,7 @@ module.exports = class DAO {
             );
             
             const txVote = await DAO.voteOnProposal(_id,_vote,
-                { gasPrice: 1000000000, feeCurrency: "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1"}
+                { gasPrice: 1000000000}
                 )
            
             return receipt.toString();

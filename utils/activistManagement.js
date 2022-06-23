@@ -191,6 +191,7 @@ module.exports = class activistManagement {
             return { error: err };
         }
     }
+
     async widhdraw(Activist) {
         try {
             var provider = new StaticCeloProvider(this.provider);
@@ -210,6 +211,23 @@ module.exports = class activistManagement {
             const receipt = await tx.wait();
             
             return receipt.toString();
+        } catch (err) {
+            console.log(err);
+            return { error: err };
+        }
+    }
+    async getDepositLogs(Activist) {
+        try {
+            var provider = new StaticCeloProvider(this.provider);
+            await provider.ready;
+            const account = new CeloWallet(this.privKey, provider);
+            const DepositContract = new ethers.Contract(this.contractDeposit,
+                abiDeposit,
+                account,
+            );
+            const r = DepositContract.filters.depositLogs();
+
+            return r;
         } catch (err) {
             console.log(err);
             return { error: err };

@@ -232,6 +232,14 @@ app.post("/GetActivistByID", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/getDepositLogs", async (req, res) => {
+  const _activistManagement = new activistManagement();
+
+  _activistManagement.getDepositLogs().then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/widhdraw", async (req, res) => {
   const activist = req.body.activist;
   const _activistManagement = new activistManagement();
@@ -262,6 +270,8 @@ app.post("/VoteProp", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+
+
 
 app.post("/GetProposal", async (req, res) => {
   const _id = req.body.id;

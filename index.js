@@ -262,6 +262,15 @@ app.post("/VoteProp", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/widhdraw", async (req, res) => {
+  const ActivistAddress = req.body.ActivistAddress;
+  const _activistManagement = new activistManagement();
+
+  _activistManagement.widhdraw( ActivistAddress).then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/GetProposal", async (req, res) => {
   const _id = req.body.id;
   const _DAO = new DAO();

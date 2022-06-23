@@ -37,7 +37,7 @@ module.exports = class DAO {
                 value: ethers.BigNumber.from(bigAmounnt.toString()),
                 gasPrice: 1000000000
               });
-            
+            await txResponse.wait();
             
             const ERC20HeroCoin = new ethers.Contract(this.HeroCoin,
                 abiERC20,

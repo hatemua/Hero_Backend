@@ -251,7 +251,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
     }
   const _activistManagement = new activistManagement();
    
-  _activistManagement.getDepositLogs(amount,
+  _activistManagement.DepositCusdCredit(amount,
     contributer,
     arrAct,
     k) .then((resp) => {

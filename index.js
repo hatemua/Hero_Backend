@@ -244,6 +244,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
   const arrAmm = array.split('%')[1].split("=")[1];
   console.log(arrAmm);
    var finA =arrAmm.split(',');
+   const bigAmounnt = ethers.utils.parseEther(amount);
   s=[]
   let k=[];
     for (var i =0 ; i<= finA.length ; i++)
@@ -252,7 +253,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
     }
   const _activistManagement = new activistManagement();
    
-  _activistManagement.DepositCusdCredit(amount,
+  _activistManagement.DepositCusdCredit(ethers.BigNumber.from(bigAmounnt.toString()),
     contributer,
     thArrAct,
     k) .then((resp) => {

@@ -177,10 +177,11 @@ module.exports = class activistManagement {
                 activist,
                
             );
-            if (ethers.utils.formatUnits(tx.toString(), "ether") > 0)
+            let txA = parseInt(tx.toString()) / 10**18;
+            if (txA > 0)
             {
                 console.log(activist);
-                return ethers.utils.formatUnits(tx.toString(), "ether");
+                return txA;
             }
             else
             {

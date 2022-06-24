@@ -157,6 +157,35 @@ module.exports = class activistManagement {
             return { error: err };
         }
     }
+    async getTransactions(user,activist) {
+        try {
+            const web3 = new Web3("https://alfajores-forno.celo-testnet.org")
+            const kit = newKitFromWeb3(web3);
+            var provider = new StaticCeloProvider(this.provider);
+            await provider.ready;
+            const account = new CeloWallet(this.privKey, provider);
+            console.log(account);
+           
+            //let x = new BigNumber(idActivist.toString());
+            const DepositContract = new ethers.Contract(this.contractDeposit,
+                abiDeposit,
+                account,
+            );
+
+            const tx = await DepositContract.contribution(
+                user,
+                activist,
+               
+            );
+            if (ethers.utils.formatUnits(tx, "ether") > 0)
+            {
+                console.log(activist);
+            }
+        } catch (err) {
+            console.log(err);
+            return { error: err };
+        }
+    }
     async getCofDatafromNumTel(NumTel) {
         try {
             const web3 = new Web3("https://alfajores-forno.celo-testnet.org")

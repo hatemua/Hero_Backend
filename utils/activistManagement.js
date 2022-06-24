@@ -185,6 +185,7 @@ module.exports = class activistManagement {
                 txA = parseInt(txA) / 10**18;
                 txA= Number(txA).toFixed(2);
             }
+            txA= Number(txA).toFixed(2);
             if (txA != 0)
             {
                 console.log(activist);

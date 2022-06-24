@@ -247,7 +247,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
    const bigAmounnt = ethers.utils.parseEther(amount);
   s=[]
   let k=[];
-    for (var i =0 ; i<= finA.length ; i++)
+    for (var i =0 ; i< finA.length ; i++)
     {
       k.push((finA[i] * 10**18).toString());
     }

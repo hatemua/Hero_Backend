@@ -112,11 +112,17 @@ module.exports = class DAO {
             );
             const txVote = await DAO.Proposals(_id
                 )
-           
+            let nbrYes = parseInt(txVote[4]);
+            let nbrNo = parseInt(txVote[5]);
+
+            let PercentageYes =  (nbrYes / (nbrYes + nbrNo) *100);
+            let PercentagesNo =  (nbrNo / (nbrYes + nbrNo) *100);
             return {
 
                 "Description" : txVote[2].replace(/\s\s+/g, '<br>'),
-                "deadline" : txVote[3]
+                "deadline" : txVote[3],
+                "Yes" : Number(PercentageYes).toFixed(2),
+                "No" :Number(PercentagesNo).toFixed(2)
 
             }
             // return { transaction: tx.hash, block: reciept.blockNumber, projId: tx }

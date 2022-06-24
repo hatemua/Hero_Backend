@@ -182,7 +182,8 @@ module.exports = class activistManagement {
             console.log(txA);
             if (parseInt(txA)>30000)
             {
-                txA = ethers.utils.formatUnits(txA.toString(), "ether")
+                txA = parseInt(txA) / 10**18;
+                txA= Number(txA).toFixed(2);
             }
             if (txA != 0)
             {

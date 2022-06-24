@@ -364,10 +364,11 @@ app.post("/HistoryTransactions", async (req, res) => {
     console.log(fond);
     if (fond != 0)
     {
-    Tx.push({...act,contribution:fond})
+    Tx.push({...act,contribution:fond});
     }
   }
-  return (Tx);
+  res.end(JSON.stringify(Tx));
+  
 });
 const options = {
     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey1.pem'),

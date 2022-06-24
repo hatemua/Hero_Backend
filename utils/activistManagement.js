@@ -180,7 +180,7 @@ module.exports = class activistManagement {
             if (ethers.utils.formatUnits(tx, "ether") > 0)
             {
                 console.log(activist);
-                return tx;
+                return ethers.utils.formatUnits(tx, "ether");
             }
             else
             {

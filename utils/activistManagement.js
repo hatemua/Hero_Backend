@@ -179,6 +179,7 @@ module.exports = class activistManagement {
             );
             
             let txA = ethers.utils.formatUnits(tx, "ether")
+            console.log(txA);
             if (parseInt(txA)>30000)
             {
                 txA = ethers.utils.formatUnits(txA, "ether")

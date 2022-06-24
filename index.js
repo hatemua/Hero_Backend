@@ -238,7 +238,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
   const array = req.body.array;
   console.log(array);
 
-  var thArrAct = JSON.parse("[" + array.split('%')[0] + "]");
+  var thArrAct = Array.from(array.split('%')[0] );
   s=[]
   for (var i =0 ; i<= thArrAct.length ; i++)
   {
@@ -247,8 +247,8 @@ app.post("/DepositCusdCredit", async (req, res) => {
   console.log(arrAct);
   const arrAmm = array.split('%')[1].split("=")[1];
   console.log(arrAmm);
-  var finA = JSON.parse("[" + arrAmm + "]");
- 
+   var finA =Array.from(arrAmm );
+  s=[]
   let k=[];
     for (var i =0 ; i<= finA.length ; i++)
     {

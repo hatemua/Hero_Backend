@@ -356,7 +356,7 @@ app.post("/HistoryTransactions", async (req, res) => {
   const _activistManagement = new activistManagement();
   const indexAct = await _activistManagement.getIndex();
   console.log(indexAct);
-  for (let i=1 ; i < parseInt(indexAct) ;i++ )
+  for (let i=1 ; i < parseInt(indexAct.index) ;i++ )
   {
     const act = await _activistManagement.searchActivistById(i);
     console.log(act);

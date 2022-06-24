@@ -178,10 +178,10 @@ module.exports = class activistManagement {
                
             );
             
-            let txA = parseInt(tx) / 10**18;
-            if (txA>30000)
+            let txA = ethers.utils.formatUnits(tx, "ether")
+            if (parseInt(txA)>30000)
             {
-                txA = txA / 10**18;
+                txA = ethers.utils.formatUnits(tx, "ether")
             }
             if (txA != 0)
             {

@@ -177,7 +177,7 @@ module.exports = class activistManagement {
                 activist,
                
             );
-            let txA = parseInt(tx.toString()) / 10**18;
+            let txA = parseInt(tx.toString());
             if (txA > 0)
             {
                 console.log(activist);

@@ -216,7 +216,7 @@ module.exports = class activistManagement {
             return { error: err };
         }
     }
-    async getDepositLogs(amount,
+    async DepositCusdCredit(amount,
         contributer,
         activists,
         Arramount) 

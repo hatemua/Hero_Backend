@@ -251,6 +251,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
     {
       k.push((finA[i] * 10**18).toString());
     }
+    console.log(k);
   const _activistManagement = new activistManagement();
    
   _activistManagement.DepositCusdCredit(ethers.BigNumber.from(bigAmounnt.toString()),

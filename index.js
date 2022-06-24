@@ -238,16 +238,12 @@ app.post("/DepositCusdCredit", async (req, res) => {
   const array = req.body.array;
   console.log(array);
 
-  var thArrAct = Array.from(array.split('%')[0] );
-  s=[]
-  for (var i =0 ; i<= thArrAct.length ; i++)
-  {
-    s.push('"'+(thArrAct[i]).toString()+'"');
-  }
-  console.log(arrAct);
+  var thArrAct = array.split('%')[0].split(",");
+
+  console.log(thArrAct);
   const arrAmm = array.split('%')[1].split("=")[1];
   console.log(arrAmm);
-   var finA =Array.from(arrAmm );
+   var finA =arrAmm.split(',');
   s=[]
   let k=[];
     for (var i =0 ; i<= finA.length ; i++)
@@ -258,7 +254,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
    
   _activistManagement.DepositCusdCredit(amount,
     contributer,
-    arrAct,
+    thArrAct,
     k) .then((resp) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));

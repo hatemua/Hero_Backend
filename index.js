@@ -249,7 +249,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
   let k=[];
     for (var i =0 ; i<= finA.length ; i++)
     {
-      k.push('"'+(finA[i] * 10**18).toString()+'"');
+      k.push((finA[i] * 10**18).toString());
     }
   const _activistManagement = new activistManagement();
    

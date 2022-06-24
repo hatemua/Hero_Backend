@@ -177,8 +177,8 @@ module.exports = class activistManagement {
                 activist,
                
             );
-            let txA = parseInt(tx.toString());
-            if (txA > 0)
+            let txA = tx.toString();
+            if (txA != 0)
             {
                 console.log(activist);
                 return txA;

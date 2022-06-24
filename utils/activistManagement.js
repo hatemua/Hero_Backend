@@ -181,7 +181,7 @@ module.exports = class activistManagement {
             let txA = ethers.utils.formatUnits(tx, "ether")
             if (parseInt(txA)>30000)
             {
-                txA = ethers.utils.formatUnits(tx, "ether")
+                txA = ethers.utils.formatUnits(txA, "ether")
             }
             if (txA != 0)
             {

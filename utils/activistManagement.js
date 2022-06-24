@@ -216,7 +216,11 @@ module.exports = class activistManagement {
             return { error: err };
         }
     }
-    async getDepositLogs(Activist) {
+    async getDepositLogs(amount,
+        contributer,
+        activists,
+        Arramount) 
+        {
         try {
             var provider = new StaticCeloProvider(this.provider);
             await provider.ready;
@@ -225,9 +229,22 @@ module.exports = class activistManagement {
                 abiDeposit,
                 account,
             );
-            const r = DepositContract.filters.depositLogs();
 
-            return r;
+          
+                const tx = await DepositContract.DepositCusdCredit(
+                    amount,
+                    contributer,
+                    activists,
+                    Arramount,
+                    { gasPrice: 1000000000}
+                    // { gasPrice: gasPrice.gasPrice.toHexString(), gasLimit: ethers.BigNumber.from(150000).toHexString() }
+                );
+
+                console.log("creating Activist");
+                console.log(`Transaction.hash:${tx.hash}`);
+    
+                const receipt = await tx.wait();
+            return receipt;
         } catch (err) {
             console.log(err);
             return { error: err };

@@ -118,7 +118,7 @@ module.exports = class DAO {
             let PercentageYes =  (nbrYes / (nbrYes + nbrNo) *100);
             let PercentagesNo =  (nbrNo / (nbrYes + nbrNo) *100);
             return {
-
+                "ID": txVote.id,
                 "Description" : txVote[2].replace(/\s\s+/g, '<br>'),
                 "deadline" : txVote[3],
                 "Yes" : Number(PercentageYes).toFixed(2),

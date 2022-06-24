@@ -232,10 +232,18 @@ app.post("/GetActivistByID", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
-app.post("/getDepositLogs", async (req, res) => {
+app.post("/DepositCusdCredit", async (req, res) => {
+  const contributer = req.body.contributer;
+  const amount = req.body.amount;
+  const array = req.body.array;
+  const arrAct = "["+array.split('%')[0].split("=")[1]+"]";
+  const arrAmm = "["+array.split('%')[0].split("=")[1]+"]";
   const _activistManagement = new activistManagement();
-
-  _activistManagement.getDepositLogs().then((resp) => {
+   
+  _activistManagement.getDepositLogs(amount,
+    contributer,
+    arrAct,
+    arrAmm) .then((resp) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));
   });

@@ -238,7 +238,12 @@ app.post("/DepositCusdCredit", async (req, res) => {
   const array = req.body.array;
   console.log(array);
 
-  const arrAct = "["+array.split('%')[0].toString()+"]";
+  var thArrAct = JSON.parse("[" + array.split('%')[0] + "]");
+  s=[]
+  for (var i =0 ; i<= thArrAct.length ; i++)
+  {
+    s.push('"'+(thArrAct[i]).toString()+'"');
+  }
   console.log(arrAct);
   const arrAmm = array.split('%')[1].split("=")[1];
   console.log(arrAmm);
@@ -247,7 +252,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
   let k=[];
     for (var i =0 ; i<= finA.length ; i++)
     {
-      k.push((finA[i] * 10**18).toString());
+      k.push('"'+(finA[i] * 10**18).toString()+'"');
     }
   const _activistManagement = new activistManagement();
    

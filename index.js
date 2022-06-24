@@ -361,6 +361,7 @@ app.post("/HistoryTransactions", async (req, res) => {
   {
     const act = await _activistManagement.searchActivistById(i);
     const fond = await _activistManagement.getTransactions(UserAddress,act.Wallet);
+    
     Tx.push({...act,contribution:fond})
   }
   return (Tx);

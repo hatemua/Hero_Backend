@@ -240,7 +240,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
 
   const arrAct = "["+array.split('%')[0]+"]";
   console.log(arrAct);
-  const arrAmm = array.split('%')[0].split("=")[1];
+  const arrAmm = array.split('%')[1].split("=")[1];
   console.log(arrAmm);
   var finA = JSON.parse("[" + arrAmm + "]");
  

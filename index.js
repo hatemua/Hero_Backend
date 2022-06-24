@@ -237,13 +237,20 @@ app.post("/DepositCusdCredit", async (req, res) => {
   const amount = req.body.amount;
   const array = req.body.array;
   const arrAct = "["+array.split('%')[0].split("=")[1]+"]";
-  const arrAmm = "["+array.split('%')[0].split("=")[1]+"]";
+  const arrAmm = array.split('%')[0].split("=")[1];
+  var finA = JSON.parse("[" + arrAmm + "]");
+ 
+  let k=[];
+    for (var i =0 ; i<= finA.length ; i++)
+    {
+      k.push((finA[i] * 10**18).toString());
+    }
   const _activistManagement = new activistManagement();
    
   _activistManagement.getDepositLogs(amount,
     contributer,
     arrAct,
-    arrAmm) .then((resp) => {
+    k) .then((resp) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));
   });

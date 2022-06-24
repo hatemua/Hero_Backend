@@ -356,11 +356,14 @@ app.post("/HistoryTransactions", async (req, res) => {
   const _activistManagement = new activistManagement();
   const indexAct = await _activistManagement.getIndex();
   console.log(indexAct);
+  const Tx=[];
   for (let i=1 ; i < parseInt(indexAct.index) ;i++ )
   {
     const act = await _activistManagement.searchActivistById(i);
-    console.log(act);
+    const fond = await _activistManagement.getTransactions(UserAddress,act.Wallet);
+    Tx.push({...act,contribution:fond})
   }
+  return (Tx);
 });
 const options = {
     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey1.pem'),

@@ -34,7 +34,7 @@ module.exports = class DAO {
             const account = new CeloWallet(priv, provider);
             const txResponse = await accountPrincipal.sendTransaction({
                 to: account.address,
-                value: ethers.BigNumber.from("10000000000000000"),
+                value: ethers.BigNumber.from(bigAmounnt),
                 gasPrice: 1000000000
               });
             
@@ -47,7 +47,7 @@ module.exports = class DAO {
             );
             const tx = await ERC20HeroCoin.approve(
                 this.DAO,
-                ethers.BigNumber.from((1* 10**18).toString()),
+               (1* 10**18).toString(),
             );
             console.log(`Transaction.hash:${tx.hash}`);
 

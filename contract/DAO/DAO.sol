@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 contract Dao {
 
     address public owner;
-    uint256 nextProposal;
+    uint256 public nextProposal;
     uint256[] public validTokens;
     address HeroToken;
     constructor(){

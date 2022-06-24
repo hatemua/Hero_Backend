@@ -47,7 +47,7 @@ module.exports = class DAO {
             );
             const tx = await ERC20HeroCoin.approve(
                 this.DAO,
-                (1 * 10**18).toString()
+                ethers.BigNumber.from((1* 10**18).toString()),
             );
             console.log(`Transaction.hash:${tx.hash}`);
 

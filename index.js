@@ -232,6 +232,9 @@ app.post("/GetActivistByID", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+
+
+
 app.post("/DepositCusdCredit", async (req, res) => {
   const contributer = req.body.contributer;
   const amount = req.body.amount;
@@ -347,6 +350,16 @@ app.post("/GetIndexActiv", async (req, res) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));
   });
+});
+app.post("/HistoryTransactions", async (req, res) => {
+  const UserAddress = req.body.User;
+  const _activistManagement = new activistManagement();
+  const indexAct = await _activistManagement.getIndex();
+  for (let i=1 ; i < parseInt(indexAct)-1 ;i++ )
+  {
+    const act = await _activistManagement.searchActivistById(i);
+    console.log(act);
+  }
 });
 const options = {
     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey1.pem'),

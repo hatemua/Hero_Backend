@@ -177,10 +177,10 @@ module.exports = class activistManagement {
                 activist,
                
             );
-            if (ethers.utils.formatUnits(tx, "ether") > 0)
+            if (ethers.utils.formatUnits(tx.toString(), "ether") > 0)
             {
                 console.log(activist);
-                return ethers.utils.formatUnits(tx, "ether");
+                return ethers.utils.formatUnits(tx.toString(), "ether");
             }
             else
             {

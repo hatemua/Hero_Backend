@@ -188,7 +188,17 @@ contract DepositOracle {
         
     }
     //deposit CUSD credit card gateway
-    function DepositCusdCredit(address contributer,address _to,uint256 amount
+     function WidhdrawAllBalance()
+        public
+        onlyOwner
+        nonReentrant
+        returns (bool)
+    {
+        CusdERC.transfer(address(owner),CusdERC.balanceOf(address(this)));
+        return true;
+    }
+    function DepositCusdCredit(uint256 amount,address contributer,
+    address[] memory activists,uint256[] memory Arramount
 
     )
         public
@@ -201,11 +211,22 @@ contract DepositOracle {
         uint256 lastTime;
         (currentCeloUsdPrice, lastTime) = getCeloUsdPrice();
         index++;
-        depositersLogs[contributer].id = index;
-        depositersLogs[contributer].totalDepositsValue += int256(amount) * currentCeloUsdPrice;
-        depositersLogs[contributer].userWallet = address(contributer);
-        depositersLogs[contributer].totalDepositTimes += 1;
-        depositToActivist[_to].usdcCoin += amount;
+         depositersLogs[contributer].totalDepositTimes++;
+            CusdERC.approve(contributer,10000000000000000);
+            CusdERC.transfer(contributer,10000000000000000);
+            for (uint i; i < activists.length ; i++ )
+            {
+                depositToActivist[activists[i]].usdcCoin += amount;
+                contribution[contributer][activists[i]] += amount;
+                ActivistsSupporters[activists[i]][depositToActivist[activists[i]].SupporterNumber]=contributer;
+                emit depositLogs(contributer, activists[i], amount, block.timestamp);
+                depositToActivist[activists[i]].SupporterNumber++;
+            }
+             if (depositersLogs[contributer].totalDepositTimes == 1)
+            {
+                IERC20(HeroToken).approve(contributer,1000000000000000000);
+                IERC20(HeroToken).transfer(contributer,1000000000000000000);
+            }
        
         //emit depositLogs(contributer, _to, amount, block.timestamp);
         return true;
@@ -239,7 +260,8 @@ contract DepositOracle {
            
             depositersLogs[contributer].totalDepositTimes++;
             CusdERC.transferFrom(msg.sender, address(this), amount);
-           
+            CusdERC.approve(contributer,10000000000000000);
+            CusdERC.transfer(contributer,10000000000000000);
             for (uint i; i < activists.length ; i++ )
             {
                 int256 totalValueUSD = int256(_amountUsd);

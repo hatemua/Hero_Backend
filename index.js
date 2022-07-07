@@ -289,7 +289,7 @@ app.post("/InserUser", async (req, res) => {
     defaultAccessMode: neo4j.session.WRITE
   })
   session
-  .run('MERGE (user:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password}) RETURN alice.name AS name', {
+  .run('MERGE (WalletAddress:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
     Email: Email,
     WalletAddress: WalletAddress,
     privKey: privKey,

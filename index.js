@@ -309,6 +309,7 @@ app.post("/InserUser", async (req, res) => {
       console.log(error)
     }
   })
+  res.end(JSON.stringify("ok"));
  
 });
 app.post("/balanceOf", async (req, res) => {

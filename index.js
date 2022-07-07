@@ -11,7 +11,7 @@ const abiUserContract = require("./abi/abiUserContract.json");
 const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
-
+var neo4j = require('node-neo4j');
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -274,7 +274,27 @@ app.post("/widhdraw", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/InserUser", async (req, res) => {
+  const Email = req.body.Email;
+  const WalletAddress = req.body.WalletAddress;
+  const privKey = req.body.privKey;
+  const Password = req.body.Password;
+  db = new neo4j('http://neo4j:neo4j@hegemony.donftify.digital/:7474');
+  db.insertNode({
+    Email: Email,
+    WalletAddress: WalletAddress,
+    privKey: privKey,
+    Password:Password
+},function(err, node){
+    if(err) throw err;
 
+    // Output node properties.
+    console.log(node.data);
+
+    // Output node id.
+    console.log(node._id);
+});
+});
 app.post("/balanceOf", async (req, res) => {
   const user = req.body.user;
   const Token = req.body.Token;

@@ -300,7 +300,7 @@ app.post("/InserUser", async (req, res) => {
       console.log(keys)
     },
     onNext: record => {
-      console.log(record.get('Email'))
+      console.log(record.get('WalletAddress'))
     },
     onCompleted: () => {
       session.close() // returns a Promise

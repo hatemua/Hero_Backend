@@ -279,7 +279,7 @@ app.post("/InserUser", async (req, res) => {
   const WalletAddress = req.body.WalletAddress;
   const privKey = req.body.privKey;
   const Password = req.body.Password;
-  db = new neo4j('http://neo4j:neo4j@hegemony.donftify.digital/:7474');
+  db = new neo4j('http://neo4j:87h0u74+-*/@hegemony.donftify.digital:7687');
   db.insertNode({
     Email: Email,
     WalletAddress: WalletAddress,

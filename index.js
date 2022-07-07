@@ -11,7 +11,7 @@ const abiUserContract = require("./abi/abiUserContract.json");
 const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
-var neo4j = require('node-neo4j');
+var neo4j = require('neo4j-driver')
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -279,21 +279,37 @@ app.post("/InserUser", async (req, res) => {
   const WalletAddress = req.body.WalletAddress;
   const privKey = req.body.privKey;
   const Password = req.body.Password;
-  db = new neo4j('http://neo4j:87h0u74+-*/@hegemony.donftify.digital:7687');
-  db.insertNode({
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital:7687',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+
+  var session = driver.session({
+    database: 'Hero',
+    defaultAccessMode: neo4j.session.WRITE
+  })
+  session
+  .run('MERGE (alice:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password}) RETURN alice.name AS name', {
     Email: Email,
     WalletAddress: WalletAddress,
     privKey: privKey,
     Password:Password
-},function(err, node){
-    if(err) throw err;
-
-    // Output node properties.
-    console.log(node.data);
-
-    // Output node id.
-    console.log(node._id);
-});
+  })
+  .subscribe({
+    onKeys: keys => {
+      console.log(keys)
+    },
+    onNext: record => {
+      console.log(record.get('name'))
+    },
+    onCompleted: () => {
+      session.close() // returns a Promise
+    },
+    onError: error => {
+      console.log(error)
+    }
+  })
+ 
 });
 app.post("/balanceOf", async (req, res) => {
   const user = req.body.user;

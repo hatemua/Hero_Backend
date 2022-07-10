@@ -282,13 +282,15 @@ async function query(sql, params) {
     password: "87h0u74+-*/",
     database: 'Survey'
   });
+  let re;
   let res=connection.query(sql, params, (err, res) => {
     if(err) throw err;
   
     console.log('Last insert ID:', res.insertId);
+    re=res.insertId;
     return res.insertId;
   });
-
+  return re;
   
 }
 app.post("/InserData", async (req, res) => {
@@ -311,7 +313,7 @@ app.post("/InserData", async (req, res) => {
     MonthlySubs : MonthlySubs};
   let result = await query(sql, params);
   console.log(result);
-    res.end({result:"ok"});
+  res.end(JSON.stringify("ok"));
  
 });
 app.post("/InserUser", async (req, res) => {

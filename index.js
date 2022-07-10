@@ -298,8 +298,8 @@ app.post("/InserData", async (req, res) => {
   let Email= req.body.Email;
   let Birth_date= req.body.Birth_date;
   let City= req.body.City;
-  let ExitesYouHero= req.body.ExitesYouHero.toString();
-  let climatesChanges=req.body.climatesChanges.toString();
+  let ExitesYouHero= JSON.stringify(req.body.ExitesYouHero);
+  let climatesChanges=JSON.stringify(req.body.climatesChanges);
   let MonthlySubs=req.body.MonthlySubs;
 
   let sql="INSERT INTO survey SET ?"

@@ -1,5 +1,6 @@
 const express = require("express");
 const https = require('https');
+const mysql = require('mysql');
 
 const Web3 = require("web3");
 const axios = require("axios");
@@ -273,6 +274,36 @@ app.post("/widhdraw", async (req, res) => {
     console.log(resp);
     res.end(JSON.stringify(resp));
   });
+});
+async function query(sql, params) {
+  const connection = await mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "87h0u74+-*/",
+    database: 'survey'
+  });
+  const [results, ] = await connection.execute(sql, params);
+
+  return results;
+}
+app.post("/InserData", async (req, res) => {
+  let Full_Name= req.body.Full_Name;
+  let Email= req.body.Email;
+  let Birth_date= req.body.Birth_date;
+  let City= req.body.City;
+  let ExitesYouHero= req.body.ExitesYouHero;
+  let climatesChanges=req.body.climatesChanges;
+  let MonthlySubs=req.body.MonthlySubs;
+
+  let sql=`INSERT INTO survey('Full_Name', 'Email', 'Birth_date', 'City', 'ExitesYouHero', 'climatesChanges', 'MonthlySubs') VALUES (
+    ${Full_Name},${Email},${Birth_date},${City},${ExitesYouHero},${climatesChanges},${MonthlySubs}
+  )`
+  let params={};
+  query(sql, params).then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+ 
 });
 app.post("/InserUser", async (req, res) => {
   const Email = req.body.Email;

@@ -311,7 +311,7 @@ app.post("/InserData", async (req, res) => {
     MonthlySubs : MonthlySubs};
   let result = await query(sql, params);
   console.log(result);
-    res.end(result);
+    res.end({result:"ok"});
  
 });
 app.post("/InserUser", async (req, res) => {

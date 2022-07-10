@@ -309,9 +309,8 @@ app.post("/InserData", async (req, res) => {
     ExitesYouHero : ExitesYouHero,
     climatesChanges : climatesChanges,
     MonthlySubs : MonthlySubs};
-  query(sql, params).then((resp) => {
-    res.end(resp);
-  });
+  let res = await query(sql, params);
+    res.end(res);
  
 });
 app.post("/InserUser", async (req, res) => {

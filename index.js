@@ -310,8 +310,7 @@ app.post("/InserData", async (req, res) => {
     climatesChanges : climatesChanges,
     MonthlySubs : MonthlySubs};
   query(sql, params).then((resp) => {
-    // convert a currency unit from wei to ether
-    res.end(JSON.stringify(resp));
+    res.end(resp);
   });
  
 });

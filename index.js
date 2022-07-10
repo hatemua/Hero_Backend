@@ -297,6 +297,7 @@ app.post("/InserData", async (req, res) => {
 
   let sql="INSERT INTO survey SET ?"
   let params={
+    Id_Personne:null,
     Full_Name : Full_Name,
     Email : Email,
     Birth_date : Birth_date,

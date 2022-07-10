@@ -280,7 +280,7 @@ async function query(sql, params) {
     host: "localhost",
     user: "root",
     password: "87h0u74+-*/",
-    database: 'survey'
+    database: 'Survey'
   });
   const [results, ] = await connection.query(sql, params);
 

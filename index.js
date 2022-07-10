@@ -282,9 +282,14 @@ async function query(sql, params) {
     password: "87h0u74+-*/",
     database: 'Survey'
   });
-  const results = await connection.query(sql, params);
+  connection.query(sql, params, (err, res) => {
+    if(err) throw err;
+  
+    console.log('Last insert ID:', res.insertId);
+    return res.insertId;
+  });
 
-  return results;
+  
 }
 app.post("/InserData", async (req, res) => {
   let Full_Name= req.body.Full_Name;

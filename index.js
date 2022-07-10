@@ -282,7 +282,7 @@ async function query(sql, params) {
     password: "87h0u74+-*/",
     database: 'survey'
   });
-  const [results, ] = await connection.execute(sql, params);
+  const [results, ] = await connection.query(sql, params);
 
   return results;
 }
@@ -295,10 +295,15 @@ app.post("/InserData", async (req, res) => {
   let climatesChanges=req.body.climatesChanges;
   let MonthlySubs=req.body.MonthlySubs;
 
-  let sql=`INSERT INTO survey('Full_Name', 'Email', 'Birth_date', 'City', 'ExitesYouHero', 'climatesChanges', 'MonthlySubs') VALUES (
-    ${Full_Name},${Email},${Birth_date},${City},${ExitesYouHero},${climatesChanges},${MonthlySubs}
-  )`
-  let params={};
+  let sql="INSERT INTO survey SET ?"
+  let params={
+    Full_Name : Full_Name,
+    Email : Email,
+    Birth_date : Birth_date,
+    City : City,
+    ExitesYouHero : ExitesYouHero,
+    climatesChanges : climatesChanges,
+    MonthlySubs : MonthlySubs};
   query(sql, params).then((resp) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));

@@ -282,12 +282,9 @@ async function query(sql, params) {
     password: "87h0u74+-*/",
     database: 'Survey'
   });
-  connection.query(sql, params, (err, res) => {
-    if(err) throw err;
-  
-    console.log('Last insert ID:', res.insertId);
+  let res=connection.query(sql, params);
+    console.log(res);
     return res.insertId;
-  });
 
   
 }

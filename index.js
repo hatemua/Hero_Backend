@@ -282,9 +282,12 @@ async function query(sql, params) {
     password: "87h0u74+-*/",
     database: 'Survey'
   });
-  let res=connection.query(sql, params);
-    console.log(res);
+  let res=connection.query(sql, params, (err, res) => {
+    if(err) throw err;
+  
+    console.log('Last insert ID:', res.insertId);
     return res.insertId;
+  });
 
   
 }
@@ -307,6 +310,7 @@ app.post("/InserData", async (req, res) => {
     climatesChanges : climatesChanges,
     MonthlySubs : MonthlySubs};
   let result = await query(sql, params);
+  console.log(result);
     res.end(result);
  
 });

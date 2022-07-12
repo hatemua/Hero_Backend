@@ -371,7 +371,7 @@ async function InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password)
     database: 'Hero',
     defaultAccessMode: neo4j.session.WRITE
   })
-  session
+  await session
   .run('MERGE (WalletAddress:Person {phoneNumber : $phoneNumber,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
     phoneNumber: phoneNumber,
     WalletAddress: WalletAddress,
@@ -379,21 +379,7 @@ async function InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password)
     Password:Password,
     Mnemonic : MNEMONIC
   })
-  .subscribe({
-    onKeys: keys => {
-      console.log(keys)
-    },
-    onNext: record => {
-      console.log(record.get('WalletAddress'))
-    },
-    onCompleted: () => {
-      session.close() // returns a Promise
-    },
-    onError: error => {
-      console.log(error)
-    }
-  })
-  res.end(JSON.stringify("ok"));
+  return (true);
  
 }
 app.post("/balanceOf", async (req, res) => {

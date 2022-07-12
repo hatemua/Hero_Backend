@@ -327,7 +327,9 @@ async function SearchUser(Email) {
     defaultAccessMode: neo4j.session.READ
   })
   session
-  .run('Match (n:Person {Email:"h@gmail.com"}) return n')
+  .run('Match (n:Person {Email:$Email}) return n', {
+    Email: Email,
+  })
   .subscribe({
     onKeys: keys => {
       console.log(keys)

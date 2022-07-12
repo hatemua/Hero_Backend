@@ -330,7 +330,7 @@ async function SearchUser(Email) {
   .run('Match (n:Person {Email:$Email}) return n', {
     Email : Email
   });
-  if (result.records.length == 0)
+  if (result.records.length > 0)
   {
   const singleRecord = result.records[0]
   const node = singleRecord.get(0)

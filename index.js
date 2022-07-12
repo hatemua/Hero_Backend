@@ -326,7 +326,7 @@ async function SearchUser(Email) {
     database: 'Hero',
     defaultAccessMode: neo4j.session.READ
   })
-  let res = await session
+  let result = await session
   .run('Match (n:Person {Email:$Email}) return n', {
     Email : Email
   });

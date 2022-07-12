@@ -335,7 +335,7 @@ async function SearchUser(Email) {
   const singleRecord = result.records[0]
   const node = singleRecord.get(0)
   console.log(node);
-  return (node.Node.properties);
+  return (node.properties);
   }
 
   return 0;

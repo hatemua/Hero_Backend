@@ -349,6 +349,7 @@ async function SearchUser(Email) {
 app.post("/SearchUserFromEmailDB", async (req, res) => {
   const Email = req.body.Email;
   let result = await SearchUser(Email);
+  console.log(result);
   res.end(JSON.stringify(result));
 
 })

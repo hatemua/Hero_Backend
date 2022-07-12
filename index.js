@@ -177,8 +177,7 @@ app.post("/CreateWallet", async (req, res) => {
    let WalletAddress = AESEncyption(password+"+-*/"+phoneNumber,pureWallet.address);
    let Password = AESEncyption(phoneNumber+"+-*/",password);
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
-   let Email = phoneNumber;
-  await InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password);
+  await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
   console.log(temp);
   const toblock = await Inscription(phoneNumber,temp.IpfsHash,pureWallet.address);
@@ -358,7 +357,7 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
   res.end(JSON.stringify(result));
 
 })
-async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
+async function InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password) {
 
   var driver = neo4j.driver(
     'neo4j://hegemony.donftify.digital:7687',
@@ -370,8 +369,8 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
     defaultAccessMode: neo4j.session.WRITE
   })
   session
-  .run('MERGE (WalletAddress:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
-    Email: Email,
+  .run('MERGE (WalletAddress:Person {phoneNumber : $phoneNumber,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
+    phoneNumber: phoneNumber,
     WalletAddress: WalletAddress,
     privKey: privKey,
     Password:Password,

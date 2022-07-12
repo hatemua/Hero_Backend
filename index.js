@@ -333,7 +333,7 @@ async function SearchUser(Email) {
       console.log(keys)
     },
     onNext: record => {
-      console.log(record.get('WalletAddress'));
+      console.log(record);
       return (record);
     },
     onCompleted: () => {

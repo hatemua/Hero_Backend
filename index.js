@@ -326,7 +326,12 @@ async function SearchUser(Email) {
     database: 'Hero',
     defaultAccessMode: neo4j.session.READ
   })
-  console.log(session);
+  let res = session
+  .run('Match (n:Person {Email:$Email}) return n', {
+    Email : Email
+  });
+  console.log(res);
+  
 }
 app.post("/SearchUserFromEmailDB", async (req, res) => {
   const Email = req.body.Email;

@@ -328,7 +328,7 @@ async function SearchUser(Email) {
   })
   session
   .run('Match (n:Person {Email:$Email}) return n', {
-    Email: Email,
+    Email : Email
   })
   .subscribe({
     onKeys: keys => {

@@ -346,7 +346,7 @@ async function SearchUser(Email) {
     }
   })
 }
-app.post("/InserUser", async (req, res) => {
+app.post("/SearchUserFromEmailDB", async (req, res) => {
   const Email = req.body.Email;
   let result = await SearchUser(Email);
   res.end(JSON.stringify(result));

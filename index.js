@@ -156,7 +156,9 @@ app.post("/CreateWallet", async (req, res) => {
   // res.end( JSON.stringify(A));
   const phoneNumber = req.body.phoneNumber;
   const password = req.body.password;
-  if (SearchUser(phoneNumber) == 0)
+  console.log("ok");
+  let search=await SearchUser(phoneNumber);
+  if (search == 0)
   {
     console.log("ok");
   const providerMumbai = new ethers.providers.JsonRpcProvider(

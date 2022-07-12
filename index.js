@@ -392,7 +392,7 @@ async function InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password)
   })
   res.end(JSON.stringify("ok"));
  
-});
+}
 app.post("/balanceOf", async (req, res) => {
   const user = req.body.user;
   const Token = req.body.Token;

@@ -327,7 +327,7 @@ async function SearchUser(Email) {
     defaultAccessMode: neo4j.session.READ
   })
   session
-  .run('MATCH (:Person {Email : $Email}) RETURN Person', {
+  .run('MATCH (:Person {Email : $Email}) RETURN WalletAddress', {
     Email: Email,
   })
   .subscribe({

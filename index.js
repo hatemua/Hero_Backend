@@ -330,7 +330,9 @@ async function SearchUser(Email) {
   .run('Match (n:Person {Email:$Email}) return n', {
     Email : Email
   });
-  console.log(res);
+  const singleRecord = result.records[0]
+  const node = singleRecord.get(0)
+  console.log(node);
   
 }
 app.post("/SearchUserFromEmailDB", async (req, res) => {

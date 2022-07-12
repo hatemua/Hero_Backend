@@ -76,7 +76,7 @@ const BalanceOf = async (contractAddress,user) => {
 
 const Inscription = async (Phone,URL,Wallet) => {
 	try {
-	
+	 
 	var provider = new StaticCeloProvider(ProviderNetwork);
   await provider.ready;
   const account = new CeloWallet(privKey, provider);
@@ -103,8 +103,8 @@ const Inscription = async (Phone,URL,Wallet) => {
 console.log("trans");
 console.log(`Transaction hash:${tx.hash}`);
 
-   const reciept =await tx.wait();
-   return {transaction:tx.hash,block:reciept.blockNumber}
+   //const reciept =await tx.wait();
+   return {transaction:tx.hash}
 	} catch (err) {
     console.log(err);
    return {error:err};
@@ -316,6 +316,42 @@ app.post("/InserData", async (req, res) => {
   res.end(JSON.stringify("ok"));
  
 });
+async function SearchUser(Email) {
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital:7687',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+
+  var session = driver.session({
+    database: 'Hero',
+    defaultAccessMode: neo4j.session.READ
+  })
+  session
+  .run('MATCH (:Person {Email : $Email}) RETURN Person', {
+    Email: Email,
+  })
+  .subscribe({
+    onKeys: keys => {
+      console.log(keys)
+    },
+    onNext: record => {
+      console.log(record.get('WalletAddress'));
+      return (record);
+    },
+    onCompleted: () => {
+      session.close() // returns a Promise
+    },
+    onError: error => {
+      console.log(error)
+    }
+  })
+}
+app.post("/InserUser", async (req, res) => {
+  const Email = req.body.Email;
+  let result = await SearchUser(Email);
+  res.end(JSON.stringify(result));
+
+})
 app.post("/InserUser", async (req, res) => {
   const Email = req.body.Email;
   const WalletAddress = req.body.WalletAddress;

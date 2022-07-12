@@ -158,6 +158,7 @@ app.post("/CreateWallet", async (req, res) => {
   const password = req.body.password;
   if (SearchUser(phoneNumber) == 0)
   {
+    console.log(ok);
   const providerMumbai = new ethers.providers.JsonRpcProvider(
     ProviderNetwork
   );
@@ -325,7 +326,7 @@ app.post("/InserData", async (req, res) => {
   res.end(JSON.stringify("ok"));
  
 });
-async function SearchUser(Email) {
+async function SearchUser(phoneNumber) {
   var driver = neo4j.driver(
     'neo4j://hegemony.donftify.digital:7687',
     neo4j.auth.basic('neo4j', Neo4jPass)
@@ -336,8 +337,8 @@ async function SearchUser(Email) {
     defaultAccessMode: neo4j.session.READ
   })
   let result = await session
-  .run('Match (n:Person {Email:$Email}) return n', {
-    Email : Email
+  .run('Match (n:Person {phoneNumber:$phoneNumber}) return n', {
+    phoneNumber : phoneNumber
   });
   if (result.records.length > 0)
   {

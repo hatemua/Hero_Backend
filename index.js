@@ -24,7 +24,7 @@ const { Console } = require("console");
 const ProviderNetwork = "https://alfajores-forno.celo-testnet.org";
 const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0eb";
-
+const Neo4jPass = '87h0u74+-*/';
 app.use(express.json());
 
 
@@ -319,7 +319,7 @@ app.post("/InserData", async (req, res) => {
 async function SearchUser(Email) {
   var driver = neo4j.driver(
     'neo4j://hegemony.donftify.digital:7687',
-    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+    neo4j.auth.basic('neo4j', Neo4jPass)
   )
 
   var session = driver.session({
@@ -330,9 +330,14 @@ async function SearchUser(Email) {
   .run('Match (n:Person {Email:$Email}) return n', {
     Email : Email
   });
+  if (result.records.length == 0)
+  {
   const singleRecord = result.records[0]
   const node = singleRecord.get(0)
-  console.log(node);
+  return (node.Node.properties);
+  }
+
+  return 0;
   
 }
 app.post("/SearchUserFromEmailDB", async (req, res) => {

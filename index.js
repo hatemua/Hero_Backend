@@ -156,22 +156,29 @@ app.post("/CreateWallet", async (req, res) => {
   // res.end( JSON.stringify(A));
   const phoneNumber = req.body.phoneNumber;
   const password = req.body.password;
-
+  if (SearchUser(Email) == 0)
+  {
   const providerMumbai = new ethers.providers.JsonRpcProvider(
     ProviderNetwork
   );
-
+ 
   const pureWallet = ethers.Wallet.createRandom();
   
   const wallet = new Wallet(pureWallet, providerMumbai);
   console.log(password+"+"+phoneNumber);
   console.log(AESEncyption(password+"+"+phoneNumber,pureWallet._mnemonic().phrase));
-  const temp = await pinJSONToIPFS("98ec2b41b43bef139ebc","4d443842873fb35c1f2866312fcad6d397a4172a8f08527e3714e35c989365c2",{
-    mnomonic: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase),
-    address: AESEncyption(password+"+-*/"+phoneNumber,pureWallet.address),
-    autre: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey),
-    password:AESEncyption(phoneNumber+"+-*/",password)
-  });
+  //const temp = await pinJSONToIPFS("98ec2b41b43bef139ebc","4d443842873fb35c1f2866312fcad6d397a4172a8f08527e3714e35c989365c2",{
+   // mnomonic: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase),
+   // address: AESEncyption(password+"+-*/"+phoneNumber,pureWallet.address),
+   // autre: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey),
+   // password:AESEncyption(phoneNumber+"+-*/",password)
+ // });
+   let MNEMONIC= AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase);
+   let WalletAddress = AESEncyption(password+"+-*/"+phoneNumber,pureWallet.address);
+   let Password = AESEncyption(phoneNumber+"+-*/",password);
+   let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
+   let Email = phoneNumber;
+  await InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
   console.log(temp);
   const toblock = await Inscription(phoneNumber,temp.IpfsHash,pureWallet.address);
@@ -183,6 +190,9 @@ app.post("/CreateWallet", async (req, res) => {
         autre: pureWallet._signingKey(),
       })
   );
+
+  }
+ 
 });
 app.post("/CreateWalletActivist", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
@@ -348,11 +358,8 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
   res.end(JSON.stringify(result));
 
 })
-app.post("/InserUser", async (req, res) => {
-  const Email = req.body.Email;
-  const WalletAddress = req.body.WalletAddress;
-  const privKey = req.body.privKey;
-  const Password = req.body.Password;
+async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
+
   var driver = neo4j.driver(
     'neo4j://hegemony.donftify.digital:7687',
     neo4j.auth.basic('neo4j', '87h0u74+-*/')
@@ -363,11 +370,12 @@ app.post("/InserUser", async (req, res) => {
     defaultAccessMode: neo4j.session.WRITE
   })
   session
-  .run('MERGE (WalletAddress:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
+  .run('MERGE (WalletAddress:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
     Email: Email,
     WalletAddress: WalletAddress,
     privKey: privKey,
-    Password:Password
+    Password:Password,
+    Mnemonic : MNEMONIC
   })
   .subscribe({
     onKeys: keys => {

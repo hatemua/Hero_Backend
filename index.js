@@ -374,7 +374,7 @@ async function SearchUser(Email) {
   })
   let result = await session
   .run('Match (n:Person {Email:$Email}) return n', {
-    Email : Email
+    Email:Email
   });
   if (result.records.length > 0)
   {

@@ -17,7 +17,6 @@ const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver')
 const app = express();
 var Datastore = require("nedb");
-var path = require("path");
 
 var db = {};
 

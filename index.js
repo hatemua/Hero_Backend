@@ -6,6 +6,8 @@ const Web3 = require("web3");
 const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
+var nodemailer = require('nodemailer');
+
 const fs = require("fs");
 const { newKitFromWeb3 }=  require('@celo/contractkit');
 const abiUserContract = require("./abi/abiUserContract.json");
@@ -14,6 +16,11 @@ const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver')
 const app = express();
+var Datastore = require("nedb");
+var path = require("path");
+
+var db = {};
+
 app.use(cors());
 app.use(express.json());
 const port = process.env.PORT;
@@ -25,6 +32,11 @@ const ProviderNetwork = "https://alfajores-forno.celo-testnet.org";
 const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0eb";
 const Neo4jPass = '87h0u74+-*/';
+db.coins = new Datastore("./utils/_db/coins.db");
+
+
+db.coins.loadDatabase();
+
 app.use(express.json());
 
 
@@ -71,6 +83,28 @@ const BalanceOf = async (contractAddress,user) => {
 
 
 
+
+const sendEmail = async (Email) => {
+    Code = Math.floor(Math.random() * 1000);
+    db.coins.insert({Email:Email,Code:Code}, function (err, newDocs) {});
+    const transporter = nodemailer.createTransport({
+      host: 'ssl0.ovh.net',
+      port: 587,
+      auth: {
+          user: 'hatem@darblockchain.io',
+          pass: 'Darblockchain.io'
+      }
+  });
+  
+  // send email
+  await transporter.sendMail({
+      from: 'from_address@example.com',
+      to: Email,
+      subject: "Validation Code",
+      text: Code.toString()
+  });
+  return("ok");
+};
 
 
 
@@ -154,7 +188,7 @@ app.post("/CreateWallet", async (req, res) => {
   // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
   // res.end( JSON.stringify(A));
-  const phoneNumber = req.body.phoneNumber;
+  const phoneNumber = req.body.Email;
   const password = req.body.password;
   console.log("ok");
   let search=await SearchUser(phoneNumber);
@@ -327,7 +361,7 @@ app.post("/InserData", async (req, res) => {
   res.end(JSON.stringify("ok"));
  
 });
-async function SearchUser(phoneNumber) {
+async function SearchUser(Email) {
   var driver = neo4j.driver(
     'neo4j://hegemony.donftify.digital:7687',
     neo4j.auth.basic('neo4j', Neo4jPass)
@@ -338,8 +372,8 @@ async function SearchUser(phoneNumber) {
     defaultAccessMode: neo4j.session.READ
   })
   let result = await session
-  .run('Match (n:Person {phoneNumber:$phoneNumber}) return n', {
-    phoneNumber : phoneNumber
+  .run('Match (n:Person {Email:$Email}) return n', {
+    Email : Email
   });
   if (result.records.length > 0)
   {
@@ -359,7 +393,7 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
   res.end(JSON.stringify(result));
 
 })
-async function InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password) {
+async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
 
   var driver = neo4j.driver(
     'neo4j://hegemony.donftify.digital:7687',
@@ -371,7 +405,7 @@ async function InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password)
     defaultAccessMode: neo4j.session.WRITE
   })
   await session
-  .run('MERGE (WalletAddress:Person {phoneNumber : $phoneNumber,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
+  .run('MERGE (WalletAddress:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
     phoneNumber: phoneNumber,
     WalletAddress: WalletAddress,
     privKey: privKey,
@@ -386,6 +420,14 @@ app.post("/balanceOf", async (req, res) => {
   const Token = req.body.Token;
 
  BalanceOf(Token,user).then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+});
+app.post("/sendEmail", async (req, res) => {
+  const Email = req.body.Email;
+
+ sendEmail(Email).then((resp) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));
   });

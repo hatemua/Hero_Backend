@@ -425,7 +425,7 @@ app.post("/balanceOf", async (req, res) => {
 });
 app.post("/sendEmail", async (req, res) => {
   const Email = req.body.Email;
-
+  console.log("A");
  sendEmail(Email).then((resp) => {
     // convert a currency unit from wei to ether
     res.end(JSON.stringify(resp));

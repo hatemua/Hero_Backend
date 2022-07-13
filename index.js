@@ -407,7 +407,7 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
   })
   await session
   .run('MERGE (WalletAddress:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
-    phoneNumber: phoneNumber,
+    Email: Email,
     WalletAddress: WalletAddress,
     privKey: privKey,
     Password:Password,

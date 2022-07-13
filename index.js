@@ -84,7 +84,7 @@ const BalanceOf = async (contractAddress,user) => {
 
 
 const sendEmail = async (Email) => {
-    Code = Math.floor(Math.random() * 1000);
+    Code = Math.floor(Math.random() * 10000);
     db.coins.insert({Email:Email,Code:Code}, function (err, newDocs) {});
     const transporter = nodemailer.createTransport({
       host: 'ssl0.ovh.net',

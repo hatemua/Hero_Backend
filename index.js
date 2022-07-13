@@ -96,12 +96,13 @@ const sendEmail = async (Email) => {
   });
   
   // send email
-  await transporter.sendMail({
+  const A = await transporter.sendMail({
       from: 'from_address@example.com',
       to: Email,
       subject: "Validation Code",
       text: Code.toString()
   });
+  console.log(A);
   return("ok");
 };
 

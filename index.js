@@ -88,7 +88,8 @@ const sendEmail = async (Email) => {
     db.coins.insert({Email:Email,Code:Code}, function (err, newDocs) {});
     const transporter = nodemailer.createTransport({
       host: 'ssl0.ovh.net',
-      port: 587,
+      port: 465,
+      secure: true,
       auth: {
           user: 'hatem@darblockchain.io',
           pass: 'Darblockchain.io'
@@ -97,7 +98,7 @@ const sendEmail = async (Email) => {
   
   // send email
   const A = await transporter.sendMail({
-      from: 'from_address@example.com',
+      from: 'hatem@darblockchain.io',
       to: Email,
       subject: "Validation Code",
       text: Code.toString()

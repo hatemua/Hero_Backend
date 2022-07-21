@@ -7,6 +7,7 @@ const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
 var nodemailer = require('nodemailer');
+const stripe = require('stripe')('sk_test_...');
 
 const fs = require("fs");
 const { newKitFromWeb3 }=  require('@celo/contractkit');
@@ -212,7 +213,7 @@ app.post("/CreateWallet", async (req, res) => {
    // password:AESEncyption(phoneNumber+"+-*/",password)
  // });
    let MNEMONIC= AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase);
-   let WalletAddress = AESEncyption(password+"+-*/"+phoneNumber,pureWallet.address);
+   let WalletAddress = pureWallet.address;
    let Password = AESEncyption(phoneNumber+"+-*/",password);
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
   await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
@@ -347,6 +348,7 @@ app.post("/InserData", async (req, res) => {
   let ExitesYouHero= JSON.stringify(req.body.ExitesYouHero);
   let climatesChanges=JSON.stringify(req.body.climatesChanges);
   let MonthlySubs=req.body.MonthlySubs;
+  let source = req.body.source;
 
   let sql="INSERT INTO survey SET ?"
   let params={
@@ -356,7 +358,8 @@ app.post("/InserData", async (req, res) => {
     City : City,
     ExitesYouHero : ExitesYouHero,
     climatesChanges : climatesChanges,
-    MonthlySubs : MonthlySubs};
+    MonthlySubs : MonthlySubs,
+    Source : source};
   let result = await query(sql, params);
   console.log(result);
   res.end(JSON.stringify("ok"));

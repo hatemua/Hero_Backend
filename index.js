@@ -7,7 +7,7 @@ const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
 var nodemailer = require('nodemailer');
-const stripe = require('stripe')('sk_test_...');
+//const stripe = require('stripe')('sk_test_...');
 
 const fs = require("fs");
 const { newKitFromWeb3 }=  require('@celo/contractkit');

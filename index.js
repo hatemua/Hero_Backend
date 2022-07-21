@@ -348,7 +348,7 @@ app.post("/InserData", async (req, res) => {
   let ExitesYouHero= JSON.stringify(req.body.ExitesYouHero);
   let climatesChanges=JSON.stringify(req.body.climatesChanges);
   let MonthlySubs=req.body.MonthlySubs;
-  let source = req.body.source;
+  let source = req.body.source || "Pledge1";
 
   let sql="INSERT INTO survey SET ?"
   let params={

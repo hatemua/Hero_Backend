@@ -218,7 +218,7 @@ app.post("/CreateWallet", async (req, res) => {
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
   await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
-  const toblock = await Inscription(phoneNumber,"",IpfsHash,pureWallet.address);
+  const toblock = await Inscription(phoneNumber,"","",pureWallet.address);
   res.end(
     JSON.stringify(
       {

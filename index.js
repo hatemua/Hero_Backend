@@ -416,6 +416,7 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
   const price2 = await addPrice(product.id,20000,"usd","Subscription","month");
   const price3 = await addPrice(product.id,50000,"usd","Subscription","month");
   if(!customer || !product || !price1 || !price2 || !price3){
+    console.log("test");
     return (false);
   }
   await session

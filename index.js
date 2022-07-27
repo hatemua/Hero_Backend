@@ -17,8 +17,9 @@ const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver')
 const app = express();
+const stripeRoutes = require("./stripe/routes/payement.routes");
 var Datastore = require("nedb");
-
+const { createCustomer,addPrice,createProduct } = require("./stripe/utils/utils");
 var db = {};
 
 app.use(cors());
@@ -139,7 +140,7 @@ const Inscription = async (Phone,URL,Wallet) => {
 console.log("trans");
 console.log(`Transaction hash:${tx.hash}`);
 
-   //const reciept =await tx.wait();
+   const reciept =await tx.wait();
    return {transaction:tx.hash}
 	} catch (err) {
     console.log(err);
@@ -178,7 +179,7 @@ const pinJSONToIPFS = async (pinataApiKey, pinataSecretApiKey, JSONBody) => {
             //handle error here
         });
 };
-
+app.use(stripeRoutes);
 app.post("/TestDecrypt", async (req, res) => {
   console.log(AESDecryption("0033143485548+-*/","WiKHiqsSUNJqFSg/5jCnDDEY064fCdgF"));
 });
@@ -192,7 +193,6 @@ app.post("/CreateWallet", async (req, res) => {
   // res.end( JSON.stringify(A));
   const phoneNumber = req.body.Email;
   const password = req.body.password;
-  console.log("ok");
   let search=await SearchUser(phoneNumber);
   if (search == 0)
   {
@@ -295,6 +295,7 @@ app.post("/DepositCusdCredit", async (req, res) => {
   const arrAmm = array.split('%')[1].split("=")[1];
   console.log(arrAmm);
    var finA =arrAmm.split(',');
+   console.log('dddd',finA);
    const bigAmounnt = ethers.utils.parseEther(amount);
   s=[]
   let k=[];
@@ -379,6 +380,7 @@ async function SearchUser(Email) {
   .run('Match (n:Person {Email:$Email}) return n', {
     Email:Email
   });
+  console.log("fff",result.records);
   if (result.records.length > 0)
   {
   const singleRecord = result.records[0]
@@ -403,18 +405,50 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
     'neo4j://hegemony.donftify.digital:7687',
     neo4j.auth.basic('neo4j', '87h0u74+-*/')
   )
-
+ 
   var session = driver.session({
     database: 'Hero',
     defaultAccessMode: neo4j.session.WRITE
   })
+  const customer = await createCustomer(Email);
+  const product = await createProduct("test",[],"testProducts");
+  const price1 = await addPrice(product.id,10000,"usd","Subscription","month");
+  const price2 = await addPrice(product.id,20000,"usd","Subscription","month");
+  const price3 = await addPrice(product.id,50000,"usd","Subscription","month");
+  if(!customer || !product || !price1 || !price2 || !price3){
+    return (false);
+  }
   await session
-  .run('MERGE (WalletAddress:Person {Email : $Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
+  .run('MERGE (WalletAddress:Person {Email:$Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid}) MERGE(pr:Product{productId:$productId}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
     Email: Email,
     WalletAddress: WalletAddress,
     privKey: privKey,
     Password:Password,
-    Mnemonic : MNEMONIC
+    Mnemonic : MNEMONIC,
+    customerid:customer.id,
+    productId:product.id
+  })
+  await session.run('CREATE (pr1:Price {priceId:$priceIdw}),(pr2:Price {priceId:$priceIdz}),(pr3:Price {priceId:$priceIda}) RETURN pr1,pr2,pr3',{
+    priceIdw:price1.id,
+    priceIdz:price2.id,
+    priceIda:price3.id
+  })
+  await session.run("MATCH(p:Person{CustomerId:$CustomerId})  MATCH(pr:Product{productId:$productId}) MERGE (p)-[:PAID]->(pr) RETURN p",{
+    CustomerId:customer.id,
+    productId:product.id,
+
+  })
+  await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
+    productId:product.id,
+    priceId:price1.id
+  })
+  await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
+    productId:product.id,
+    priceId:price2.id
+  })
+  await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
+    productId:product.id,
+    priceId:price3.id
   })
   return (true);
  
@@ -534,4 +568,4 @@ app.listen(process.env.PORT || 8000, () => {
 
 
 const server = https.createServer(options,app);
-server.listen(8080);
+server.listen(process.env.PORT || 8000);

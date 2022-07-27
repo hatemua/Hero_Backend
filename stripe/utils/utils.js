@@ -1,4 +1,4 @@
-
+var neo4j = require('neo4j-driver');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.STRIPEKEY);
 exports.createCustomer = async(email)=>{
@@ -103,4 +103,23 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
     }
 }
 
+exports.getPriceId = async(customerId,amount)=>{
+    var driver = neo4j.driver(
+        'neo4j://hegemony.donftify.digital:7687',
+        neo4j.auth.basic('neo4j', '87h0u74+-*/')
+      )
+     
+      var session = driver.session({
+        database: 'Hero',
+        defaultAccessMode: neo4j.session.WRITE
+      })
+//
+      const result = await session.run("match(pe:Person{CustomerId:$customerId})-[:PAID]->(p:Product)-[:PRICED]->(pr:Price{amount:$amount}) return pr.priceId as prId",{
+        customerId,
+        amount
+      });
+
+
+      return result.records[0].get("prId");
+}
 

@@ -140,7 +140,7 @@ const Inscription = async (Phone,URL,Wallet) => {
 console.log("trans");
 console.log(`Transaction hash:${tx.hash}`);
 
-   const reciept =await tx.wait();
+   //const reciept =await tx.wait();
    return {transaction:tx.hash}
 	} catch (err) {
     console.log(err);

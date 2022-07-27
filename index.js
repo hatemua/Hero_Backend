@@ -218,7 +218,7 @@ app.post("/CreateWallet", async (req, res) => {
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
   await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
-  const toblock = await Inscription(phoneNumber,"".IpfsHash,pureWallet.address);
+  const toblock = await Inscription(phoneNumber,"",IpfsHash,pureWallet.address);
   res.end(
     JSON.stringify(
       {
@@ -229,7 +229,6 @@ app.post("/CreateWallet", async (req, res) => {
   );
 
   }
- 
 });
 app.post("/CreateWalletActivist", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));

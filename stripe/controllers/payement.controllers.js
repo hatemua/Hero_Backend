@@ -1,6 +1,7 @@
 const stripe = require('stripe')(process.env.STRIPEKEY);
 const { getPriceId,getCustomerId } = require("../utils/utils");
 exports.createSession = async(req,res,next)=>{
+  console.log("test")
   const {mode,userEmail,activistEmail,amount}= req.body;
   //{price:  req.body.priceId, quantity: 1}
   const priceId = await getPriceId(activistEmail,amount);

@@ -229,6 +229,10 @@ app.post("/CreateWallet", async (req, res) => {
   });
 
   }
+  else{
+    console.log(search);
+   
+  }
   
 });
 app.post("/CreateWalletActivist", async (req, res) => {

@@ -18,6 +18,7 @@ exports.createSession = async(req,res,next)=>{
       mode: mode,
       customer : activistCId 
     });
+    console.log(session)
     return res.status(200).json(session);
   } catch (err) {
     if (!err.statusCode) {

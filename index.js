@@ -218,6 +218,7 @@ app.post("/CreateWallet", async (req, res) => {
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
   const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
+<<<<<<< HEAD
   const toblock = await Inscription(phoneNumber,"","",pureWallet.address);
   res.end(
     JSON.stringify(
@@ -228,6 +229,15 @@ app.post("/CreateWallet", async (req, res) => {
         customerId:customerId
       })
   );
+=======
+  const toblock = await Inscription(phoneNumber,"".IpfsHash,pureWallet.address);
+  return res.status(200).json({
+    mnomonic: pureWallet._mnemonic().phrase,
+    address: pureWallet.address,
+    autre: pureWallet._signingKey(),
+    customerId:customerId
+  });
+>>>>>>> d761b5612a13c2356c9a8d9e1becd5a96a65ac95
 
   }
 });

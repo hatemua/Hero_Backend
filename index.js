@@ -218,15 +218,12 @@ app.post("/CreateWallet", async (req, res) => {
   const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
   const toblock = await Inscription(phoneNumber,"".IpfsHash,pureWallet.address);
-  res.end(
-    JSON.stringify(
-      {
-        mnomonic: pureWallet._mnemonic().phrase,
-        address: pureWallet.address,
-        autre: pureWallet._signingKey(),
-        customerId:customerId
-      })
-  );
+  return res.status(200).json({
+    mnomonic: pureWallet._mnemonic().phrase,
+    address: pureWallet.address,
+    autre: pureWallet._signingKey(),
+    customerId:customerId
+  });
 
   }
  

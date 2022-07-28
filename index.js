@@ -15,7 +15,7 @@ const abiUserContract = require("./abi/abiUserContract.json");
 const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
-var neo4j = require('neo4j-driver')
+var neo4j = require('neo4j-driver');
 const app = express();
 const stripeRoutes = require("./stripe/routes/payement.routes");
 var Datastore = require("nedb");
@@ -216,17 +216,15 @@ app.post("/CreateWallet", async (req, res) => {
    let WalletAddress = pureWallet.address;
    let Password = AESEncyption(phoneNumber+"+-*/",password);
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
-  await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
+  const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
-  const toblock = await Inscription(phoneNumber,"","",pureWallet.address);
-  res.end(
-    JSON.stringify(
-      {
-        mnomonic: pureWallet._mnemonic().phrase,
-        address: pureWallet.address,
-        autre: pureWallet._signingKey(),
-      })
-  );
+  const toblock = await Inscription(phoneNumber,"".IpfsHash,pureWallet.address);
+  return res.status(200).json({
+    mnomonic: pureWallet._mnemonic().phrase,
+    address: pureWallet.address,
+    autre: pureWallet._signingKey(),
+    customerId:customerId
+  });
 
   }
 });
@@ -411,15 +409,16 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
   })
   const customer = await createCustomer(Email);
   const product = await createProduct("test",[],"testProducts");
-  const price1 = await addPrice(product.id,10000,"usd","Subscription","month");
-  const price2 = await addPrice(product.id,20000,"usd","Subscription","month");
-  const price3 = await addPrice(product.id,50000,"usd","Subscription","month");
+  const price1 = await addPrice(product.id,1000,"usd","Subscription","month");
+  const price2 = await addPrice(product.id,2000,"usd","Subscription","month");
+  const price3 = await addPrice(product.id,5000,"usd","Subscription","month");
+  
   if(!customer || !product || !price1 || !price2 || !price3){
     console.log("test");
-    return (false);
+    return {customerId:null,state:false};
   }
   await session
-  .run('MERGE (WalletAddress:Person {Email:$Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid}) MERGE(pr:Product{productId:$productId}) RETURN WalletAddress.WalletAddress AS WalletAddress', {
+  .run('MERGE (WalletAddress:Person {Email:$Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid}) MERGE(pr:Product{productId:$productId}) RETURN WalletAddress', {
     Email: Email,
     WalletAddress: WalletAddress,
     privKey: privKey,
@@ -428,7 +427,7 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
     customerid:customer.id,
     productId:product.id
   })
-  await session.run('CREATE (pr1:Price {priceId:$priceIdw}),(pr2:Price {priceId:$priceIdz}),(pr3:Price {priceId:$priceIda}) RETURN pr1,pr2,pr3',{
+  await session.run('CREATE (pr1:Price {priceId:$priceIdw,amount:1000}),(pr2:Price {priceId:$priceIdz,amount:2000}),(pr3:Price {priceId:$priceIda,amount:5000}) RETURN pr1,pr2,pr3',{
     priceIdw:price1.id,
     priceIdz:price2.id,
     priceIda:price3.id
@@ -450,7 +449,7 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
     productId:product.id,
     priceId:price3.id
   })
-  return (true);
+  return {customerId:customer.id,state :true};
  
 }
 app.post("/balanceOf", async (req, res) => {

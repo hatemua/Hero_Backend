@@ -1,15 +1,18 @@
 const stripe = require('stripe')(process.env.STRIPEKEY);
-
+const { getPriceId } = require("../utils/utils");
 exports.createSession = async(req,res,next)=>{
-  const mode = req.body.mode;
-  const customerId = req.body.customerId;
+  const {mode,customerId,amount}= req.body;
   //{price:  req.body.priceId, quantity: 1}
-  
+  const priceId = await getPriceId(customerId,amount);
+
   try {
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}${process.env.PORT}/?success=true`,
       cancel_url: `${process.env.DOMAIN}${process.env.PORT}?canceled=true`,
-      line_items: req.body.items,
+      line_items: [{
+        price:priceId,
+        quantity:1
+    }],
       mode: mode,
       customer : customerId
     });
@@ -24,9 +27,9 @@ exports.createSession = async(req,res,next)=>{
 }
 exports.saveCard = async(req,res,next)=>{
   try {
-    const {type,number,exp_month,exp_year,cvc,customerId} = req.body;
+    const {number,exp_month,exp_year,cvc,customerId} = req.body;
     const paymentMethod = await stripe.paymentMethods.create({
-      type,
+      type:"card",
       card: {
         number,
         exp_month,

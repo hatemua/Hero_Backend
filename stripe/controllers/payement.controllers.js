@@ -10,8 +10,8 @@ exports.createSession = async(req,res,next)=>{
   console.log(process.env.PORT)
   try {
     const session = await stripe.checkout.sessions.create({
-      success_url: `${process.env.DOMAIN}:8080/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.DOMAIN}:8080/cancel?canceled=true`,
+      success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.DOMAIN}8080/cancel?canceled=true`,
       line_items: [{
         price:priceId,
         quantity:1

@@ -580,4 +580,8 @@ app.listen(process.env.PORT || 8000, () => {
 
 
 const server = https.createServer(options,app);
+<<<<<<< HEAD
 server.listen(8080);
+=======
+server.listen(8080);
+>>>>>>> a46ff8da0eacb374f0b72923fc56c5c82e71f1c1

@@ -231,7 +231,12 @@ app.post("/CreateWallet", async (req, res) => {
   }
   else{
     console.log(search);
-   
+    return res.status(200).json({
+      mnomonic: search.Mnemoni,
+      address: search.WalletAddress,
+      autre: search.privKey,
+      customerId:search.CustomerId
+    });
   }
   
 });

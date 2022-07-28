@@ -1,21 +1,25 @@
 const stripe = require('stripe')(process.env.STRIPEKEY);
-const { getPriceId } = require("../utils/utils");
+const { getPriceId,getCustomerId } = require("../utils/utils");
 exports.createSession = async(req,res,next)=>{
-  const {mode,customerId,amount}= req.body;
+  console.log("test")
+  const {mode,userEmail,activistEmail,amount}= req.body;
   //{price:  req.body.priceId, quantity: 1}
-  const priceId = await getPriceId(customerId,amount);
-
+  const priceId = await getPriceId(activistEmail,amount);
+  const activistCId =await getCustomerId(activistEmail); 
+  console.log(priceId,activistCId)
+  console.log(process.env.PORT)
   try {
     const session = await stripe.checkout.sessions.create({
-      success_url: `${process.env.DOMAIN}${process.env.PORT}/?success=true`,
-      cancel_url: `${process.env.DOMAIN}${process.env.PORT}?canceled=true`,
+      success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.DOMAIN}8080/cancel?canceled=true`,
       line_items: [{
         price:priceId,
         quantity:1
     }],
       mode: mode,
-      customer : customerId
+      customer : activistCId 
     });
+    console.log(session)
     return res.status(200).json(session);
   } catch (err) {
     if (!err.statusCode) {
@@ -24,6 +28,12 @@ exports.createSession = async(req,res,next)=>{
     return err;
   }
   
+}
+
+exports.successPage = async (req, res) => {
+  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+ 
+  return res.status(200).json(session);
 }
 exports.saveCard = async(req,res,next)=>{
   try {

@@ -1,23 +1,20 @@
 const stripe = require('stripe')(process.env.STRIPEKEY);
 const { getPriceId,getCustomerId } = require("../utils/utils");
 exports.createSession = async(req,res,next)=>{
-  console.log("test")
-  const {mode,userEmail,activistEmail,amount}= req.body;
+  // const {mode,customerId,amount,idActivist}= req.body; for later changement
+  const {mode,customerId,amount}= req.body;
   //{price:  req.body.priceId, quantity: 1}
-  const priceId = await getPriceId(activistEmail,amount);
-  const activistCId =await getCustomerId(activistEmail); 
-  console.log(priceId,activistCId)
-  console.log(process.env.PORT)
+  const priceId = await getPriceId(amount);
   try {
     const session = await stripe.checkout.sessions.create({
-      success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.DOMAIN}81/mobilizer-feed`,
       cancel_url: `${process.env.DOMAIN}8080/cancel?canceled=true`,
       line_items: [{
         price:priceId,
         quantity:1
     }],
       mode: mode,
-      customer : activistCId 
+      customer : customerId
     });
     console.log(session)
     return res.status(200).json(session);

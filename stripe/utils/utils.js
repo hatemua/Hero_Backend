@@ -103,7 +103,7 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
     }
 }
 
-exports.getPriceId = async(email,amount)=>{
+exports.getPriceId = async(amount)=>{
     try {
         var driver = neo4j.driver(
             'neo4j://hegemony.donftify.digital:7687',
@@ -115,12 +115,11 @@ exports.getPriceId = async(email,amount)=>{
             defaultAccessMode: neo4j.session.WRITE
           })
     //
-          const result = await session.run("match(pe:Person{Email:$email})-[:PAID]->(p:Product)-[:PRICED]->(pr:Price{amount:$amount}) return pr.priceId as prId",{
-            email,
+          const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
             amount
           });
     
-    
+        console.log(result.records[0])
           return result.records[0].get("prId");
     } catch (error) {
         return false;

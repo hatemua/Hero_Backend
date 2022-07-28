@@ -218,33 +218,15 @@ app.post("/CreateWallet", async (req, res) => {
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
   const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
   console.log("************");
-<<<<<<< HEAD
-<<<<<<< HEAD
+
+
   const toblock = await Inscription(phoneNumber,"","",pureWallet.address);
-  res.end(
-    JSON.stringify(
-      {
-        mnomonic: pureWallet._mnemonic().phrase,
-        address: pureWallet.address,
-        autre: pureWallet._signingKey(),
-        customerId:customerId
-      })
-  );
-=======
-  const toblock = await Inscription(phoneNumber,"".IpfsHash,pureWallet.address);
-=======
-  const toblock = await Inscription(phoneNumber,"","",pureWallet.address);
->>>>>>> 2f5f1a3b891e83b61cf458381365249a175faf36
   return res.status(200).json({
     mnomonic: pureWallet._mnemonic().phrase,
     address: pureWallet.address,
     autre: pureWallet._signingKey(),
     customerId:customerId
   });
-<<<<<<< HEAD
->>>>>>> d761b5612a13c2356c9a8d9e1becd5a96a65ac95
-=======
->>>>>>> 2f5f1a3b891e83b61cf458381365249a175faf36
 
   }
   
@@ -588,8 +570,4 @@ app.listen(process.env.PORT || 8000, () => {
 
 
 const server = https.createServer(options,app);
-<<<<<<< HEAD
 server.listen(8080);
-=======
-server.listen(8080);
->>>>>>> a46ff8da0eacb374f0b72923fc56c5c82e71f1c1

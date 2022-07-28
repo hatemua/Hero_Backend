@@ -220,7 +220,7 @@ app.post("/CreateWallet", async (req, res) => {
   console.log("************");
 
 
-  const toblock = await Inscription(phoneNumber,"","",pureWallet.address);
+  const toblock = await Inscription(phoneNumber,"",pureWallet.address);
   return res.status(200).json({
     mnomonic: pureWallet._mnemonic().phrase,
     address: pureWallet.address,
@@ -228,6 +228,15 @@ app.post("/CreateWallet", async (req, res) => {
     customerId:customerId
   });
 
+  }
+  else{
+    console.log(search);
+    return res.status(200).json({
+      mnomonic: search.Mnemoni,
+      address: search.WalletAddress,
+      autre: search.privKey,
+      customerId:search.CustomerId
+    });
   }
   
 });

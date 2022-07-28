@@ -247,6 +247,7 @@ app.post("/CreateWallet", async (req, res) => {
 >>>>>>> 2f5f1a3b891e83b61cf458381365249a175faf36
 
   }
+  
 });
 app.post("/CreateWalletActivist", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));

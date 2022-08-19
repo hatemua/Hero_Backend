@@ -1,13 +1,17 @@
 const stripe = require('stripe')(process.env.STRIPEKEY);
-const { getPriceId,getCustomerId } = require("../utils/utils");
+const { getPriceId,getCustomerId,mergeString } = require("../utils/utils");
+const { getdriver,initDriver }=require("../../neo4j");
+const neo4j = require("neo4j-driver")
+const moment =require("moment")
 exports.createSession = async(req,res,next)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
-  const {mode,customerId,amount}= req.body;
+  
+  const {mode,customerId,amount,grName}= req.body;
   //{price:  req.body.priceId, quantity: 1}
   const priceId = await getPriceId(amount);
   try {
     const session = await stripe.checkout.sessions.create({
-      success_url: `${process.env.DOMAIN}81/mobilizer-feed`,
+      success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
       cancel_url: `${process.env.DOMAIN}8080/cancel?canceled=true`,
       line_items: [{
         price:priceId,
@@ -16,7 +20,6 @@ exports.createSession = async(req,res,next)=>{
       mode: mode,
       customer : customerId
     });
-    console.log(session)
     return res.status(200).json(session);
   } catch (err) {
     if (!err.statusCode) {
@@ -28,9 +31,51 @@ exports.createSession = async(req,res,next)=>{
 }
 
 exports.successPage = async (req, res) => {
-  const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  // const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
  
-  return res.status(200).json(session);
+  // return res.status(200).json(session);
+  const {grName}= req.query;
+  console.log(req.query.grName);
+  const sessione = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+  var driver = getdriver();
+  var session = driver.session({
+    database: 'Hero'
+  })
+  console.log(sessione)
+  const customer = await stripe.customers.retrieve(sessione.customer);
+  const ind = mergeString(customer.id,grName,new Date(),sessione.amount_total);
+  const ed = moment().add(30, 'days').calendar();
+  const today = moment().format();
+  const resu = await session.run("match(t:Transaction{Index:$ind})return t",{
+    ind
+  })
+  if(resu.records.length>0){
+    return res.status(200).json({message:"already transaction added !"});
+  }
+  const bwf = sessione.amount_total - ((sessione.amount_total*15)/100);
+  await session.run("merge(t:Transaction{From:$fr,To:$to,Amount:$amount,SentDay:$today,Subscribed:$sub,EndDay:$ed,Transfered:$tr,Index:$in})",{
+    fr:customer.id,
+    to:grName,
+    amount:bwf,
+    today,
+    ed,
+    sub:true,
+    tr:false,
+    in:ind
+  });
+  await session.run("match(h:Holder)set h.balance=h.balance+$amount,h.nTransactions=h.nTransactions	+1 with h as h match(t:Transaction{SentDay:$ed}) merge(h)-[:GOT]->(t)",{
+    ed:today,
+    amount:sessione.amount_total
+  });
+  
+  await session.run("match(g:Groupe{Name:$grName})set g.balance=g.balance+$bwf",{
+    grName,
+    bwf
+  })
+
+  
+  res.send(`<html><body><h1>Thanks for your order, ${customer.email}!</h1></body></html>`);
 }
 exports.saveCard = async(req,res,next)=>{
   try {

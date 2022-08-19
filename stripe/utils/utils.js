@@ -1,6 +1,7 @@
 var neo4j = require('neo4j-driver');
 require('dotenv').config()
 const stripe = require('stripe')(process.env.STRIPEKEY);
+const { getdriver,initDriver } = require("../../neo4j");
 exports.createCustomer = async(email)=>{
     try {
         const customer = await stripe.customers.create({
@@ -105,21 +106,15 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
 
 exports.getPriceId = async(amount)=>{
     try {
-        var driver = neo4j.driver(
-            'neo4j://hegemony.donftify.digital:7687',
-            neo4j.auth.basic('neo4j', '87h0u74+-*/')
-          )
-         
-          var session = driver.session({
+        await initDriver();
+        var driver = getdriver();
+        var session = driver.session({
             database: 'Hero',
-            defaultAccessMode: neo4j.session.WRITE
-          })
-    //
+            defaultAccessMode: neo4j.session.READ
+        })
           const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
             amount
           });
-    
-        console.log(result.records[0])
           return result.records[0].get("prId");
     } catch (error) {
         return false;
@@ -128,17 +123,13 @@ exports.getPriceId = async(amount)=>{
 }
 exports.getCustomerId = async(email)=>{
     try {
-        var driver = neo4j.driver(
-            'neo4j://hegemony.donftify.digital:7687',
-            neo4j.auth.basic('neo4j', '87h0u74+-*/')
-          )
-         
-          var session = driver.session({
-            database: 'Hero',
-            defaultAccessMode: neo4j.session.WRITE
-          })
-    //
-          const result = await session.run("match(pe:Person{Email:$email})return pe.CustomerId as ci",{
+        await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+        var driver = getdriver();
+        var session = driver.session({
+            database: 'neo4j',
+            defaultAccessMode: neo4j.session.READ
+        })
+          const result = await session.run("match(pe:Customer{Email:$email})return pe.CustomerId as ci",{
             email
           });
     
@@ -147,4 +138,35 @@ exports.getCustomerId = async(email)=>{
     } catch (error) {
         return false;
     }
+}
+
+exports.createAccount = async(country,email)=>{
+    try {
+        const account = await stripe.accounts.create({
+            type: 'custom',
+            capabilities: {
+              card_payments: {requested: true},
+              transfers: {requested: true},
+            },
+          });
+          console.log(account)
+          return account;  
+        } catch (err) {
+            console.log(err.message)
+            if (!err.statusCode) {
+                err.statusCode = 500;
+              }
+              //in case error the function is false 
+              return false;
+        }
+}
+exports.mergeString = (from,to,date,amount)=>{
+    const fr = from.slice(12);
+    var month = date.getMonth()+1;
+    var year = date.getFullYear();
+    console.log(fr+to+month+year+amount)
+    year.toString();
+    month.toString();
+    amount.toString();
+    return fr+to+month+year+amount
 }

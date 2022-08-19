@@ -1,14 +1,14 @@
 const express = require("express");
 const https = require('https');
-const mysql = require('mysql');
+// const mysql = require('mysql');
 
 const Web3 = require("web3");
 const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
-var nodemailer = require('nodemailer');
+// var nodemailer = require('nodemailer');
 //const stripe = require('stripe')('sk_test_...');
-
+const { initDriver, getdriver } = require("./neo4j");
 const fs = require("fs");
 const { newKitFromWeb3 }=  require('@celo/contractkit');
 const abiUserContract = require("./abi/abiUserContract.json");
@@ -16,10 +16,14 @@ const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver');
-const app = express();
+const app = express();  
 const stripeRoutes = require("./stripe/routes/payement.routes");
+const groupeRoutes = require("./groupe/routes/route");
+const activistRoutes = require("./activist/router/router");
+const customerRoutes = require("./customer/router/router");
 var Datastore = require("nedb");
-const { createCustomer,addPrice,createProduct } = require("./stripe/utils/utils");
+const { createCustomer,addPrice,createProduct, createAccount } = require("./stripe/utils/utils");
+const findEmail = require("./utils/findEmail");
 var db = {};
 
 app.use(cors());
@@ -180,18 +184,58 @@ const pinJSONToIPFS = async (pinataApiKey, pinataSecretApiKey, JSONBody) => {
         });
 };
 app.use(stripeRoutes);
+app.use("/circle",groupeRoutes);
+app.use("/mobelizer",activistRoutes);
+app.use("/supporter",customerRoutes);
 app.post("/TestDecrypt", async (req, res) => {
   console.log(AESDecryption("0033143485548+-*/","WiKHiqsSUNJqFSg/5jCnDDEY064fCdgF"));
 });
 
+app.post("/createTag",async(req,res)=>{
+  const name = req.body.name;
+  await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+  var driver = getdriver();
+  var session = driver.session({
+    database: 'Hero'
+  })
+  const tag = await session.run("match(t:Tag{Name:$name})return t",{
+    name
+  })
+  if(tag.records.length>0){
+    return res.status(400).json("Tag alerady exists !");
+  }
+  await session.run("merge(t:Tag{Name:$name})",{
+    name
+  });
+  return res.status(200).json("Tag created successfully !");
 
+})
+app.post("/createLocation",async(req,res)=>{
+  const name = req.body.name;
+  await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+  var driver = getdriver();
+  var session = driver.session({
+    database: 'Hero'
+  })
+  const tag = await session.run("match(l:Location{Name:$name})return l",{
+    name
+  })
+  if(tag.records.length>0){
+    return res.status(400).json("Location alerady exists !");
+  }
+  await session.run("merge(l:Location{Name:$name})",{
+    name
+  });
+  return res.status(200).json("Location created successfully !");
+
+})
 app.post("/CreateWallet", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
   // A=web3.eth.accounts.create("87h0u74+-*/");
   // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
   // res.end( JSON.stringify(A));
-  const phoneNumber = req.body.Email;
+  const phoneNumber = req.body.email;
   const password = req.body.password;
   let search=await SearchUser(phoneNumber);
   if (search == 0)
@@ -240,18 +284,28 @@ app.post("/CreateWallet", async (req, res) => {
   }
   
 });
-app.post("/CreateWalletActivist", async (req, res) => {
+app.post("/CreateWalletMobelizer", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
   // A=web3.eth.accounts.create("87h0u74+-*/");
   // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
   // res.end( JSON.stringify(A));
-  const phoneNumber = req.body.phoneNumber;
-  const password = req.body.password;
-  console.log(phoneNumber);
- 
- 
-
+  const {email,phoneNumber,password,country,grName}=req.body;
+  
+  await initDriver();
+  var driver = getdriver();
+  var session = driver.session({
+    database: 'Hero'
+    })
+  var Emailexistens = await findEmail(email);
+  console.log(Emailexistens)
+  if(Emailexistens>0){
+    return res.status(400).json("Email already exists !")
+  }
+  var account = await createAccount(country,phoneNumber);
+  if(!account){
+    return res.status(500).send("stripe account creation failed !")
+  }
   const providerMumbai = new ethers.providers.JsonRpcProvider(
     ProviderNetwork
   );
@@ -269,6 +323,17 @@ app.post("/CreateWalletActivist", async (req, res) => {
   });
   console.log("************");
   console.log(temp);
+  console.log(account.id)
+ await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,accountId:$actId})return a", {
+    Email:email,
+    phoneNumber:phoneNumber,
+    Wallet:pureWallet.address,
+    actId:account.id
+  });
+  await session.run("match(a:Activist{email:$Email}),(g:Groupe{Name:$grName})set g.members=g.members+1 merge(a)-[:PART_OF]->(g)",{
+    Email:email,
+    grName
+  })
   //const toblock = await Inscription(phoneNumber,temp.IpfsHash,pureWallet.address);
   res.end(
     JSON.stringify(
@@ -376,17 +441,14 @@ app.post("/InserData", async (req, res) => {
  
 });
 async function SearchUser(Email) {
-  var driver = neo4j.driver(
-    'neo4j://hegemony.donftify.digital:7687',
-    neo4j.auth.basic('neo4j', Neo4jPass)
-  )
-
+  await initDriver();
+  var driver = getdriver();
   var session = driver.session({
     database: 'Hero',
     defaultAccessMode: neo4j.session.READ
   })
   let result = await session
-  .run('Match (n:Person {Email:$Email}) return n', {
+  .run('Match (n:Customer {email:$Email}) return n', {
     Email:Email
   });
   console.log("fff",result.records);
@@ -410,57 +472,71 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
 })
 async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
 
+  // var driver = neo4j.driver(
+  //   'neo4j://hegemony.donftify.digital:7687',
+  //   neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  // )
+   
+  //  await initDriver();
+  //  var driver = getdriver();
+  // var session = driver.session({
+  //   database: 'Hero',
+  //   defaultAccessMode: neo4j.session.WRITE
+  // })
   var driver = neo4j.driver(
-    'neo4j://hegemony.donftify.digital:7687',
+    'neo4j://hegemony.donftify.digital',
     neo4j.auth.basic('neo4j', '87h0u74+-*/')
   )
  
   var session = driver.session({
-    database: 'Hero',
-    defaultAccessMode: neo4j.session.WRITE
+    database: 'Hero'
   })
+  console.log(session)
   const customer = await createCustomer(Email);
-  const product = await createProduct("test",[],"testProducts");
-  const price1 = await addPrice(product.id,1000,"usd","Subscription","month");
-  const price2 = await addPrice(product.id,2000,"usd","Subscription","month");
-  const price3 = await addPrice(product.id,5000,"usd","Subscription","month");
+  // const product = await createProduct("test",[],"testProducts");
+  // const price1 = await addPrice(product.id,1000,"usd","Subscription","month");
+  // const price2 = await addPrice(product.id,2000,"usd","Subscription","month");
+  // const price3 = await addPrice(product.id,5000,"usd","Subscription","month");
   
-  if(!customer || !product || !price1 || !price2 || !price3){
+  // if(!customer || !product || !price1 || !price2 || !price3){
+  //   console.log("test");
+  //   return {customerId:null,state:false};
+  // }
+  if(!customer ){
     console.log("test");
     return {customerId:null,state:false};
   }
   await session
-  .run('MERGE (WalletAddress:Person {Email:$Email,WalletAddress:$WalletAddress,privKey:$privKey,Password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid}) MERGE(pr:Product{productId:$productId}) RETURN WalletAddress', {
+  .run('MERGE (c:Customer {email:$Email,walletAddress:$WalletAddress,privKey:$privKey,password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid})RETURN c', {
     Email: Email,
-    WalletAddress: WalletAddress,
+    WalletAddress,
     privKey: privKey,
     Password:Password,
     Mnemonic : MNEMONIC,
-    customerid:customer.id,
-    productId:product.id
-  })
-  await session.run('CREATE (pr1:Price {priceId:$priceIdw,amount:1000}),(pr2:Price {priceId:$priceIdz,amount:2000}),(pr3:Price {priceId:$priceIda,amount:5000}) RETURN pr1,pr2,pr3',{
-    priceIdw:price1.id,
-    priceIdz:price2.id,
-    priceIda:price3.id
-  })
-  await session.run("MATCH(p:Person{CustomerId:$CustomerId})  MATCH(pr:Product{productId:$productId}) MERGE (p)-[:PAID]->(pr) RETURN p",{
-    CustomerId:customer.id,
-    productId:product.id,
+    customerid:customer.id
+  });
+  // await session.run('CREATE (pr1:Price {priceId:$priceIdw,amount:1000}),(pr2:Price {priceId:$priceIdz,amount:2000}),(pr3:Price {priceId:$priceIda,amount:5000}) RETURN pr1,pr2,pr3',{
+  //   priceIdw:price1.id,
+  //   priceIdz:price2.id,
+  //   priceIda:price3.id
+  // })
+  // await session.run("MATCH(p:Person{CustomerId:$CustomerId})  MATCH(pr:Product{productId:$productId}) MERGE (p)-[:PAID]->(pr) RETURN p",{
+  //   CustomerId:customer.id,
+  //   productId:product.id,
 
-  })
-  await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
-    productId:product.id,
-    priceId:price1.id
-  })
-  await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
-    productId:product.id,
-    priceId:price2.id
-  })
-  await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
-    productId:product.id,
-    priceId:price3.id
-  })
+  // })
+  // await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
+  //   productId:product.id,
+  //   priceId:price1.id
+  // })
+  // await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
+  //   productId:product.id,
+  //   priceId:price2.id
+  // })
+  // await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
+  //   productId:product.id,
+  //   priceId:price3.id
+  // })
   return {customerId:customer.id,state :true};
  
 }
@@ -567,16 +643,16 @@ app.post("/HistoryTransactions", async (req, res) => {
   res.end(JSON.stringify(Tx));
   
 });
-const options = {
-    key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey1.pem'),
-    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain1.pem')
+// const options = {
+//     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey1.pem'),
+//     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain1.pem')
   
-};
+// };
 app.listen(process.env.PORT || 8000, () => {
   console.log("Serveur à l'écoute on ");
 });
 
 
 
-const server = https.createServer(options,app);
-server.listen(8080);
+// const server = https.createServer(options,app);
+// server.listen(8080);

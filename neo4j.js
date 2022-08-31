@@ -6,7 +6,7 @@ exports.initDriver=()=> {
     // TODO: Create an instance of the driver here
     driver = neo4j.driver(
       process.env.DBURL,
-      neo4j.auth.basic(process.env.USER, process.env.DBPASSWORD)
+      neo4j.auth.basic(process.env.USERR, process.env.DBPASSWORD)
     ),
     {
       maxConnectionPoolSize: 100,

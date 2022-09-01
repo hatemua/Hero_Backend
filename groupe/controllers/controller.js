@@ -81,6 +81,7 @@ exports.getMembers = async(req,res,next)=>{
         grName
     })
     let activists = []
+    console.log(result.records);
     result.records.map(record => activists.push(record.get(0).properties) )
     return res.status(200).json(activists);
 

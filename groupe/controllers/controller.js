@@ -70,7 +70,7 @@ exports.getGroupe = async(req,res,next)=>{
 }
 exports.getMembers = async(req,res,next)=>{
     const grName = req.params.grName;
-    
+    console.log(grName);
     await initDriver();
     var driver = getdriver();
     var session = driver.session({

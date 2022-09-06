@@ -235,7 +235,7 @@ app.post("/CreateWallet", async (req, res) => {
   // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
   // res.end( JSON.stringify(A));
-  const phoneNumber = req.body.email;
+  const phoneNumber = req.body.Email;
   const password = req.body.password;
   const googleId =  req.body.googleId;
   const imageUrl=req.body.imageUrl;

@@ -61,3 +61,19 @@ exports.getActivists= async(req,res,next)=>{
     return res.status(200).json(activists)
 
 }
+
+exports.addMedia = async(req,res,next)=>{
+     const {email,url} = req.body;
+
+     await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero',
+            defaultAccessMode: neo4j.session.WRITE
+    })
+    await session.run("match(a:Activist{email:$email})set a.Media=a.Media+$media",{
+        email,
+        media:url
+    });
+    return res.status(200).json("Media added successfully !")
+}

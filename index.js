@@ -193,7 +193,7 @@ app.post("/TestDecrypt", async (req, res) => {
 
 app.post("/createTag",async(req,res)=>{
   const name = req.body.name;
-  await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+  await initDriver();
   var driver = getdriver();
   var session = driver.session({
     database: 'Hero'
@@ -212,7 +212,7 @@ app.post("/createTag",async(req,res)=>{
 })
 app.post("/createLocation",async(req,res)=>{
   const name = req.body.name;
-  await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+  await initDriver();
   var driver = getdriver();
   var session = driver.session({
     database: 'Hero'
@@ -341,11 +341,12 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   console.log("************");
   console.log(temp);
   console.log(account.id)
- await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,accountId:$actId})return a", {
+ await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,accountId:$actId,Media:$media})return a", {
     Email:email,
     phoneNumber:phoneNumber,
     Wallet:pureWallet.address,
-    actId:account.id
+    actId:account.id,
+    media:[]
   });
   await session.run("match(a:Activist{email:$Email}),(g:Groupe{Name:$grName})set g.members=g.members+1 merge(a)-[:PART_OF]->(g)",{
     Email:email,
@@ -534,28 +535,6 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,google
     googleId:googleId,imageUrl:imageUrl,name:name,lastname:lastname
     
   });
-  // await session.run('CREATE (pr1:Price {priceId:$priceIdw,amount:1000}),(pr2:Price {priceId:$priceIdz,amount:2000}),(pr3:Price {priceId:$priceIda,amount:5000}) RETURN pr1,pr2,pr3',{
-  //   priceIdw:price1.id,
-  //   priceIdz:price2.id,
-  //   priceIda:price3.id
-  // })
-  // await session.run("MATCH(p:Person{CustomerId:$CustomerId})  MATCH(pr:Product{productId:$productId}) MERGE (p)-[:PAID]->(pr) RETURN p",{
-  //   CustomerId:customer.id,
-  //   productId:product.id,
-
-  // })
-  // await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
-  //   productId:product.id,
-  //   priceId:price1.id
-  // })
-  // await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
-  //   productId:product.id,
-  //   priceId:price2.id
-  // })
-  // await session.run("MATCH(pr:Product{productId:$productId}) MATCH (pr1:Price{priceId:$priceId})MERGE (pr)-[:PRICED]->(pr1) RETURN pr",{
-  //   productId:product.id,
-  //   priceId:price3.id
-  // })
   return {customerId:customer.id,state :true};
  
 }

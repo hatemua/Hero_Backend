@@ -37,12 +37,11 @@ exports.successPage = async (req, res) => {
   const {grName}= req.query;
   console.log(req.query.grName);
   const sessione = await stripe.checkout.sessions.retrieve(req.query.session_id);
-  await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+  await initDriver();
   var driver = getdriver();
   var session = driver.session({
     database: 'Hero'
   })
-  console.log(sessione)
   const customer = await stripe.customers.retrieve(sessione.customer);
   const ind = mergeString(customer.id,grName,new Date(),sessione.amount_total);
   const ed = moment().add(30, 'days').calendar();
@@ -64,6 +63,10 @@ exports.successPage = async (req, res) => {
     tr:false,
     in:ind
   });
+  await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED]->(g)",{
+    ci:customer.id,
+    grName
+  })
   await session.run("match(h:Holder)set h.balance=h.balance+$amount,h.nTransactions=h.nTransactions	+1 with h as h match(t:Transaction{SentDay:$ed}) merge(h)-[:GOT]->(t)",{
     ed:today,
     amount:sessione.amount_total

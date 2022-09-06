@@ -70,7 +70,6 @@ exports.getGroupe = async(req,res,next)=>{
 }
 exports.getMembers = async(req,res,next)=>{
     const grName = req.params.grName;
-    console.log(grName);
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
@@ -81,9 +80,31 @@ exports.getMembers = async(req,res,next)=>{
         grName
     })
     let activists = []
-    console.log(result.records);
     result.records.map(record => activists.push(record.get(0).properties) )
     return res.status(200).json(activists);
+
+}
+exports.getSupporters = async(req,res,next)=>{
+    const grName = req.params.grName;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero',
+            defaultAccessMode: neo4j.session.READ
+    })
+    var result = await session.run("match(c:Customer)-[:JOINED]->(g:Groupe{Name:$grName}) return c",{
+        grName
+    })
+    let supporters = []
+    result.records.map(record => {
+        var supporter = {
+            email:record.get(0).properties.email,
+            customerId:record.get(0).properties.CustomerId,
+            walletAddress: record.get(0).properties.walletAddress
+        }
+        supporters.push(supporter) 
+    })
+    return res.status(200).json(supporters);
 
 }
 
@@ -130,3 +151,18 @@ exports.getAll = async(req,res)=>{
     }
 }
 
+exports.addMedia = async(req,res,next)=>{
+    const {grName,url} = req.body;
+
+    await initDriver();
+   var driver = getdriver();
+   var session = driver.session({
+           database: 'Hero',
+           defaultAccessMode: neo4j.session.WRITE
+   })
+   await session.run("match(g:Groupe{Name:$grName})set g.Media=g.Media+$media",{
+       grName,
+       media:url
+   });
+   return res.status(200).json("Media added successfully !")
+}

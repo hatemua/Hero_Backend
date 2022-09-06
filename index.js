@@ -236,7 +236,7 @@ app.post("/CreateWallet", async (req, res) => {
 
   // res.end( JSON.stringify(A));
   const phoneNumber = req.body.Email;
-  const password = req.body.password;
+  let password = req.body.password;
   const googleId =  req.body.googleId;
   const imageUrl=req.body.imageUrl;
   const  name=req.body.givenName;

@@ -241,7 +241,7 @@ app.post("/CreateWallet", async (req, res) => {
   const imageUrl=req.body.imageUrl;
   const  name=req.body.givenName;
   const lastname=req.body.familyName;
-
+  console.log(googleId);
   let search=await SearchUser(phoneNumber);
   if (search == 0)
   {

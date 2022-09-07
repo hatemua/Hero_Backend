@@ -3,8 +3,9 @@ import { readFileSync } from 'fs';
 import { WebSocketServer } from 'ws';
 
 const server = createServer({
-  cert: readFileSync('/path/to/cert.pem'),
-  key: readFileSync('/path/to/key.pem')
+
+  key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
+cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
 });
 const wss = new WebSocketServer({ server });
 

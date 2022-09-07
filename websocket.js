@@ -1,6 +1,6 @@
-import { createServer } from 'https';
-import { readFileSync } from 'fs';
-import { WebSocketServer } from 'ws';
+const { createServer } =  require ('https');
+const { readFileSync } = require ('fs');
+const { WebSocketServer } = require ('ws');
 
 const server = createServer({
 

@@ -345,11 +345,11 @@ var upload = multer({
 // mypic is the name of file attribute
 }).single("myFile");   
 
-app.post("/uploadUpdatesFile",(req, res, next) =>{
+app.post("/uploadUpdatesFile",async(req, res, next) =>{
    console.log("ok");     
   // Error MiddleWare for multer file upload, so if any
   // error occurs, the image would not be uploaded!
-  upload(req,res,function(err) {
+  const a =await upload(req,res,function(err) {
 
       if(err) {
 

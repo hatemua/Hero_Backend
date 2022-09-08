@@ -235,15 +235,25 @@ app.post("/CreateWallet", async (req, res) => {
   // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
   // res.end( JSON.stringify(A));
-  const phoneNumber = req.body.email;
-  const password = req.body.password;
+  const phoneNumber = req.body.Email;
+  let password = req.body.password;
+  const googleId =  req.body.googleId;
+  const imageUrl=req.body.imageUrl;
+  const  name=req.body.name;
+  const lastname=req.body.lastname;
+  console.log(name,lastname);
   let search=await SearchUser(phoneNumber);
   if (search == 0)
   {
+    if (googleId != "")
+    {
+      password=googleId;
+    }
+   
     console.log("ok");
   const providerMumbai = new ethers.providers.JsonRpcProvider(
     ProviderNetwork
-  );
+    );
  
   const pureWallet = ethers.Wallet.createRandom();
   
@@ -260,7 +270,7 @@ app.post("/CreateWallet", async (req, res) => {
    let WalletAddress = pureWallet.address;
    let Password = AESEncyption(phoneNumber+"+-*/",password);
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
-  const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password);
+  const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname);
   console.log("************");
 
 
@@ -269,17 +279,24 @@ app.post("/CreateWallet", async (req, res) => {
     mnomonic: pureWallet._mnemonic().phrase,
     address: pureWallet.address,
     autre: pureWallet._signingKey(),
-    customerId:customerId
+    customerId:customerId,
+    imageUrl:imageUrl,
+    name:name,
+    lastname:lastname
   });
-
+  
   }
   else{
     console.log(search);
+
     return res.status(200).json({
       mnomonic: search.Mnemoni,
       address: search.WalletAddress,
       autre: search.privKey,
-      customerId:search.CustomerId
+      customerId:search.CustomerId,
+      imageUrl:imageUrl,
+      name:name,
+      lastname:lastname
     });
   }
   
@@ -471,7 +488,7 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
   res.end(JSON.stringify(result));
 
 })
-async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
+async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname) {
 
   // var driver = neo4j.driver(
   //   'neo4j://hegemony.donftify.digital:7687',
@@ -508,13 +525,15 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password) {
     return {customerId:null,state:false};
   }
   await session
-  .run('MERGE (c:Customer {email:$Email,walletAddress:$WalletAddress,privKey:$privKey,password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid})RETURN c', {
+  .run('MERGE (c:Customer {email:$Email,walletAddress:$WalletAddress,privKey:$privKey,password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid,googleId:$googleId,imageUrl:$imageUrl,name:$name,lastname:$lastname})RETURN c', {
     Email: Email,
     WalletAddress,
     privKey: privKey,
     Password:Password,
     Mnemonic : MNEMONIC,
-    customerid:customer.id
+    customerid:customer.id,
+    googleId:googleId,imageUrl:imageUrl,name:name,lastname:lastname
+    
   });
   return {customerId:customer.id,state :true};
  

@@ -74,12 +74,12 @@ exports.addMedia = async(req,res,next)=>{
     })
     await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,time:$time,type:$typeMedia}) with p as p match(a:Activist{email:$email}) merge(a)-[:CREATED]->(p)",{
         title,
-        url,
+        url:url || "",
         email,
         desc,
         id,
         time:getTime(),
-        typeMedia
+        typeMedia:typeMedia|| ""
     });
     return res.status(200).json("Media added successfully !")
 }

@@ -305,7 +305,7 @@ app.post("/CreateWallet", async (req, res) => {
 });
 
 
-var storage = multer.diskStorage({
+const storage = multer.diskStorage({
   destination: function (req, file, cb) {
 
       // Uploads is the Upload_folder_name
@@ -345,8 +345,8 @@ var upload = multer({
 // mypic is the name of file attribute
 }).single("myFile");   
 
-app.post("/uploadUpdatesFile",function (req, res, next) {
-        
+app.post("/uploadUpdatesFile",(req, res, next) =>{
+   console.log(ok);     
   // Error MiddleWare for multer file upload, so if any
   // error occurs, the image would not be uploaded!
   upload(req,res,function(err) {

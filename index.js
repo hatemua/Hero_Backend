@@ -310,7 +310,7 @@ const storage = multer.diskStorage({
 
       // Uploads is the Upload_folder_name
       
-      cb(null, "uploads")
+      cb(null, "/opt/lampp/htdocs/HerCoin/uploads")
   },
   filename: function (req, file, cb) {
     console.log(file);

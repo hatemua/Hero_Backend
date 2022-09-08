@@ -314,7 +314,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     console.log(file);
-    cb(null,  Date.now()+ "-" +file.fieldname )
+    cb(null,  "-" +file.fieldname )
   }
 })
 
@@ -346,7 +346,6 @@ var upload = multer({ storage: storage }).single("myFile");
 }).single("myFile");  */ 
 app.post("/uploadUpdatesFile", upload, (req, res) =>{
   try {
-    console.log(req);
     res.send(req);
   } catch (error) {
     console.log(error);

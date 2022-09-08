@@ -4,7 +4,8 @@ const {createAccount} = require("../../stripe/utils/utils");
 const { createTagsRelations } = require("../utils/util");
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30});
-
+const uniqid = require("uniqid");
+const getTime = require("../../utils/getTime");
 exports.createGroup = async(req,res,next)=>{
     const {grName,grDesc,country,tags} = req.body;
     console.log("test")
@@ -151,18 +152,25 @@ exports.getAll = async(req,res)=>{
     }
 }
 
-exports.addMedia = async(req,res,next)=>{
-    const {grName,url} = req.body;
 
+
+exports.addMedia = async(req,res,next)=>{
+    const {groupe,url,desc,title,typeMedia} = req.body;
+    const id = uniqid();
     await initDriver();
    var driver = getdriver();
    var session = driver.session({
            database: 'Hero',
            defaultAccessMode: neo4j.session.WRITE
    })
-   await session.run("match(g:Groupe{Name:$grName})set g.Media=g.Media+$media",{
-       grName,
-       media:url
+   await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
+       title,
+       url,
+       groupe,
+       desc,
+       id,
+       time:getTime(),
+       typeMedia
    });
    return res.status(200).json("Media added successfully !")
 }

@@ -344,27 +344,15 @@ var upload = multer({
 
 // mypic is the name of file attribute
 }).single("myFile");   
+app.post("/uploadUpdatesFile", upload, (req, res) =>{
+  try {
+    res.send(req.files);
+  } catch (error) {
+    console.log(error);
+    res.send(400);
+  }
+});
 
-app.post("/uploadUpdatesFile",async(req, res, next) =>{
-   console.log("ok");     
-  // Error MiddleWare for multer file upload, so if any
-  // error occurs, the image would not be uploaded!
-  const a =await upload(req,res,function(err) {
-
-      if(err) {
-
-          // ERROR occurred (here it can be occurred due
-          // to uploading image of size greater than
-          // 1MB or uploading different file type)
-          res.send(err)
-      }
-      else {
-
-          // SUCCESS, image successfully uploaded
-          res.send("Success, Image uploaded!")
-      }
-  })
-})
 
 app.post("/CreateWalletMobelizer", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));

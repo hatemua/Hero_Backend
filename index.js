@@ -1,6 +1,7 @@
 const express = require("express");
 const https = require('https');
 const mysql = require('mysql');
+const formidable = require('formidable');
 
 const Web3 = require("web3");
 const axios = require("axios");
@@ -343,15 +344,12 @@ var upload = multer({
 }).single("myFile");  
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   try {
-    data = Object.fromEntries(req.body);
-    console.log(data);
-    let desc = data.Description;
-    let groupe = data.circle;
-    let mobilizer = data.mobilizer;
-    let url = res.file.filename;
-    let typeMedia = data.typeMedia;
     
+   
     
+    const form = formidable({ multiples: true });
+    let a = form.parse(req) ;
+    console.log(a);
     const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
     console.log("ok");
     res.send(res);

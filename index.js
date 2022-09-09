@@ -343,7 +343,6 @@ var upload = multer({
 }).single("myFile");  
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   try {
-    console.log(req);
     data = Object.fromEntries(req.body);
     console.log(data);
     let desc = data.Description;

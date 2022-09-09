@@ -344,12 +344,13 @@ var upload = multer({
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   try {
     const data = JSON.parse(req.body);
+    console.log(data);
     let desc = data.Description;
     let groupe = data.circle;
     let mobilizer = data.mobilizer;
     let url = res.file.filename;
     let typeMedia = data.typeMedia;
-    console.log(data);
+    
     
     const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
     console.log("ok");

@@ -346,8 +346,8 @@ var upload = multer({
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
 
     
-    const obj = req.body;
-    console.log(obj);
+  const obj = JSON.parse(JSON.stringify(req.body)); 
+      console.log(obj);
     const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
     console.log("ok");
     res.send(res);

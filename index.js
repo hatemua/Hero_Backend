@@ -2,6 +2,7 @@ const express = require("express");
 const https = require('https');
 const mysql = require('mysql');
 const formidable = require('formidable');
+const uniqid = require("uniqid");
 
 const Web3 = require("web3");
 const axios = require("axios");
@@ -349,7 +350,7 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   const obj = JSON.parse(JSON.stringify(req.body)); 
       console.log(res);
       let groupe = obj.circle.replace(":","");
-      let url = res.file;
+      let url = res.file.filename;
       let desc = obj.Description;
       let typeMedia=obj.typeMedia;
       let mobilizer = obj.mobilizer;

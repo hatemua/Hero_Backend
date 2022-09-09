@@ -308,7 +308,6 @@ app.post("/CreateWallet", async (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-
       // Uploads is the Upload_folder_name
       cb(null, "./uploads")
   },
@@ -346,13 +345,8 @@ var upload = multer({
 
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
 
-  const form = formidable({ multiples: true });
-  const k=form.parse(req, (err, fields, files) => {
-      console.log('fields: ', fields);
-      console.log('files: ', files);
-      return fields;
-  });
-    console.log(k);
+    
+    console.log(typeof req.body);
     const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
     console.log("ok");
     res.send(res);

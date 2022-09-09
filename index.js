@@ -376,6 +376,7 @@ addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
      typeMedia:typeMedia||"",
      mobilizer:mobilizer
  });
+ console.log("Media added successfully !");
  return res.status(200).json("Media added successfully !")
 }
 

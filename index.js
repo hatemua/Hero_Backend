@@ -347,7 +347,12 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
 
     
   const obj = JSON.parse(JSON.stringify(req.body)); 
-      console.log(obj);
+      console.log(res);
+      let groupe = obj.circle.replace(":","");
+      let url = res.file;
+      let desc = obj.Description;
+      let typeMedia=obj.typeMedia;
+      let mobilizer = obj.mobilizer;
     const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
     console.log("ok");
     res.send(res);

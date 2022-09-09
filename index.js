@@ -343,8 +343,7 @@ var upload = multer({
 // mypic is the name of file attribute
 }).single("myFile");  
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
-  try {
-    
+
    
     
     const form = formidable({ multiples: true });
@@ -353,9 +352,7 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
     const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
     console.log("ok");
     res.send(res);
-  } catch (error) {
-    res.send(error);
-  }
+  
 });
 
 const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{

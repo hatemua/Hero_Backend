@@ -358,7 +358,7 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   }
 });
 
-addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
+const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
   const id = uniqid();
   await initDriver();
  var driver = getdriver();

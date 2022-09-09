@@ -343,7 +343,6 @@ var upload = multer({
 }).single("myFile");  
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   try {
-    console.log(res);
 
     let desc = req.body.Description;
     let groupe = req.body.circle;

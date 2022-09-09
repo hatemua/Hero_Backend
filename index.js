@@ -347,8 +347,8 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
    
     
     const form = formidable({ multiples: true });
-    let a = form.parse(req.body) ;
-    console.log(a);
+    form.parse(req) ;
+    console.log(form);
     const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
     console.log("ok");
     res.send(res);

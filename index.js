@@ -372,7 +372,7 @@ const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
      groupe,
      desc,
      id,
-     time:getTime(),
+     time:Date.now(),
      typeMedia:typeMedia||"",
      mobilizer:mobilizer
  });

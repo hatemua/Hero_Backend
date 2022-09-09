@@ -351,6 +351,7 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
     let typeMedia = req.body.typeMedia;
     
     const A = await addMedia(groupe,url,desc,title,typeMedia,mobilizer)
+    console.log(A);
     res.send(res);
   } catch (error) {
     res.send(error);

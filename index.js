@@ -341,15 +341,41 @@ var upload = multer({
 
 // mypic is the name of file attribute
 }).single("myFile");  
-app.post("/uploadUpdatesFile", upload, (req, res) =>{
+app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   try {
     console.log(res);
-    res.send(req);
+    let desc = req.body.Description;
+    let groupe = req.body.circle;
+    let mobilizer = req.body.mobilizer;
+    let url = res.file.filename;
+    let typeMedia = req.body.typeMedia;
+    const A = await addMedia(groupe,url,desc,title,typeMedia,mobilizer)
+    res.send(res);
   } catch (error) {
     res.send(error);
   }
 });
 
+addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
+  const id = uniqid();
+  await initDriver();
+ var driver = getdriver();
+ var session = driver.session({
+         database: 'Hero',
+         defaultAccessMode: neo4j.session.WRITE
+ })
+ await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time,mobilizer:$mobilizer}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
+     title,
+     url:url || "",
+     groupe,
+     desc,
+     id,
+     time:getTime(),
+     typeMedia:typeMedia||"",
+     mobilizer:mobilizer
+ });
+ return res.status(200).json("Media added successfully !")
+}
 
 app.post("/CreateWalletMobelizer", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));

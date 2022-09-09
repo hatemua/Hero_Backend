@@ -343,7 +343,7 @@ var upload = multer({
 }).single("myFile");  
 app.post("/uploadUpdatesFile", upload, (req, res) =>{
   try {
-    console.log(req.body);
+    console.log(res);
     res.send(req);
   } catch (error) {
     res.send(error);

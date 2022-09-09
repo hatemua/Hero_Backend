@@ -309,7 +309,7 @@ const storage = multer.diskStorage({
   destination: function (req, file, cb) {
 
       // Uploads is the Upload_folder_name
-      
+      console.log(file);
       cb(null, "./uploads")
   },
   filename: function (req, file, cb) {
@@ -320,7 +320,6 @@ const storage = multer.diskStorage({
 // Define the maximum size for uploading
 // picture i.e. 1 MB. it is optional
 const maxSize = 100 * 1000 * 1000;
-var upload = multer({ storage: storage }).single("myFile");
 var upload = multer({ 
   storage: storage,
   limits: { fileSize: maxSize },

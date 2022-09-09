@@ -350,7 +350,7 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
     let mobilizer = req.body.mobilizer;
     let url = res.file.filename;
     let typeMedia = req.body.typeMedia;
-    console.log(desc,groupe,mobilizer);
+    console.log(req.body);
     const A = await addMedia(groupe,url,desc,title,typeMedia,mobilizer)
     res.send(res);
   } catch (error) {

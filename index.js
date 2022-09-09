@@ -344,7 +344,8 @@ var upload = multer({
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
   try {
     console.log(req);
-    data = JSON.stringify(Object.fromEntries(req.body));
+    data = Object.fromEntries(req.body);
+    console.log(data);
     let desc = data.Description;
     let groupe = data.circle;
     let mobilizer = data.mobilizer;

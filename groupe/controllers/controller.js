@@ -174,3 +174,23 @@ exports.addMedia = async(req,res,next)=>{
    });
    return res.status(200).json("Media added successfully !")
 }
+
+exports.getFeed = async(req,res)=>{
+    const {cercle}= req.body ;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero',
+            defaultAccessMode: neo4j.session.READ
+    })
+
+    const result = await session.run(`match(g:Groupe{Name:$cercle})-[:CREATED]->(n:Post)
+    with n
+    match(g:Groupe{Name:$cercle})<-[:PART_OF]-(a:Activist)-[:CREATED]->(p:Post)
+    return p,n`,{
+        cercle
+    })
+    var posts = [];
+    result.records.map(record => posts.push(record.get(0).properties) )
+    return res.status(200).json({posts})
+}

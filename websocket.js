@@ -1,6 +1,6 @@
 const { createServer } =  require ('https');
 const { readFileSync } = require ('fs');
-const { WebSocketServer } = require ('ws');
+const WebSocketServer  = require ('ws').Server;
 
 const server = createServer({
 
@@ -12,8 +12,11 @@ const wss = new WebSocketServer({ server });
 wss.on('connection', function connection(ws) {
   ws.on('message', function message(data, isBinary) {
     wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(data, { binary: isBinary });
+        console.log(client);
+
+        if (client.readyState) {
+        console.log("okOK");
+          client.send(data.toJSON(), { binary: isBinary });
         }
     });
   });

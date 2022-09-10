@@ -1,6 +1,8 @@
 const express = require("express");
 const https = require('https');
 const mysql = require('mysql');
+const formidable = require('formidable');
+const uniqid = require("uniqid");
 
 const Web3 = require("web3");
 const axios = require("axios");
@@ -16,6 +18,8 @@ const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver');
+const path = require("path")
+const multer = require("multer")
 const app = express();  
 const stripeRoutes = require("./stripe/routes/payement.routes");
 const groupeRoutes = require("./groupe/routes/route");
@@ -301,6 +305,86 @@ app.post("/CreateWallet", async (req, res) => {
   }
   
 });
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      // Uploads is the Upload_folder_name
+      cb(null, "./uploads")
+  },
+  filename: function (req, file, cb) {
+    cb(null,  Date.now()+"-" +file.originalname )
+  }
+})
+
+// Define the maximum size for uploading
+// picture i.e. 1 MB. it is optional
+const maxSize = 100 * 1000 * 1000;
+var upload = multer({ 
+  storage: storage,
+  limits: { fileSize: maxSize },
+  fileFilter: function (req, file, cb){
+  
+      // Set the filetypes, it is optional
+      var filetypes = /jpeg|jpg|png|avi|mp4|m4v/;
+      var mimetype = filetypes.test(file.mimetype);
+
+      var extname = filetypes.test(path.extname(
+                  file.originalname).toLowerCase());
+      
+      if (mimetype && extname) {
+          return cb(null, true);
+      }
+    
+      cb("Error: File upload only supports the "
+              + "following filetypes - " + filetypes);
+    } 
+
+// mypic is the name of file attribute
+}).single("myFile");
+
+
+app.post("/uploadUpdatesFile", upload, async(req, res) =>{
+
+    
+  const obj = JSON.parse(JSON.stringify(req.body)); 
+      console.log(res);
+      let groupe = obj.circle.replace(":","");
+      let url = res.req.file.filename;
+      let desc = obj.Description;
+      let typeMedia=obj.typeMedia;
+      let mobilizer = obj.mobilizer;
+    const A = await addMedia(groupe,url,desc,groupe+" "+mobilizer+" "+Date.now(),typeMedia,mobilizer);
+    console.log("ok");
+    res.send(
+      {
+        groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer
+      }
+    );
+  
+});
+
+const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
+  const id = uniqid();
+  await initDriver();
+ var driver = getdriver();
+ var session = driver.session({
+         database: 'Hero',
+         defaultAccessMode: neo4j.session.WRITE
+ })
+ await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time,mobilizer:$mobilizer}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
+     title,
+     url:url || "",
+     groupe,
+     desc,
+     id,
+     time:Date.now(),
+     typeMedia:typeMedia||"",
+     mobilizer:mobilizer
+ });
+ console.log("Media added successfully !");
+}
+
 app.post("/CreateWalletMobelizer", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
   // A=web3.eth.accounts.create("87h0u74+-*/");

@@ -1,6 +1,6 @@
 const { createServer } =  require ('https');
 const { readFileSync } = require ('fs');
-const { WebSocketServer } = require ('ws');
+const WebSocketServer  = require ('ws').Server;
 
 const server = createServer({
 

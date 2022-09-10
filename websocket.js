@@ -16,7 +16,7 @@ wss.on('connection', function connection(ws) {
 
         if (client.readyState) {
         console.log("okOK");
-          client.send(data, { binary: isBinary });
+          client.send(JSON.stringify(data), { binary: isBinary });
         }
     });
   });

@@ -12,7 +12,7 @@ const wss = new WebSocketServer({ server });
 wss.on('connection', function connection(ws) {
   ws.on('message', function message(data, isBinary) {
     wss.clients.forEach(function each(client) {
-        if (client.readyState === WebSocket.OPEN) {
+        if (client.readyState === wss.OPEN) {
           client.send(data, { binary: isBinary });
         }
     });

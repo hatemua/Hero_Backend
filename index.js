@@ -354,9 +354,13 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
       let desc = obj.Description;
       let typeMedia=obj.typeMedia;
       let mobilizer = obj.mobilizer;
-    const A = await addMedia(groupe,url,desc,"",typeMedia,mobilizer);
+    const A = await addMedia(groupe,url,desc,groupe+" "+mobilizer+" "+Date.now(),typeMedia,mobilizer);
     console.log("ok");
-    res.send(res);
+    res.send(
+      {
+        groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer
+      }
+    );
   
 });
 
@@ -379,7 +383,6 @@ const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
      mobilizer:mobilizer
  });
  console.log("Media added successfully !");
- return res.status(200).json("Media added successfully !")
 }
 
 app.post("/CreateWalletMobelizer", async (req, res) => {

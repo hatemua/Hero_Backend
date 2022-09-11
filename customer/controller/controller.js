@@ -35,44 +35,38 @@ exports.reactPost = async(req,res)=>{
          database: 'Hero'
  })
 
- const [q1,q2]= await Promise.all(
+ const [q1]= await Promise.all(
     [ await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match(c)-[L:LIKE]->(p) return L`,{
       email,
-      postId
-  }),await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match(c)-[L:DISLIKE]->(p) return L`,{
-      email,
-      postId
-})])
-const result = q2.records.length+q1.records.length;
-const [rr]= await Promise.all(
-    [ await session.run(`match(c:Customer)match(p:Post{id:$postId}) match(c)-[L:LIKE]->(p) return L`,{
-      postId
+      postId,
+      type
   })])
-re = rr.records.length+q1.records.length;
+const result = q1.records.length;
+
 if(result>0){
-    if(q2.records.length>q1.records.length){
+    
         await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:DISLIKE]->(p) detach delete t`,{
             email,
             postId,
             type
         });
-    }else{
-        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:LIKE]->(p) detach delete t`,{
-            email,
-            postId,
-            type
-        });
-    }
+    
+    
        
-       return res.status(200).json(re-1);
 }else{
     await session.run(`match(c:Customer{email:$email}) match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
         email,
         postId,
         type
     });
-    return res.status(200).json(re+1);
 }
+const [qq]= await Promise.all(
+    [ await session.run(`MATCH (n1:Customer)-[:LIKE]-(Post{id:$id}) RETURN n1,Post`,{
+      postId,
+      
+  })])
+const res = qq.records.length;
+return res.status(200).json(res)
 
 }
 

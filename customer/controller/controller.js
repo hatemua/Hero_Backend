@@ -44,7 +44,11 @@ exports.reactPost = async(req,res)=>{
       postId
 })])
 const result = q2.records.length+q1.records.length;
-console.log(result)
+const [rr]= await Promise.all(
+    [ await session.run(`match(c:Customer)match(p:Post{id:$postId}) match(c)-[L:LIKE]->(p) return L`,{
+      postId
+  })])
+re = rr.records.length+q1.records.length;
 if(result>0){
     if(q2.records.length>q1.records.length){
         await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:DISLIKE]->(p) detach delete t`,{
@@ -60,15 +64,16 @@ if(result>0){
         });
     }
        
-       return res.status(200).json("Reaction deleted successfully !");
+       return res.status(200).json(re-1);
 }else{
     await session.run(`match(c:Customer{email:$email}) match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
         email,
         postId,
         type
     });
-    return res.status(200).json("Reaction Added successfully !");
+    return res.status(200).json(re+1);
 }
+
 }
 
 

@@ -176,21 +176,90 @@ exports.addMedia = async(req,res,next)=>{
 }
 
 exports.getFeed = async(req,res)=>{
-    const {cercle}= req.body ;
+    const {cercle,page}= req.body ;
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
             database: 'Hero',
             defaultAccessMode: neo4j.session.READ
     })
-
+    const limit = 10;
+    const skip = (page*limit)-limit;
     const result = await session.run(`match(g:Groupe{Name:$cercle})-[:CREATED]->(n:Post)
-    with n
-    match(g:Groupe{Name:$cercle})<-[:PART_OF]-(a:Activist)-[:CREATED]->(p:Post)
-    return p,n`,{
-        cercle
+    return n 
+    order by n.time
+    skip $skip
+    limit toInteger($limit)
+    `,{
+        cercle,
+        skip:neo4j.int(skip),
+        limit:neo4j.int(limit)
     })
     var posts = [];
     result.records.map(record => posts.push(record.get(0).properties) )
     return res.status(200).json({posts})
+}
+
+exports.getComments = async(req,res)=>{
+    const {postId,page} = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero',
+            defaultAccessMode: neo4j.session.READ
+    })
+    const limit = 10;
+    const skip = (page*limit)-limit;
+    const result = await session.run("match(p:Post{id:$postId})-[c:COMMENTED]-(n) return c skip $skip limit $limit",{
+        postId,
+        skip:neo4j.int(skip),
+        limit:neo4j.int(limit)
+    });
+    var comments = [];
+    result.records.map(record => comments.push(record.get(0).properties) )
+    return res.status(200).json({comments})
+
+}
+
+
+exports.getLikes = async(req,res)=>{
+    const {postId,page} = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero',
+            defaultAccessMode: neo4j.session.READ
+    })
+    const limit = 10;
+    const skip = (page*limit)-limit;
+    const result = await session.run("match(p:Post{id:$postId})-[c:LIKE]-(n) return c skip $skip limit $limit",{
+        postId,
+        skip:neo4j.int(skip),
+        limit:neo4j.int(limit)
+    });
+    var likes = [];
+    result.records.map(record => likes.push(record.get(0).properties) )
+    return res.status(200).json({likes})
+
+}
+
+exports.getDislikes = async(req,res)=>{
+    const {postId,page} = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero',
+            defaultAccessMode: neo4j.session.READ
+    })
+    const limit = 10;
+    const skip = (page*limit)-limit;
+    const result = await session.run("match(p:Post{id:$postId})-[c:DISLIKE]-(n) return c skip $skip limit $limit",{
+        postId,
+        skip:neo4j.int(skip),
+        limit:neo4j.int(limit)
+    });
+    var dislikes = [];
+    result.records.map(record => dislikes.push(record.get(0).properties) )
+    return res.status(200).json({dislikes})
+
 }

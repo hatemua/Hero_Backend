@@ -25,9 +25,7 @@ exports.getTransactions = async(req,res,next)=>{
 
 exports.reactPost = async(req,res)=>{
  const  {type,postId,email} = req.body; 
- if(type !== "DISLIKE" || type !== "LIKE"){
-    return res.status(400).json("Type not accepted !");
-}
+ if(type == "DISLIKE" || type == "LIKE"){
  await initDriver();
  var driver = getdriver();
  var session = driver.session({
@@ -46,13 +44,13 @@ const result = q2.records.length+q1.records.length;
 console.log(result)
 if(result>0){
     if(q2.records.length>q1.records.length){
-        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:DISLIKE]->(p) detach delete t`,{
+        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId})set p.dislikes=p.dislikes-1 with p match (c)-[t:DISLIKE]->(p) detach delete t`,{
             email,
             postId,
             type
         });
     }else{
-        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:LIKE]->(p) detach delete t`,{
+        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId})set p.likes=p.likes-1 with p match (c)-[t:LIKE]->(p) detach delete t`,{
             email,
             postId,
             type
@@ -61,12 +59,23 @@ if(result>0){
        
        return res.status(200).json("Reaction deleted successfully !");
 }else{
-    await session.run(`match(c:Customer{email:$email}) match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
-        email,
-        postId,
-        type
-    });
+    var l = "likes";
+
+    if(type !== "LIKE"){
+        l="dislikes"
+    }
+       await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
+           email,
+           postId,
+           type
+       });
+       await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1`,{
+        postId
+       });
     return res.status(200).json("Reaction Added successfully !");
+}
+}else{
+    return res.status(400).json("Type not accepted !");
 }
 }
 
@@ -78,7 +87,7 @@ exports.commentPost = async(req,res)=>{
     var session = driver.session({
             database: 'Hero'
     })
-   await session.run("match(a:Customer{email:$email})match(p:Post{id:$postId}) merge (a)-[:COMMENTED{comment:$comment,time:$time}]->(p)",{
+   await session.run("match(a:Customer{email:$email})match(p:Post{id:$postId})set p.comments=p.comments+1 merge (a)-[:COMMENTED{comment:$comment,time:$time,creator:$email}]->(p)",{
     postId,
     email,
     comment,

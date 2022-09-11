@@ -65,8 +65,8 @@ const [qq]= await Promise.all(
       postId,
       
   })])
-const res = qq.records.length;
-return res.status(200).json(res)
+const resi = qq.records.length;
+return res.status(200).json(resi)
 
 }
 

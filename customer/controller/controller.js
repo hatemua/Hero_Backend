@@ -25,6 +25,7 @@ exports.getTransactions = async(req,res,next)=>{
 
 exports.reactPost = async(req,res)=>{
  const  {type,postId,email} = req.body; 
+ console.log(type);
  if(type !== "DISLIKE" || type !== "LIKE"){
     return res.status(400).json("Type not accepted !");
 }

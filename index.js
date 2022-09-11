@@ -358,7 +358,7 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
     console.log("ok");
     res.send(
       {
-        groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer
+        groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer,time:Date.now(),id:A,likes:0
       }
     );
   
@@ -382,6 +382,7 @@ const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
      typeMedia:typeMedia||"",
      mobilizer:mobilizer
  });
+ return (id);
  console.log("Media added successfully !");
 }
 

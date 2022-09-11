@@ -37,27 +37,25 @@ exports.reactPost = async(req,res)=>{
 
  const [q1]= await Promise.all(
     [ await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match(c)-[L:LIKE]->(p) return L`,{
-        email:email,
-        postId:postId,
-        type:type
+      email,
+      postId,
+      type
   })])
 const result = q1.records.length;
-console.log(result);
+
 if(result>0){
     
-        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:DISLIKE]->(p) detach delete t`,{
+        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:LIKE]->(p) detach delete t`,{
             email:email,
-            postId:postId,
-            type:type
+        postId:postId,
         });
     
     
        
 }else{
-    await session.run(`match(c:Customer{email:$email}) match(p:Post{id:$postId}) merge(c)-[:$type]->(p)`,{
+    await session.run(`match(c:Customer{email:$email}) match(p:Post{id:$postId}) merge(c)-[:LIKE]->(p)`,{
         email:email,
         postId:postId,
-        type:type
     });
 }
 const [qq]= await Promise.all(

@@ -59,7 +59,7 @@ if(result>0){
     });
 }
 const [qq]= await Promise.all(
-    [ await session.run(`MATCH (n1:Customer)-[:LIKE]-(Post{id:$id}) RETURN n1,Post`,{
+    [ await session.run(`MATCH (n1:Customer)-[:LIKE]-(p:Post{id:$id}) RETURN n1`,{
       id:postId,
       
   })])

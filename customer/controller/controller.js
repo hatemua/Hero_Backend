@@ -25,30 +25,41 @@ exports.getTransactions = async(req,res,next)=>{
 
 exports.reactPost = async(req,res)=>{
  const  {type,postId,email} = req.body; 
+<<<<<<< HEAD
  if(type == "DISLIKE" || type == "LIKE"){
+=======
+ console.log(type);
+ if(type !== "DISLIKE" && type !== "LIKE"){
+    return res.status(400).json("Type not accepted !");
+}
+>>>>>>> b4db97e2269d726a54301770d05a5281122ece5d
  await initDriver();
  var driver = getdriver();
  var session = driver.session({
          database: 'Hero'
  })
 
- const [q1,q2]= await Promise.all(
+ const [q1]= await Promise.all(
     [ await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match(c)-[L:LIKE]->(p) return L`,{
       email,
-      postId
-  }),await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match(c)-[L:DISLIKE]->(p) return L`,{
-      email,
-      postId
-})])
-const result = q2.records.length+q1.records.length;
-console.log(result)
+      postId,
+      type
+  })])
+const result = q1.records.length;
+
 if(result>0){
+<<<<<<< HEAD
     if(q2.records.length>q1.records.length){
         await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId})set p.dislikes=p.dislikes-1 with p match (c)-[t:DISLIKE]->(p) detach delete t`,{
+=======
+    
+        await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match (c)-[t:DISLIKE]->(p) detach delete t`,{
+>>>>>>> b4db97e2269d726a54301770d05a5281122ece5d
             email,
             postId,
             type
         });
+<<<<<<< HEAD
     }else{
         await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId})set p.likes=p.likes-1 with p match (c)-[t:LIKE]->(p) detach delete t`,{
             email,
@@ -56,9 +67,13 @@ if(result>0){
             type
         });
     }
+=======
+    
+    
+>>>>>>> b4db97e2269d726a54301770d05a5281122ece5d
        
-       return res.status(200).json("Reaction deleted successfully !");
 }else{
+<<<<<<< HEAD
     var l = "likes";
 
     if(type !== "LIKE"){
@@ -77,6 +92,22 @@ if(result>0){
 }else{
     return res.status(400).json("Type not accepted !");
 }
+=======
+    await session.run(`match(c:Customer{email:$email}) match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
+        email,
+        postId,
+        type
+    });
+}
+const [qq]= await Promise.all(
+    [ await session.run(`MATCH (n1:Customer)-[:LIKE]-(Post{id:$id}) RETURN n1,Post`,{
+      id:postId,
+      
+  })])
+const resi = qq.records.length;
+return res.status(200).json(resi)
+
+>>>>>>> b4db97e2269d726a54301770d05a5281122ece5d
 }
 
 

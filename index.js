@@ -358,7 +358,7 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
     console.log("ok");
     res.send(
       {
-        groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer
+        groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer,time:Date.now(),id:A,likes:0
       }
     );
   
@@ -385,6 +385,7 @@ const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
      dislikes:neo4j.int(0),
      comments:neo4j.int(0)
  });
+ return (id);
  console.log("Media added successfully !");
 }
 

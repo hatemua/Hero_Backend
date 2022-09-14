@@ -366,6 +366,10 @@ var upload = multer({
       if (mimetype && extname) {
           return cb(null, true);
       }
+      if (file == null)
+      {
+        return cb(null, true);
+      }
     
       cb("Error: File upload only supports the "
               + "following filetypes - " + filetypes);
@@ -373,6 +377,28 @@ var upload = multer({
 
 // mypic is the name of file attribute
 }).single("myFile");
+
+
+app.post("/uploadProfilePhoto", upload, async(req, res) =>{
+
+    
+  const obj = JSON.parse(JSON.stringify(req.body)); 
+  console.log(res);
+  let Email = obj.Email.replace(":","");
+  let url = res.req.file.filename;
+  let newEmail = obj.newEmail;
+  let name=obj.name;
+  let HeroId = obj.HeroId;
+  let CountryTolive = obj.CountryTolive;
+  const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive);
+
+res.send(
+  {
+    groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer,time:Date.now(),id:A,likes:0
+  }
+);
+  
+});
 
 
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
@@ -636,7 +662,7 @@ async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive) {
   //   console.log("test");
   //   return {customerId:null,state:false};
   // }
-
+  
   await session
   .run('match (n:Customer{email:$email}) set n.email=$newEmail, n.name=$name, n.HeroId=$HeroId ,n.CountryTolive=$CountryTolive', {
     email: Email,

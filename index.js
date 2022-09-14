@@ -341,6 +341,7 @@ app.get("/getFile:file", async (req, response) => {
             break;
     }
     fs.readFile("./uploads/"+file, function(error, content) {
+      console.log(content);
       if (error) {
           if(error.code == 'ENOENT'){
               fs.readFile('./404.html', function(error, content) {

@@ -315,6 +315,10 @@ app.post("/userInfo", async(req, res) => {
 });
 app.get("/getFile/:file", async (req, res) => {
     let file = req.params.id;
+    var filePath = './uploads/' + file;
+ 
+
+    var extname = path.extname(filePath);
     var contentType = 'text/html';
     switch (extname) {
         case '.js':

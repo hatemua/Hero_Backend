@@ -388,7 +388,15 @@ app.post("/uploadProfilePhoto",upload.single("myFile"), async(req, res) =>{
  
   console.log(obj);
   let Email = obj.Email;
-  let url = res.req.file.filename;
+  let url;
+  if (res.req.file == undefined)
+  {
+    url = obj.url;
+  }
+  else
+  {
+  url = res.req.file.filename;
+  }
   let newEmail = obj.newEmail;
   let name=obj.name;
   let HeroId = obj.HeroId;

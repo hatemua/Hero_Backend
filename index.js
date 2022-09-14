@@ -308,10 +308,10 @@ app.post("/CreateWallet", async (req, res) => {
 
 app.get("/userInfo", async(req, res) => {
   console.log("ok");
-  /*const Email = req.body.Email;
+  const Email = req.body.Email;
   const s =await getUserInfo(Email);
 
-    res.end(JSON.stringify(s));*/
+    res.end(JSON.stringify(s));
 });
 
 app.post("/UpdateUserInfo", async (req, res) => {

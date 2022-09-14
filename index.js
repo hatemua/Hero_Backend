@@ -314,9 +314,9 @@ app.post("/userInfo", async(req, res) => {
     res.end(JSON.stringify(s));
 });
 app.get("/getFile:file", async (req, response) => {
-    let file = req.params.id;
+    let file = req.params.file;
     var filePath = './uploads/' + file;
- 
+    
 
     var extname = path.extname(filePath);
     var contentType = 'text/html';

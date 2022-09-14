@@ -678,6 +678,7 @@ async function getUserInfo(Email) {
    
     /*tttttt */
   });
+  console.log(result);
   return result.records;
  
 }

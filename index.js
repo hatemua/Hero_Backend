@@ -327,11 +327,11 @@ app.post("/UpdateUserInfo", async (req, res) => {
   const HeroId=req.body.HeroId;
   const CountryTolive=req.body.CountryTolive;
 
-  const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive);
+  const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url);
   console.log("************");
   res.send(
     {
-state:state    }
+      Email:newEmail,name:name,HeroId:HeroId,CountryTolive:CountryTolive,url:url    }
   );
 
   
@@ -379,24 +379,24 @@ var upload = multer({
 }).single("myFile");
 
 
-app.post("/uploadProfilePhoto", upload, async(req, res) =>{
+app.post("/uploadProfilePhoto", async(req, res) =>{
 
     
   const obj = JSON.parse(JSON.stringify(req.body)); 
-  console.log(res);
+  console.log("*********");
+  console.log(req.files);
   let Email = obj.Email.replace(":","");
   let url = res.req.file.filename;
   let newEmail = obj.newEmail;
   let name=obj.name;
   let HeroId = obj.HeroId;
   let CountryTolive = obj.CountryTolive;
-  const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive);
-
-res.send(
-  {
-    groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer,time:Date.now(),id:A,likes:0
-  }
-);
+   const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url);
+  console.log("************");
+  res.send(
+    {
+      Email:newEmail,name:name,HeroId:HeroId,CountryTolive:CountryTolive,url:url    }
+  );
   
 });
 
@@ -631,7 +631,7 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
   res.end(JSON.stringify(result));
 
 })
-async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive) {
+async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url) {
 
   // var driver = neo4j.driver(
   //   'neo4j://hegemony.donftify.digital:7687',
@@ -664,12 +664,13 @@ async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive) {
   // }
   
   await session
-  .run('match (n:Customer{email:$email}) set n.email=$newEmail, n.name=$name, n.HeroId=$HeroId ,n.CountryTolive=$CountryTolive', {
+  .run('match (n:Customer{email:$email}) set n.email=$newEmail,n.imageUrl=$url ,n.name=$name, n.HeroId=$HeroId ,n.CountryTolive=$CountryTolive', {
     email: Email,
     newEmail:newEmail,
     name:name,
     HeroId:HeroId,
-    CountryTolive:CountryTolive
+    CountryTolive:CountryTolive,
+    $url : url
     
   });
   return {state :true};

@@ -340,6 +340,7 @@ app.get("/getFile:file", async (req, response) => {
             contentType = 'audio/wav';
             break;
     }
+    console.log("./uploads/"+file);
     fs.readFile("./uploads/"+file, function(error, content) {
       console.log(content);
       if (error) {

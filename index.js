@@ -385,12 +385,12 @@ app.post("/uploadProfilePhoto", async(req, res) =>{
   const obj = JSON.parse(JSON.stringify(req.body)); 
   
   console.log("*********");
-  if (req.files !== "")
+  if (req.files !== undefined)
   {
     upload.single("myFile");
   }
-  console.log(req.files);
-  let Email = obj.Email.replace(":","");
+  console.log(obj);
+  let Email = obj.Email;
   let url = res.req.file.filename;
   let newEmail = obj.newEmail;
   let name=obj.name;

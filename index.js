@@ -365,7 +365,16 @@ var upload = multer({
 // mypic is the name of file attribute
 }).single("myFile");
 
+app.post("/getUserInfo", async (req, res) => {
+  const Email = req.body.Email;
+  console.log(Email);
 
+ getUserInfo(Email).then((resp) => {
+    // convert a currency unit from wei to ether
+    
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
 
     
@@ -741,16 +750,7 @@ app.post("/balanceOf", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
-app.post("/getUserInfo", async (req, res) => {
-  const Email = req.body.Email;
-  console.log(Email);
 
- getUserInfo(Email).then((resp) => {
-    // convert a currency unit from wei to ether
-    
-    res.end(JSON.stringify(resp));
-  });
-});
 
 app.post("/sendEmail", async (req, res) => {
   const Email = req.body.Email;

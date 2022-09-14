@@ -305,6 +305,17 @@ app.post("/CreateWallet", async (req, res) => {
   }
   
 });
+
+app.post("/userInfo", async (req, res) => {
+  const Email = req.body.Email;
+  console.log(Email);
+
+ getUserInfo(Email).then((resp) => {
+    // convert a currency unit from wei to ether
+    
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/UpdateUserInfo", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
   // A=web3.eth.accounts.create("87h0u74+-*/");
@@ -365,16 +376,7 @@ var upload = multer({
 // mypic is the name of file attribute
 }).single("myFile");
 
-app.post("/getUserInfo", async (req, res) => {
-  const Email = req.body.Email;
-  console.log(Email);
 
- getUserInfo(Email).then((resp) => {
-    // convert a currency unit from wei to ether
-    
-    res.end(JSON.stringify(resp));
-  });
-});
 app.post("/uploadUpdatesFile", upload, async(req, res) =>{
 
     

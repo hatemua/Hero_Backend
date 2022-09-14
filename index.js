@@ -313,7 +313,28 @@ app.post("/userInfo", async(req, res) => {
 
     res.end(JSON.stringify(s));
 });
-
+app.get("/getFile/:file", async (req, res) => {
+    let file = req.params.id;
+    fs.readFile("./uploads/"+file, function(error, content) {
+      if (error) {
+          if(error.code == 'ENOENT'){
+              fs.readFile('./404.html', function(error, content) {
+                  response.writeHead(200, { 'Content-Type': contentType });
+                  response.end(content, 'utf-8');
+              });
+          }
+          else {
+              response.writeHead(500);
+              response.end('Sorry, check with the site admin for error: '+error.code+' ..\n');
+              response.end(); 
+          }
+      }
+      else {
+          response.writeHead(200, { 'Content-Type': contentType });
+          response.end(content, 'utf-8');
+      }
+  });
+})
 app.post("/UpdateUserInfo", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
   // A=web3.eth.accounts.create("87h0u74+-*/");

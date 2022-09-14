@@ -400,7 +400,7 @@ app.post("/uploadProfilePhoto", async(req, res) =>{
   console.log("************");
   res.send(
     {
-      Email:newEmail,name:name,HeroId:HeroId,CountryTolive:CountryTolive   }
+      Email:newEmail,name:name,HeroId:HeroId,CountryTolive:CountryTolive,url:url   }
   );
   
 });

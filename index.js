@@ -305,7 +305,31 @@ app.post("/CreateWallet", async (req, res) => {
   }
   
 });
+app.post("/UpdateUserInfo", async (req, res) => {
+  // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
+  // A=web3.eth.accounts.create("87h0u74+-*/");
+  // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
 
+  // res.end( JSON.stringify(A));
+  const Email = req.body.Email;
+  let newEmail = req.body.newEmail;
+  
+  const  name=req.body.name;
+  const HeroId=req.body.HeroId;
+  const CountryTolive=req.body.CountryTolive;
+
+  console.log(name,lastname);
+  /*tttttttttttttttt*/ 
+  const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive);
+  console.log("************");
+  res.send(
+    {
+state:state    }
+  );
+
+  
+  
+});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -574,6 +598,50 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
   res.end(JSON.stringify(result));
 
 })
+async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive) {
+
+  // var driver = neo4j.driver(
+  //   'neo4j://hegemony.donftify.digital:7687',
+  //   neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  // )
+   
+  //  await initDriver();
+  //  var driver = getdriver();
+  // var session = driver.session({
+  //   database: 'Hero',
+  //   defaultAccessMode: neo4j.session.WRITE
+  // })
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+ 
+  var session = driver.session({
+    database: 'Hero'
+  })
+  console.log(session)
+  // const product = await createProduct("test",[],"testProducts");
+  // const price1 = await addPrice(product.id,1000,"usd","Subscription","month");
+  // const price2 = await addPrice(product.id,2000,"usd","Subscription","month");
+  // const price3 = await addPrice(product.id,5000,"usd","Subscription","month");
+  
+  // if(!customer || !product || !price1 || !price2 || !price3){
+  //   console.log("test");
+  //   return {customerId:null,state:false};
+  // }
+
+  await session
+  .run('match (n:Customer{email:$email}) set n.email=$newEmail n.name=$name n.HeroId=$HeroId n.CountryTolive=$CountryTolive', {
+    email: Email,
+    newEmail:newEmail,
+    name:name,
+    HeroId:HeroId,
+    CountryTolive:CountryTolive
+    
+  });
+  return {state :true};
+ 
+}
 async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname) {
 
   // var driver = neo4j.driver(

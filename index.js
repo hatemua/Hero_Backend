@@ -306,12 +306,13 @@ app.post("/CreateWallet", async (req, res) => {
   
 });
 
-app.get("/userInfo", async (req, res) => {
+app.get("/userInfo", (req, res) => {
   const Email = req.body.Email;
   const s =await getUserInfo(Email);
 
     res.end(JSON.stringify(s));
 });
+
 app.post("/UpdateUserInfo", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
   // A=web3.eth.accounts.create("87h0u74+-*/");

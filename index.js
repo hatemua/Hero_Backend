@@ -19,7 +19,6 @@ const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver');
-const path = require("path")
 const multer = require("multer")
 const app = express();  
 const stripeRoutes = require("./stripe/routes/payement.routes");

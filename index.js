@@ -640,6 +640,47 @@ async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive) {
   return {state :true};
  
 }
+async function getUserInfo(Email) {
+
+  // var driver = neo4j.driver(
+  //   'neo4j://hegemony.donftify.digital:7687',
+  //   neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  // )
+   
+  //  await initDriver();
+  //  var driver = getdriver();
+  // var session = driver.session({
+  //   database: 'Hero',
+  //   defaultAccessMode: neo4j.session.WRITE
+  // })
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+ 
+  var session = driver.session({
+    database: 'Hero'
+  })
+  console.log(session)
+  // const product = await createProduct("test",[],"testProducts");
+  // const price1 = await addPrice(product.id,1000,"usd","Subscription","month");
+  // const price2 = await addPrice(product.id,2000,"usd","Subscription","month");
+  // const price3 = await addPrice(product.id,5000,"usd","Subscription","month");
+  
+  // if(!customer || !product || !price1 || !price2 || !price3){
+  //   console.log("test");
+  //   return {customerId:null,state:false};
+  // }
+
+  const result = await session
+  .run('match (n:Customer{email:$email}) return n', {
+    email: Email,
+   
+    /*tttttt */
+  });
+  return result.records;
+ 
+}
 async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname) {
 
   // var driver = neo4j.driver(
@@ -699,7 +740,16 @@ app.post("/balanceOf", async (req, res) => {
     res.end(JSON.stringify(resp));
   });
 });
+app.post("/getUserInfo", async (req, res) => {
+  const Email = req.body.Email;
+ 
 
+ getUserInfo(Email).then((resp) => {
+    // convert a currency unit from wei to ether
+    
+    res.end(JSON.stringify(resp));
+  });
+});
 
 app.post("/sendEmail", async (req, res) => {
   const Email = req.body.Email;

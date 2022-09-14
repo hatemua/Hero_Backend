@@ -318,8 +318,6 @@ app.post("/UpdateUserInfo", async (req, res) => {
   const HeroId=req.body.HeroId;
   const CountryTolive=req.body.CountryTolive;
 
-  console.log(name,lastname);
-  /*tttttttttttttttt*/ 
   const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive);
   console.log("************");
   res.send(

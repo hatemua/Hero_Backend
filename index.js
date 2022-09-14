@@ -3,6 +3,7 @@ const https = require('https');
 const mysql = require('mysql');
 const formidable = require('formidable');
 const uniqid = require("uniqid");
+var path = require('path');
 
 const Web3 = require("web3");
 const axios = require("axios");

@@ -383,6 +383,7 @@ app.post("/uploadProfilePhoto", async(req, res) =>{
 
     
   const obj = JSON.parse(JSON.stringify(req.body)); 
+  upload;
   console.log("*********");
   console.log(req.files);
   let Email = obj.Email.replace(":","");

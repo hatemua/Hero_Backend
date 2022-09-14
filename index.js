@@ -629,7 +629,7 @@ async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive) {
   // }
 
   await session
-  .run('match (n:Customer{email:$email}) set n.email=$newEmail n.name=$name n.HeroId=$HeroId n.CountryTolive=$CountryTolive', {
+  .run('match (n:Customer{email:$email}) set n.email=$newEmail, n.name=$name, n.HeroId=$HeroId ,n.CountryTolive=$CountryTolive', {
     email: Email,
     newEmail:newEmail,
     name:name,

@@ -379,16 +379,13 @@ var upload = multer({
 })
 
 
-app.post("/uploadProfilePhoto", async(req, res) =>{
+app.post("/uploadProfilePhoto",upload.single("myFile"), async(req, res) =>{
 
     
   const obj = JSON.parse(JSON.stringify(req.body)); 
   
   console.log("*********");
-  if (req.files !== undefined)
-  {
-    upload.single("myFile");
-  }
+ 
   console.log(obj);
   let Email = obj.Email;
   let url = res.req.file.filename;

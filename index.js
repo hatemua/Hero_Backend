@@ -406,7 +406,7 @@ app.post("/uploadProfilePhoto", async(req, res) =>{
 });
 
 
-app.post("/uploadUpdatesFile", upload, async(req, res) =>{
+app.post("/uploadUpdatesFile", upload.single("myFile"), async(req, res) =>{
 
     
   const obj = JSON.parse(JSON.stringify(req.body)); 

@@ -376,14 +376,14 @@ var upload = multer({
     } 
 
 // mypic is the name of file attribute
-}).single("myFile");
+})
 
 
 app.post("/uploadProfilePhoto", async(req, res) =>{
 
     
   const obj = JSON.parse(JSON.stringify(req.body)); 
-  upload;
+  upload.single("myFile");
   console.log("*********");
   console.log(req.files);
   let Email = obj.Email.replace(":","");

@@ -743,7 +743,7 @@ app.post("/balanceOf", async (req, res) => {
 });
 app.post("/getUserInfo", async (req, res) => {
   const Email = req.body.Email;
- 
+  console.log(Email);
 
  getUserInfo(Email).then((resp) => {
     // convert a currency unit from wei to ether

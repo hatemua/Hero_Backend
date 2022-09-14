@@ -315,6 +315,27 @@ app.post("/userInfo", async(req, res) => {
 });
 app.get("/getFile/:file", async (req, res) => {
     let file = req.params.id;
+    var contentType = 'text/html';
+    switch (extname) {
+        case '.js':
+            contentType = 'text/javascript';
+            break;
+        case '.css':
+            contentType = 'text/css';
+            break;
+        case '.json':
+            contentType = 'application/json';
+            break;
+        case '.png':
+            contentType = 'image/png';
+            break;      
+        case '.jpg':
+            contentType = 'image/jpg';
+            break;
+        case '.wav':
+            contentType = 'audio/wav';
+            break;
+    }
     fs.readFile("./uploads/"+file, function(error, content) {
       if (error) {
           if(error.code == 'ENOENT'){

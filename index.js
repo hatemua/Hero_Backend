@@ -309,12 +309,9 @@ app.post("/CreateWallet", async (req, res) => {
 app.post("/userInfo", async (req, res) => {
   const Email = req.body.Email;
   console.log(Email);
+  const s =await getUserInfo(Email);
 
- getUserInfo(Email).then((resp) => {
-    // convert a currency unit from wei to ether
-    
-    res.end(JSON.stringify(resp));
-  });
+    res.end(JSON.stringify(s));
 });
 app.post("/UpdateUserInfo", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));

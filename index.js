@@ -680,7 +680,7 @@ async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url) {
     name:name,
     HeroId:HeroId,
     CountryTolive:CountryTolive,
-    $url : url
+    url : url
     
   });
   return {state :true};

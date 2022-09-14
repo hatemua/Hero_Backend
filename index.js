@@ -306,9 +306,8 @@ app.post("/CreateWallet", async (req, res) => {
   
 });
 
-app.post("/userInfo", async (req, res) => {
+app.get("/userInfo", async (req, res) => {
   const Email = req.body.Email;
-  console.log(Email);
   const s =await getUserInfo(Email);
 
     res.end(JSON.stringify(s));

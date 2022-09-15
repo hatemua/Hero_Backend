@@ -8,7 +8,7 @@ exports.createSession = async(req,res)=>{
   const {mode,customerId,amount,grName}= req.body;
   //{price:  req.body.priceId, quantity: 1}
   const priceId = await getPriceId(amount);
-  console.log(process.env.DOMAIN);
+  console.log(priceId);
   try {
     console.log("okok");
     const session = await stripe.checkout.sessions.create({

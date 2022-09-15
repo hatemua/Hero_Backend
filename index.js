@@ -1,7 +1,7 @@
 const express = require("express");
 const https = require('https');
 const mysql = require('mysql');
-const formidable = require('formidable');
+// const formidable = require('formidable');
 const uniqid = require("uniqid");
 var path = require('path');
 
@@ -489,7 +489,7 @@ const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
          database: 'Hero',
          defaultAccessMode: neo4j.session.WRITE
  })
- await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time,mobilizer:$mobilizer}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
+ await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time,mobilizer:$mobilizer,likes:$likes,dislikes:$dislikes,comments:$comments}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
      title,
      url:url || "",
      groupe,
@@ -497,7 +497,10 @@ const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
      id,
      time:Date.now(),
      typeMedia:typeMedia||"",
-     mobilizer:mobilizer
+     mobilizer:mobilizer,
+     likes:neo4j.int(0),
+     dislikes:neo4j.int(0),
+     comments:neo4j.int(0)
  });
  return (id);
  console.log("Media added successfully !");

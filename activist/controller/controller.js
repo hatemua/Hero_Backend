@@ -107,13 +107,13 @@ exports.reactPost = async(req,res)=>{
    console.log(result)
    if(result>0){
     if(q2.records.length>q1.records.length){
-        await session.run(`match(c:Activist{email:$email})match(p:Post{id:$postId}) match (c)-[t:DISLIKE]->(p) detach delete t`,{
+        await session.run(`match(c:Activist{email:$email})match(p:Post{id:$postId})set p.dislikes=p.dislikes-1 with p match (c)-[t:DISLIKE]->(p) detach delete t`,{
             email,
             postId,
             type
         });
     }else{
-        await session.run(`match(c:Activist{email:$email})match(p:Post{id:$postId}) match (c)-[t:LIKE]->(p) detach delete t`,{
+        await session.run(`match(c:Activist{email:$email})match(p:Post{id:$postId})set p.likes=p.likes-1 with p match (c)-[t:LIKE]->(p) detach delete t`,{
             email,
             postId,
             type
@@ -122,10 +122,18 @@ exports.reactPost = async(req,res)=>{
        
        return res.status(200).json("Reaction deleted successfully !");
    }else{
-       await session.run(`match(c:Activist{email:$email}) match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
+    var l = "likes";
+
+    if(type !== "LIKE"){
+        l="dislikes"
+    }
+       await session.run(`match(c:Activist{email:$email})match(p:Post{id:$postId})set p.${l}=p.${l}+1 merge(c)-[:${type}]->(p)`,{
            email,
            postId,
            type
+       });
+       await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1`,{
+        postId
        });
        return res.status(200).json("Reaction Added successfully !");
    }
@@ -145,11 +153,14 @@ exports.reactPost = async(req,res)=>{
     var session = driver.session({
             database: 'Hero'
     })
-   await session.run("match(a:Activist{email:$email})match(p:Post{id:$postId}) merge (a)-[:COMMENTED{comment:$comment,time:$time}]->(p)",{
+   await session.run("match(a:Activist{email:$email})match(p:Post{id:$postId}) merge (a)-[:COMMENTED{comment:$comment,time:$time,creator:$email}]->(p)",{
     postId,
     email,
     comment,
     time:getTime()
+   })
+   await session.run("match(p:Post{id:$postId})set p.comments=p.comments+1 ",{
+    postId
    })
    return res.status(200).json("Comment Added successfully !")
    }

@@ -2,14 +2,14 @@ const stripe = require('stripe')(process.env.STRIPEKEY);
 const { getPriceId,getCustomerId,mergeString } = require("../utils/utils");
 const { getdriver,initDriver }=require("../../neo4j");
 const neo4j = require("neo4j-driver")
-const moment =require("moment")
-exports.createSession = async(req,res)=>{
+const moment =require("moment");
+const getTime = require("../../utils/getTime")
+exports.createSession = async(req,res,next)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
   const {mode,customerId,amount,grName}= req.body;
   //{price:  req.body.priceId, quantity: 1}
+  try{
   const priceId = await getPriceId(amount);
-  console.log(priceId);
-    console.log("okok");
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
       cancel_url: `${process.env.DOMAIN}8080/cancel?canceled=true`,
@@ -18,12 +18,18 @@ exports.createSession = async(req,res)=>{
         quantity:1
     }],
       mode: mode,
+      payment_method_types:["card","ideal"],
+      currency: 'eur',
       customer : customerId
     });
-    console.log(session);
-
+    console.log(session)
     return res.status(200).json(session);
-  
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    console.log(err)
+  }
   
 }
 
@@ -132,3 +138,42 @@ exports.saveCard = async(req,res)=>{
     
 
 // };   
+
+
+exports.monthPay = async(req,res,next)=>{
+  console.log(getTime())
+  await initDriver();
+  var driver = getdriver();
+  var session = driver.session({
+    database: 'Hero'
+  })
+
+  var result = await session.run("match(c:Groupe) return c");
+
+  for (let record of result.records){
+    var groupe = record.get("c").properties;
+    var result = await session.run("match(c:Groupe{Name:$name})<-[:PART_OF]-(a:Activist) return a",{
+      name:groupe.Name
+    });
+    var activistAmount = groupe.balance / groupe.members;
+    var groupeBalance = groupe.balance;
+    for(let activistD of result.records){
+      var activist = activistD.get("a").properties;
+      console.log(activist)
+      await stripe.transfers.create({
+        amount: activistAmount,
+        currency: "usd",
+        destination: activist.accountId,
+      });
+
+    }
+    var amountRemovedFromStore = groupeBalance + ((groupeBalance*15)/100);
+
+    await session.run("match(h:Holder) set h.balance= h.balance - $amount",{
+      amount:amountRemovedFromStore
+    });
+
+    return res.status(200).json("Payment sent successfully to activists !")
+  }
+ 
+}

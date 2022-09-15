@@ -149,6 +149,7 @@ exports.createAccount = async(country,email)=>{
               transfers: {requested: true},
             },
           });
+          
           console.log(account)
           return account;  
         } catch (err) {

@@ -9,7 +9,6 @@ exports.createSession = async(req,res)=>{
   //{price:  req.body.priceId, quantity: 1}
   const priceId = await getPriceId(amount);
   console.log(priceId);
-  try {
     console.log("okok");
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
@@ -24,12 +23,7 @@ exports.createSession = async(req,res)=>{
     console.log(session);
 
     return res.status(200).json(session);
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    return err;
-  }
+  
   
 }
 

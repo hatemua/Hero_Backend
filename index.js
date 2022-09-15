@@ -245,6 +245,7 @@ app.post("/CreateWallet", async (req, res) => {
   const imageUrl=req.body.imageUrl;
   const  name=req.body.name;
   const lastname=req.body.lastname;
+  const HeroId = req.body.HeroId;
   console.log(name,lastname);
   let search=await SearchUser(phoneNumber);
   if (search == 0)
@@ -274,7 +275,7 @@ app.post("/CreateWallet", async (req, res) => {
    let WalletAddress = pureWallet.address;
    let Password = AESEncyption(phoneNumber+"+-*/",password);
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
-  const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname);
+  const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname,HeroId);
   console.log("************");
 
 
@@ -776,7 +777,7 @@ async function getUserInfo(Email) {
   return result.records;
  
 }
-async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname) {
+async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname,HeroId) {
 
   // var driver = neo4j.driver(
   //   'neo4j://hegemony.donftify.digital:7687',
@@ -813,14 +814,15 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,google
     return {customerId:null,state:false};
   }
   await session
-  .run('MERGE (c:Customer {email:$Email,walletAddress:$WalletAddress,privKey:$privKey,password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid,googleId:$googleId,imageUrl:$imageUrl,name:$name,lastname:$lastname})RETURN c', {
+  .run('MERGE (c:Customer {email:$Email,walletAddress:$WalletAddress,privKey:$privKey,password:$Password,Mnemoni:$Mnemonic,CustomerId:$customerid,googleId:$googleId,imageUrl:$imageUrl,name:$name,lastname:$lastname,HeroId:$HeroId})RETURN c', {
+   
     Email: Email,
     WalletAddress,
     privKey: privKey,
     Password:Password,
     Mnemonic : MNEMONIC,
     customerid:customer.id,
-    googleId:googleId,imageUrl:imageUrl,name:name,lastname:lastname
+    googleId:googleId,imageUrl:imageUrl,name:name,lastname:lastname,HeroId:HeroId
     
   });
   return {customerId:customer.id,state :true};

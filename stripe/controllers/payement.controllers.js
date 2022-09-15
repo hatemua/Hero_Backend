@@ -18,7 +18,7 @@ exports.createSession = async(req,res,next)=>{
         quantity:1
     }],
       mode: mode,
-      payment_method_types:["card","ideal"],
+      payment_method_types:["card","ideal","google_pay"],
       currency: 'eur',
       customer : customerId
     });

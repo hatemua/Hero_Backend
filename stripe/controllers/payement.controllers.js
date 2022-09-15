@@ -10,6 +10,7 @@ exports.createSession = async(req,res)=>{
   const priceId = await getPriceId(amount);
   console.log(process.env.DOMAIN);
   try {
+    console.log("okok");
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
       cancel_url: `${process.env.DOMAIN}8080/cancel?canceled=true`,
@@ -20,6 +21,8 @@ exports.createSession = async(req,res)=>{
       mode: mode,
       customer : customerId
     });
+    console.log(session);
+
     return res.status(200).json(session);
   } catch (err) {
     if (!err.statusCode) {

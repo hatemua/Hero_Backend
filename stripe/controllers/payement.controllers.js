@@ -5,10 +5,10 @@ const neo4j = require("neo4j-driver")
 const moment =require("moment")
 exports.createSession = async(req,res)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
-  console.log("AAA");
   const {mode,customerId,amount,grName}= req.body;
   //{price:  req.body.priceId, quantity: 1}
   const priceId = await getPriceId(amount);
+  console.log(priceId);
   try {
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,

@@ -355,7 +355,8 @@ app.post("/uploadUpdatesFile", upload, async(req, res) =>{
       let typeMedia=obj.typeMedia;
       let mobilizer = obj.mobilizer;
     const A = await addMedia(groupe,url,desc,groupe+" "+mobilizer+" "+Date.now(),typeMedia,mobilizer);
-    console.log("ok");
+    console.log(A);
+    
     res.send(
       {
         groupe:groupe,url:url,desc:desc,typeMedia:typeMedia,mobilizer:mobilizer,time:Date.now(),id:A,likes:0

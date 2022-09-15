@@ -2,20 +2,14 @@ const stripe = require('stripe')(process.env.STRIPEKEY);
 const { getPriceId,getCustomerId,mergeString } = require("../utils/utils");
 const { getdriver,initDriver }=require("../../neo4j");
 const neo4j = require("neo4j-driver")
-<<<<<<< HEAD
 const moment =require("moment");
 const getTime = require("../../utils/getTime")
 exports.createSession = async(req,res,next)=>{
-=======
-const moment =require("moment")
-exports.createSession = async(req,res)=>{
->>>>>>> 18ce7870f8f238aae37ec798d8b66ac822045660
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
   const {mode,customerId,amount,grName}= req.body;
   //{price:  req.body.priceId, quantity: 1}
+  try{
   const priceId = await getPriceId(amount);
-  console.log(priceId);
-    console.log("okok");
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
       cancel_url: `${process.env.DOMAIN}8080/cancel?canceled=true`,
@@ -28,7 +22,6 @@ exports.createSession = async(req,res)=>{
       currency: 'eur',
       customer : customerId
     });
-<<<<<<< HEAD
     console.log(session)
     return res.status(200).json(session);
   } catch (err) {
@@ -37,12 +30,6 @@ exports.createSession = async(req,res)=>{
     }
     console.log(err)
   }
-=======
-    console.log(session);
-
-    return res.status(200).json(session);
-  
->>>>>>> 18ce7870f8f238aae37ec798d8b66ac822045660
   
 }
 

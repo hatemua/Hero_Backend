@@ -81,7 +81,7 @@ exports.successPage = async (req, res) => {
   })
 
   
-  return res.redirect('http://hegemony.donftify.digital:3000/welcome-circle:'+grName.replace(":",""));
+  return res.redirect('https://hegemony.donftify.digital:3000/welcome-circle:'+grName.replace(":",""));
 
 }
 exports.saveCard = async(req,res)=>{

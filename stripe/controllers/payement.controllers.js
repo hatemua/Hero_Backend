@@ -5,7 +5,7 @@ const neo4j = require("neo4j-driver")
 const moment =require("moment")
 exports.createSession = async(req,res)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
-  
+  console.log("AAA");
   const {mode,customerId,amount,grName}= req.body;
   //{price:  req.body.priceId, quantity: 1}
   const priceId = await getPriceId(amount);

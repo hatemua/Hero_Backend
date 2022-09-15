@@ -3,7 +3,7 @@ const { getPriceId,getCustomerId,mergeString } = require("../utils/utils");
 const { getdriver,initDriver }=require("../../neo4j");
 const neo4j = require("neo4j-driver")
 const moment =require("moment")
-exports.createSession = async(req,res,next)=>{
+exports.createSession = async(req,res)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
   
   const {mode,customerId,amount,grName}= req.body;
@@ -80,7 +80,7 @@ exports.successPage = async (req, res) => {
   
   res.send(`<html><body><h1>Thanks for your order, ${customer.email}!</h1></body></html>`);
 }
-exports.saveCard = async(req,res,next)=>{
+exports.saveCard = async(req,res)=>{
   try {
     const {number,exp_month,exp_year,cvc,customerId} = req.body;
     const paymentMethod = await stripe.paymentMethods.create({

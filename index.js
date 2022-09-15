@@ -3,6 +3,7 @@ const https = require('https');
 const mysql = require('mysql');
 // const formidable = require('formidable');
 const uniqid = require("uniqid");
+var path = require('path');
 
 const Web3 = require("web3");
 const axios = require("axios");
@@ -18,7 +19,6 @@ const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver');
-const path = require("path")
 const multer = require("multer")
 const app = express();  
 const stripeRoutes = require("./stripe/routes/payement.routes");
@@ -306,6 +306,85 @@ app.post("/CreateWallet", async (req, res) => {
   
 });
 
+app.post("/userInfo", async(req, res) => {
+  console.log("ok");
+  const Email = req.body.Email;
+  const s =await getUserInfo(Email);
+
+    res.end(JSON.stringify(s));
+});
+app.get("/getFile:file", async (req, response) => {
+    let file = req.params.file.replace(":","");
+    var filePath = './uploads/' + file;
+    
+
+    var extname = path.extname(filePath);
+    var contentType = 'text/html';
+    switch (extname) {
+        case '.js':
+            contentType = 'text/javascript';
+            break;
+        case '.css':
+            contentType = 'text/css';
+            break;
+        case '.json':
+            contentType = 'application/json';
+            break;
+        case '.png':
+            contentType = 'image/png';
+            break;      
+        case '.jpg':
+            contentType = 'image/jpg';
+            break;
+        case '.wav':
+            contentType = 'audio/wav';
+            break;
+    }
+    console.log("./uploads/"+file);
+    fs.readFile("./uploads/"+file, function(error, content) {
+      console.log(content);
+      if (error) {
+          if(error.code == 'ENOENT'){
+              fs.readFile('./404.html', function(error, content) {
+                  response.writeHead(200, { 'Content-Type': contentType });
+                  response.end(content, 'utf-8');
+              });
+          }
+          else {
+              response.writeHead(500);
+              response.end('Sorry, check with the site admin for error: '+error.code+' ..\n');
+              response.end(); 
+          }
+      }
+      else {
+          response.writeHead(200, { 'Content-Type': contentType });
+          response.end(content, 'utf-8');
+      }
+  });
+})
+app.post("/UpdateUserInfo", async (req, res) => {
+  // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
+  // A=web3.eth.accounts.create("87h0u74+-*/");
+  // var A=web3.eth.accounts.wallet.load("87h0u74+-*/");
+
+  // res.end( JSON.stringify(A));
+  const Email = req.body.Email;
+  let newEmail = req.body.newEmail;
+  
+  const  name=req.body.name;
+  const HeroId=req.body.HeroId;
+  const CountryTolive=req.body.CountryTolive;
+
+  const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url);
+  console.log("************");
+  res.send(
+    {
+      Email:newEmail,name:name,HeroId:HeroId,CountryTolive:CountryTolive,url:url    }
+  );
+
+  
+  
+});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -335,16 +414,52 @@ var upload = multer({
       if (mimetype && extname) {
           return cb(null, true);
       }
+      if (file == null)
+      {
+        return cb(null, true);
+      }
     
       cb("Error: File upload only supports the "
               + "following filetypes - " + filetypes);
     } 
 
 // mypic is the name of file attribute
-}).single("myFile");
+})
 
 
-app.post("/uploadUpdatesFile", upload, async(req, res) =>{
+app.post("/uploadProfilePhoto",upload.single("myFile"), async(req, res) =>{
+
+    
+  const obj = JSON.parse(JSON.stringify(req.body)); 
+  
+  console.log("*********");
+ 
+  console.log(obj);
+  let Email = obj.Email;
+  let url;
+  if (res.req.file == undefined)
+  {
+    url = obj.url;
+  }
+  else
+  {
+  url = res.req.file.filename;
+  }
+  let newEmail = obj.newEmail;
+  let name=obj.name;
+  let HeroId = obj.HeroId;
+  let CountryTolive = obj.CountryTolive;
+   const {state}=await UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url);
+  console.log("************");
+  res.send(
+    {
+      Email:newEmail,name:name,HeroId:HeroId,CountryTolive:CountryTolive,url:url   }
+  );
+  
+});
+
+
+app.post("/uploadUpdatesFile", upload.single("myFile"), async(req, res) =>{
 
     
   const obj = JSON.parse(JSON.stringify(req.body)); 
@@ -577,6 +692,93 @@ app.post("/SearchUserFromEmailDB", async (req, res) => {
   res.end(JSON.stringify(result));
 
 })
+async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url) {
+
+  // var driver = neo4j.driver(
+  //   'neo4j://hegemony.donftify.digital:7687',
+  //   neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  // )
+   
+  //  await initDriver();
+  //  var driver = getdriver();
+  // var session = driver.session({
+  //   database: 'Hero',
+  //   defaultAccessMode: neo4j.session.WRITE
+  // })
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+ 
+  var session = driver.session({
+    database: 'Hero'
+  })
+  console.log(session)
+  // const product = await createProduct("test",[],"testProducts");
+  // const price1 = await addPrice(product.id,1000,"usd","Subscription","month");
+  // const price2 = await addPrice(product.id,2000,"usd","Subscription","month");
+  // const price3 = await addPrice(product.id,5000,"usd","Subscription","month");
+  
+  // if(!customer || !product || !price1 || !price2 || !price3){
+  //   console.log("test");
+  //   return {customerId:null,state:false};
+  // }
+  
+  await session
+  .run('match (n:Customer{email:$email}) set n.email=$newEmail,n.imageUrl=$url ,n.name=$name, n.HeroId=$HeroId ,n.CountryTolive=$CountryTolive', {
+    email: Email,
+    newEmail:newEmail,
+    name:name,
+    HeroId:HeroId,
+    CountryTolive:CountryTolive,
+    url : url
+    
+  });
+  return {state :true};
+ 
+}
+async function getUserInfo(Email) {
+
+  // var driver = neo4j.driver(
+  //   'neo4j://hegemony.donftify.digital:7687',
+  //   neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  // )
+   
+  //  await initDriver();
+  //  var driver = getdriver();
+  // var session = driver.session({
+  //   database: 'Hero',
+  //   defaultAccessMode: neo4j.session.WRITE
+  // })
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+ 
+  var session = driver.session({
+    database: 'Hero'
+  })
+  console.log(session)
+  // const product = await createProduct("test",[],"testProducts");
+  // const price1 = await addPrice(product.id,1000,"usd","Subscription","month");
+  // const price2 = await addPrice(product.id,2000,"usd","Subscription","month");
+  // const price3 = await addPrice(product.id,5000,"usd","Subscription","month");
+  
+  // if(!customer || !product || !price1 || !price2 || !price3){
+  //   console.log("test");
+  //   return {customerId:null,state:false};
+  // }
+
+  const result = await session
+  .run('match (n:Customer{email:$email}) return n', {
+    email: Email,
+   
+    /*tttttt */
+  });
+  console.log(result);
+  return result.records;
+ 
+}
 async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname) {
 
   // var driver = neo4j.driver(

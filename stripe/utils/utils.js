@@ -123,7 +123,7 @@ exports.getPriceId = async(amount)=>{
 }
 exports.getCustomerId = async(email)=>{
     try {
-        await initDriver("neo4j+s://ee4df690.databases.neo4j.io","neo4j","IGR6RZSiXnGnXM6BfswtQmFtVxkaewEPFjZPPUKzYC8");
+        await initDriver();
         var driver = getdriver();
         var session = driver.session({
             database: 'neo4j',

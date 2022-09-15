@@ -81,7 +81,8 @@ exports.successPage = async (req, res) => {
   })
 
   
-  res.send(`<html><body><h1>Thanks for your order, ${customer.email}!</h1></body></html>`);
+  return res.redirect('http://hegemony.donftify.digital:3000/welcome-circle:'+grName.replace(":",""));
+
 }
 exports.saveCard = async(req,res)=>{
   try {

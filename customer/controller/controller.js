@@ -73,8 +73,19 @@ if(result>0){
        await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1`,{
         postId
        });
-    return res.status(200).json("Reaction Added successfully !");
 }
+await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
+    email,
+    postId,
+    type
+});
+
+await k=session.run(`match(p:Post{id:$postId}) return p`,{
+    postId,
+   
+});
+return res.status(200).json(k.records);
+
 }else{
     return res.status(400).json("Type not accepted !");
 }

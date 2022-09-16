@@ -18,7 +18,7 @@ exports.createSession = async(req,res,next)=>{
         quantity:1
     }],
       mode: mode,
-      payment_method_types:["card","ideal","google_pay"],
+      payment_method_types:["card","ideal"],
       currency: 'eur',
       customer : customerId
     });
@@ -81,7 +81,7 @@ exports.successPage = async (req, res) => {
   })
 
   
-  return res.redirect('https://hegemony.donftify.digital:3000/welcome-circle:'+grName.replace(":",""));
+  return res.redirect('https://hegemony.donftify.digital:3001/welcome-circle:'+grName.replace(":",""));
 
 }
 exports.saveCard = async(req,res)=>{

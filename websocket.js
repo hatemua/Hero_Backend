@@ -21,7 +21,6 @@ wss.on('connection', function connection(ws) {
     });
   });
 
-  ws.send('something');
 });
 
 server.listen(8081);

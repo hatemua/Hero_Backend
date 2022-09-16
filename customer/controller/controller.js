@@ -80,7 +80,7 @@ await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) merg
     type
 });
 
-await k=session.run(`match(p:Post{id:$postId}) return p`,{
+const k=await session.run(`match(p:Post{id:$postId}) return p`,{
     postId,
    
 });

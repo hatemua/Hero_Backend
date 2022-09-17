@@ -197,7 +197,7 @@ exports.getFeed = async(req,res)=>{
     })
     var posts = [];
     result.records.map(record => posts.push(record.get(0).properties) )
-    return res.status(200).json({posts})
+    return res.status(200).json(result.records)
 }
 
 exports.getComments = async(req,res)=>{

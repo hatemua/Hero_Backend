@@ -24,15 +24,15 @@ exports.createGroup = async(req,res,next)=>{
             return res.status(422).json("Groupe name already exists !");
         }
         console.log(gr.records.length)
-        var account = await createAccount();
-        if(!account){
+        //var account = await createAccount();
+        /*if(!account){
             return res.status(500).send("stripe account creation failed !")
-        }
+        }*/
         var result = await session.run("merge(g:Groupe{Name:$grName,Description:$grDesc,balance:$balance,accountId:$actId,members:$members})",{
             grName,
             grDesc,
             balance:0,
-            actId:account.id,
+            actId:"",//account.id,
             members:0
         })
         await createTagsRelations(grName,tags);

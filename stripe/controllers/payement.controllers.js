@@ -4,6 +4,10 @@ const { getdriver,initDriver }=require("../../neo4j");
 const neo4j = require("neo4j-driver")
 const moment =require("moment");
 const getTime = require("../../utils/getTime")
+
+
+
+
 exports.createSession = async(req,res,next)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
   const {mode,customerId,amount,grName}= req.body;

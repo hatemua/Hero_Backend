@@ -115,7 +115,24 @@ exports.getPriceId = async(amount)=>{
           const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
             amount
           });
+          if (result.records.length == 0)
+          {
+            let product = await createProduct("prod"+amount,"","prod"+amount+"desc");
+            console.log(product.id);
+
+            let price = await addPrice (product.id,amount*100,"eur",'month');
+            console.log(price);
+            const result = await session.run("merge(g:Product{Name:$Name,productId:$productId})-[k:HAVE]->(s:Price{amount:$amount,priceId:$priceId})",{
+                Name:"prod"+amount,
+                productId:product.id,
+                amount:amount*100,
+                priceId:price.id
+              });
+          }
+          else
+          {
           return result.records[0].get("prId");
+          }
     } catch (error) {
         return false;
     }

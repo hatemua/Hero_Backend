@@ -105,7 +105,7 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
 }
 
 exports.getPriceId = async(amount)=>{
-    try {
+    //try {
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
@@ -134,9 +134,9 @@ exports.getPriceId = async(amount)=>{
           {
           return result.records[0].get("prId");
           }
-    } catch (error) {
+   /* } catch (error) {
         return false;
-    }
+    }*/
    
 }
 exports.getCustomerId = async(email)=>{

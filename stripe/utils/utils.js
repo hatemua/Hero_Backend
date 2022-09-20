@@ -105,7 +105,7 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
 }
 
 exports.getPriceId = async(amount)=>{
-    //try {
+    try {
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
@@ -117,10 +117,10 @@ exports.getPriceId = async(amount)=>{
           });
           if (result.records.length == 0)
           {
-            let product = await createProduct("prod"+amount,"","prod"+amount+"desc");
+            let product = await this.createProduct("prod"+amount,"","prod"+amount+"desc");
             console.log(product.id);
 
-            let price = await addPrice (product.id,amount*100,"eur","Subscription",'month');
+            let price = await this.addPrice (product.id,amount*100,"eur","Subscription",'month');
             console.log(price);
              await session.run("merge(g:Product{Name:$Name,productId:$productId})-[k:HAVE]->(s:Price{amount:$amount,priceId:$priceId})",{
                 Name:"prod"+amount,
@@ -134,9 +134,9 @@ exports.getPriceId = async(amount)=>{
           {
           return result.records[0].get("prId");
           }
-    /*} catch (error) {
+    } catch (error) {
         return false;
-    }*/
+    }
    
 }
 exports.getCustomerId = async(email)=>{

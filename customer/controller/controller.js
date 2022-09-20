@@ -73,19 +73,8 @@ if(result>0){
        await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1`,{
         postId
        });
+    return res.status(200).json("Reaction Added successfully !");
 }
-await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) merge(c)-[:${type}]->(p)`,{
-    email,
-    postId,
-    type
-});
-
-const k=await session.run(`match(p:Post{id:$postId}) return p`,{
-    postId,
-   
-});
-return res.status(200).json(k.records);
-
 }else{
     return res.status(400).json("Type not accepted !");
 }
@@ -108,4 +97,20 @@ exports.commentPost = async(req,res)=>{
     time:getTime()
    })
    return res.status(200).json("Comment Added successfully !")
+   }
+
+
+   exports.isSubscribed = async(req,res)=>{
+    const {email,circlename} = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero'
+    })
+   const res = await session.run("match (n:Customer{email:$email})-[c:JOINED]-(p:Groupe{Name:$circlename}) return n",{
+    email:email,
+    circlename:circlename
+   })
+   
+   return res.status(200).json({subscribed:res.records.length})
    }

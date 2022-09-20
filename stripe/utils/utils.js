@@ -67,7 +67,7 @@ exports.retrivePrice= async(priceId)=>{
 //function that creats a product
 exports.createProduct = async(prodName,imgList,desc)=>{
     try {
-        const product = await stripe.products.create({name: prodName ,images :imgList,description:desc});
+        const product = await stripe.products.create({name: prodName ,description:desc});
         return product;  
         //returns the product object with id u can store it in db
     } catch (err) {

@@ -119,12 +119,12 @@ exports.getPriceId = async(amount)=>{
             let product = await this.createProduct("prod"+amount,"","prod"+amount+"desc");
             console.log(product.id);
 
-            let price = await this.addPrice (product.id,amount*100,"eur","Subscription",'month');
+            let price = await this.addPrice (product.id,amount,"eur","Subscription",'month');
             console.log(price);
              await session.run("merge(g:Product{Name:$Name,productId:$productId})-[k:HAVE]->(s:Price{amount:$amount,priceId:$priceId})",{
                 Name:"prod"+amount,
                 productId:product.id,
-                amount:amount*100,
+                amount:amount,
                 priceId:price.id
               });
             return price.id;

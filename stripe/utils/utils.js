@@ -110,7 +110,6 @@ exports.getPriceId = async(amount)=>{
         var driver = getdriver();
         var session = driver.session({
             database: 'Hero',
-            defaultAccessMode: neo4j.session.READ
         })
           const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
             amount

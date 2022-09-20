@@ -107,10 +107,10 @@ exports.commentPost = async(req,res)=>{
     var session = driver.session({
             database: 'Hero'
     })
-   const res = await session.run("match (n:Customer{email:$email})-[c:JOINED]-(p:Groupe{Name:$circlename}) return n",{
+   const result = await session.run("match (n:Customer{email:$email})-[c:JOINED]-(p:Groupe{Name:$circlename}) return n",{
     email:email,
     circlename:circlename
    })
    
-   return res.status(200).json({subscribed:res.records.length})
+   return res.status(200).json({subscribed:result.records.length})
    }

@@ -1,6 +1,6 @@
 const express = require("express");
 const https = require('https');
-const mysql = require('mysql');
+// const mysql = require('mysql');
 // const formidable = require('formidable');
 const uniqid = require("uniqid");
 var path = require('path');
@@ -9,7 +9,7 @@ const Web3 = require("web3");
 const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
-var nodemailer = require('nodemailer');
+// var nodemailer = require('nodemailer');
 //const stripe = require('stripe')('sk_test_...');
 const { initDriver, getdriver } = require("./neo4j");
 const fs = require("fs");
@@ -524,7 +524,7 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   if(Emailexistens>0){
     return res.status(400).json("Email already exists !")
   }
-  var account = await createAccount(country,phoneNumber);
+  var account = await createAccount("US",email,1,1,1901,"mahersi","male","222222222","youssef","0000000000","new york","usa","usa","address_full_match",12345,"state","0000");
   if(!account){
     return res.status(500).send("stripe account creation failed !")
   }
@@ -936,16 +936,16 @@ app.post("/HistoryTransactions", async (req, res) => {
   res.end(JSON.stringify(Tx));
   
 });
-const options = {
-    key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
-    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
+// const options = {
+//     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
+//     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
   
-};
+// };
 app.listen(process.env.PORT || 8000, () => {
   console.log("Serveur à l'écoute on ");
 });
 
 
 
-const server = https.createServer(options,app);
-server.listen(8080);
+// const server = https.createServer(options,app);
+// server.listen(8080);

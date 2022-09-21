@@ -140,20 +140,47 @@ exports.getCustomerId = async(email)=>{
     }
 }
 
-exports.createAccount = async(country,email)=>{
+exports.createAccount = async(country,email,day,month,year,fn,gender,idNumber,ln,phone,city,line1,line2,postal_code,state,ssn_last_4)=>{
     try {
         const account = await stripe.accounts.create({
             type: 'custom',
+            country,
+            email,
+            business_type:"individual",
+            tos_acceptance:{
+                date:Math.floor(Date.now() / 1000),
+                ip:"8.8.8.8",
+                service_agreement:"full"
+              },
+              individual:{
+                address:{
+                    city,
+                    country,
+                    line1,
+                    line2
+                },
+                dob:{
+                    day,
+                    month,
+                    year
+                },
+                email,
+                first_name:fn,
+                last_name:ln,
+                gender,
+                id_number:idNumber,
+                phone,
+                // ssn_last_4,
+              },
             capabilities: {
               card_payments: {requested: true},
-              transfers: {requested: true},
+              transfers: {requested: true}
             },
           });
           
-          console.log(account)
           return account;  
         } catch (err) {
-            console.log(err.message)
+            console.log(err)
             if (!err.statusCode) {
                 err.statusCode = 500;
               }

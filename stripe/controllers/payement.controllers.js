@@ -66,9 +66,11 @@ exports.successPage = async (req, res) => {
     tr:false,
     in:ind
   });
-  await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED]->(g)",{
+  await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date}]->(g)",{
     ci:customer.id,
-    grName
+    grName,
+    amount :sessione.amount_total,
+    date:moment().format()
   })
   await session.run("match(h:Holder)set h.balance=h.balance+$amount,h.nTransactions=h.nTransactions	+1 with h as h match(t:Transaction{SentDay:$ed}) merge(h)-[:GOT]->(t)",{
     ed:today,
@@ -150,31 +152,41 @@ exports.monthPay = async(req,res,next)=>{
   })
 
   var result = await session.run("match(c:Groupe) return c");
-
   for (let record of result.records){
     var groupe = record.get("c").properties;
     var result = await session.run("match(c:Groupe{Name:$name})<-[:PART_OF]-(a:Activist) return a",{
       name:groupe.Name
     });
-    var activistAmount = groupe.balance / groupe.members;
+    if(groupe.members >0 && groupe.balance>0 ){
+      var activistAmount = parseInt(groupe.balance / groupe.members);
     var groupeBalance = groupe.balance;
+    var amountRemovedFromStore = parseInt(groupeBalance + ((groupeBalance*15)/100));
+    
+    await stripe.paymentIntents.create({
+      amount:  amountRemovedFromStore ,
+      currency: 'usd'
+    });
     for(let activistD of result.records){
       var activist = activistD.get("a").properties;
       console.log(activist)
-      await stripe.transfers.create({
+      
+        
+      const paymentIntent = await stripe.paymentIntents.create({
         amount: activistAmount,
-        currency: "usd",
-        destination: activist.accountId,
+        currency: 'usd',
+        transfer_data: {
+          destination: activist.accountId,
+        },
       });
-
     }
-    var amountRemovedFromStore = groupeBalance + ((groupeBalance*15)/100);
-
+    
     await session.run("match(h:Holder) set h.balance= h.balance - $amount",{
-      amount:amountRemovedFromStore
+      amount:amountRemovedFromStore 
     });
+    }
+    
 
-    return res.status(200).json("Payment sent successfully to activists !")
+    
   }
- 
+  return res.status(200).json("Payment sent successfully to activists !")
 }

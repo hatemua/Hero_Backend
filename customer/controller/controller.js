@@ -80,7 +80,33 @@ if(result>0){
 }
 }
 
-
+exports.getSubscription = async(req,res,next)=>{
+    try{
+        await initDriver();
+        var driver = getdriver();
+        var session = driver.session({
+            database: 'Hero'
+        })
+        const email = req.body.email;
+        const result = await session.run("match(a:Customer{email:$email})-[l:JOINED]-(g:Groupe) return g,l",{
+            email
+        })
+        
+        var subscriptions=[];
+        result.records.map(record => {
+            subscriptions.push({
+                amount:record.get(1).properties.amount || 0,
+                dateJoined:record.get(1).properties.date || "",
+                grName:record.get(0).properties.Name,
+                grDescription:record.get(0).properties.Description
+            })
+        })
+        return res.status(200).json(subscriptions)
+    
+    }catch(err){
+        console.log(err.message)
+    }
+}
 
 
 exports.commentPost = async(req,res)=>{

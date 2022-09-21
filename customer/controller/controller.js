@@ -80,7 +80,7 @@ if(result>0){
 }
 }
 
-exports.getSubscription = async(req,res,next)=>{
+exports.getSubscription = async(req,res)=>{
     try{
         await initDriver();
         var driver = getdriver();

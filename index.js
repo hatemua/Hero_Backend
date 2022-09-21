@@ -936,6 +936,9 @@ app.post("/HistoryTransactions", async (req, res) => {
   res.end(JSON.stringify(Tx));
   
 });
+
+
+
  const options = {
      key: fs.readFileSync("/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem"),
      cert: fs.readFileSync("/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem") 

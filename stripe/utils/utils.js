@@ -67,7 +67,7 @@ exports.retrivePrice= async(priceId)=>{
 //function that creats a product
 exports.createProduct = async(prodName,imgList,desc)=>{
     try {
-        const product = await stripe.products.create({name: prodName ,images :imgList,description:desc});
+        const product = await stripe.products.create({name: prodName ,description:desc});
         return product;  
         //returns the product object with id u can store it in db
     } catch (err) {
@@ -105,20 +105,37 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
 }
 
 exports.getPriceId = async(amount)=>{
-    try {
+    //try {
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
             database: 'Hero',
-            defaultAccessMode: neo4j.session.READ
         })
           const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
             amount
           });
+          if (result.records.length == 0)
+          {
+            let product = await this.createProduct("prod"+amount,"","prod"+amount+"desc");
+            console.log(product.id);
+
+            let price = await this.addPrice (product.id,amount,"eur","Subscription",'month');
+            console.log(price);
+             await session.run("merge(g:Product{Name:$Name,productId:$productId})-[k:HAVE]->(s:Price{amount:$amount,priceId:$priceId})",{
+                Name:"prod"+amount,
+                productId:product.id,
+                amount:amount,
+                priceId:price.id
+              });
+            return price.id;
+          }
+          else
+          {
           return result.records[0].get("prId");
-    } catch (error) {
+          }
+   /* } catch (error) {
         return false;
-    }
+    }*/
    
 }
 exports.getCustomerId = async(email)=>{

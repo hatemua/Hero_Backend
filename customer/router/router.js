@@ -6,4 +6,6 @@ router.get("/transactions/:wallet",controller.getTransactions);
 router.post("/react-post",controller.reactPost);
 router.post("/get-subscriptions",controller.getSubscription);
 router.post("/comment-post",controller.commentPost);
+router.post("/isSubscribed",controller.isSubscribed);
+
 module.exports = router;

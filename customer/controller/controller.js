@@ -124,3 +124,19 @@ exports.commentPost = async(req,res)=>{
    })
    return res.status(200).json("Comment Added successfully !")
    }
+
+
+   exports.isSubscribed = async(req,res)=>{
+    const {email,circlename} = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero'
+    })
+   const result = await session.run("match (n:Customer{email:$email})-[c:JOINED]-(p:Groupe{Name:$circlename}) return n",{
+    email:email,
+    circlename:circlename
+   })
+   
+   return res.status(200).json({subscribed:result.records.length})
+   }

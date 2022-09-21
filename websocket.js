@@ -16,12 +16,11 @@ wss.on('connection', function connection(ws) {
 
         if (client.readyState) {
         console.log("okOK");
-          client.send(data.toJSON(), { binary: isBinary });
+          client.send(JSON.stringify(data.toString()), { binary: isBinary });
         }
     });
   });
 
-  ws.send('something');
 });
 
 server.listen(8081);

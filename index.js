@@ -545,8 +545,6 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
     password:AESEncyption(phoneNumber+"+-",password)
   });*/
   console.log("************");
-  console.log(temp);
-  console.log(account.id)
  await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,accountId:$actId,Media:$media})return a", {
     Email:email,
     phoneNumber:phoneNumber,

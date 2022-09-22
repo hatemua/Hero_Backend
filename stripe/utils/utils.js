@@ -116,7 +116,19 @@ exports.getPriceId = async(amount)=>{
           });
           if (result.records.length == 0)
           {
-            let product = await this.createProduct("prod"+amount,"","prod"+amount+"desc");
+            var name = "";
+            var desc = "";
+            if(amount>=1000 && amount<2000){
+                name = "STARTER";
+                desc = "HERO starter";
+            }else if(amount >=2000 && amount <5000 ){
+                name = "ADVOCATE";
+                desc = "HERO advocate";
+            }else{
+                name = "CHANGER";
+                desc = "HERO changer";
+            }
+            let product = await this.createProduct("prod"+name,"",desc+" "+amount);
             console.log(product.id);
 
             let price = await this.addPrice (product.id,amount,"eur","Subscription",'month');

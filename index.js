@@ -941,9 +941,9 @@ const options = {
     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
   
 };
-app.listen(process.env.PORT || 8000, () => {
+/*app.listen(process.env.PORT || 8000, () => {
   console.log("Serveur à l'écoute on ");
-});
+});*/
 
 
 

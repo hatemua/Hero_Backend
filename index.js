@@ -537,19 +537,20 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   const wallet = new Wallet(pureWallet, providerMumbai);
   console.log(password+"+"+phoneNumber);
   console.log(AESEncyption(password+"+"+phoneNumber,pureWallet._mnemonic().phrase));
+  /*
   const temp = await pinJSONToIPFS("98ec2b41b43bef139ebc","4d443842873fb35c1f2866312fcad6d397a4172a8f08527e3714e35c989365c2",{
-    mnomonic: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase),
-    address: AESEncyption(password+"+-*/"+phoneNumber,pureWallet.address),
-    autre: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey),
-    password:AESEncyption(phoneNumber+"+-*/",password)
-  });
+    mnomonic: AESEncyption(password+"+-"+phoneNumber,pureWallet._mnemonic().phrase),
+    address: AESEncyption(password+"+-"+phoneNumber,pureWallet.address),
+    autre: AESEncyption(password+"+-"+phoneNumber,pureWallet._signingKey().privateKey),
+    password:AESEncyption(phoneNumber+"+-",password)
+  });*/
   console.log("************");
   console.log(temp);
   console.log(account.id)
  await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,accountId:$actId,Media:$media})return a", {
     Email:email,
     phoneNumber:phoneNumber,
-    Wallet:pureWallet.address,
+    //Wallet:pureWallet.address,
     actId:"account.id",
     media:[]
   });
@@ -561,10 +562,7 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   res.end(
     JSON.stringify(
       {
-        mnomonic: pureWallet._mnemonic().phrase,
-        address: pureWallet.address,
-        autre: pureWallet._signingKey(),
-        IpfsHash :temp
+       created:"created"
       })
   );
 });

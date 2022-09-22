@@ -107,7 +107,18 @@ exports.getSubscription = async(req,res)=>{
         console.log(err.message)
     }
 }
-
+exports.getExistHeroID = async(req,res)=>{
+    const {HeroID} = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: 'Hero'
+    })
+   const resultat =await session.run("match(a:Customer{HeroId:$HeroID}) return a",{
+    HeroID
+   })
+   return res.status(200).json({subscribed:result.records.length});
+}
 
 exports.commentPost = async(req,res)=>{
     const {comment,email,postId} = req.body;

@@ -524,10 +524,10 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   if(Emailexistens>0){
     return res.status(400).json("Email already exists !")
   }
-  var account = await createAccount("US",email,1,1,1901,"mahersi","male","222222222","youssef","0000000000","new york","usa","usa","address_full_match",12345,"state","0000");
-  if(!account){
+  //var account = await createAccount("US",email,1,1,1901,"mahersi","male","222222222","youssef","0000000000","new york","usa","usa","address_full_match",12345,"state","0000");
+  /*if(!account){
     return res.status(500).send("stripe account creation failed !")
-  }
+  }*/
   const providerMumbai = new ethers.providers.JsonRpcProvider(
     ProviderNetwork
   );
@@ -546,11 +546,10 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   console.log("************");
   console.log(temp);
   console.log(account.id)
- await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,accountId:$actId,Media:$media})return a", {
+ await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,Media:$media})return a", {
     Email:email,
     phoneNumber:phoneNumber,
     Wallet:pureWallet.address,
-    actId:account.id,
     media:[]
   });
   await session.run("match(a:Activist{email:$Email}),(g:Groupe{Name:$grName})set g.members=g.members+1 merge(a)-[:PART_OF]->(g)",{

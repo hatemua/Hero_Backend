@@ -4,10 +4,27 @@ const { getdriver,initDriver }=require("../../neo4j");
 const neo4j = require("neo4j-driver")
 const moment =require("moment");
 const getTime = require("../../utils/getTime")
+const path = require('path');
+const writeXlsxFile = require('write-excel-file/node')
 
-
-
-
+const HEADER_ROW = [
+  {
+    value: 'Activist email',
+    fontWeight: 'bold'
+  },
+  {
+    value: 'amount',
+    fontWeight: 'bold'
+  },
+  {
+    value: 'IBAN',
+    fontWeight: 'bold'
+  },
+  {
+    value : "Cercle",
+    fontWeight: 'bold'
+  }
+]
 exports.createSession = async(req,res,next)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
   const {mode,customerId,amount,grName}= req.body;
@@ -149,7 +166,10 @@ exports.saveCard = async(req,res)=>{
 
 
 exports.monthPay = async(req,res,next)=>{
-  console.log(getTime())
+  var EXCELDATA = [
+    HEADER_ROW
+  ];
+
   await initDriver();
   var driver = getdriver();
   var session = driver.session({
@@ -163,28 +183,38 @@ exports.monthPay = async(req,res,next)=>{
       name:groupe.Name
     });
     if(groupe.members >0 && groupe.balance>0 ){
-      var activistAmount = parseInt(groupe.balance / groupe.members);
+      var activistAmount = parseInt((groupe.balance / groupe.members)/100);
     var groupeBalance = groupe.balance;
     var amountRemovedFromStore = parseInt(groupeBalance + ((groupeBalance*15)/100));
-    
-    await stripe.paymentIntents.create({
-      amount:  amountRemovedFromStore ,
-      currency: 'usd'
-    });
+    let data_row = [];
     for(let activistD of result.records){
       var activist = activistD.get("a").properties;
       console.log(activist)
       
-        
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: activistAmount,
-        currency: 'usd',
-        transfer_data: {
-          destination: activist.accountId,
+      data_row.push(
+        {
+            value: activist.email
         },
-      });
+        {
+          value: activistAmount
+        },
+        {
+          value : ""
+        },
+        {
+          value : groupe.Name
+        }
+      )
+      // const paymentIntent = await stripe.paymentIntents.create({
+      //   amount: activistAmount,
+      //   currency: 'usd',
+      //   transfer_data: {
+      //     destination: activist.accountId,
+      //   },
+      // });
     }
-    
+    EXCELDATA.push(data_row)
+
     await session.run("match(h:Holder) set h.balance= h.balance - $amount",{
       amount:amountRemovedFromStore 
     });
@@ -193,5 +223,8 @@ exports.monthPay = async(req,res,next)=>{
 
     
   }
-  return res.status(200).json("Payment sent successfully to activists !")
+  await writeXlsxFile(EXCELDATA, { // (optional) column widths, etc.
+    filePath: path.join("excel","file.xlsx")
+  })
+  return res.status(200).json("EXcel file is ready !")
 }

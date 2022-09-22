@@ -35,7 +35,8 @@
     "swagger-autogen": "^2.21.2",
     "swagger-ui-express": "^4.4.0",
     "uniqid": "^5.4.0",
-    "web3": "^1.7.3"
+    "web3": "^1.7.3",
+    "write-excel-file": "^1.4.13"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

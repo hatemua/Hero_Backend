@@ -546,10 +546,11 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   console.log("************");
   console.log(temp);
   console.log(account.id)
- await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,Media:$media})return a", {
+ await session.run("merge(a:Activist{email:$Email,phoneNumber:$phoneNumber,wallet:$Wallet,accountId:$actId,Media:$media})return a", {
     Email:email,
     phoneNumber:phoneNumber,
     Wallet:pureWallet.address,
+    actId:"account.id",
     media:[]
   });
   await session.run("match(a:Activist{email:$Email}),(g:Groupe{Name:$grName})set g.members=g.members+1 merge(a)-[:PART_OF]->(g)",{

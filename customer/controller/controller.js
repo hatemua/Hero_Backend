@@ -117,7 +117,7 @@ exports.getExistHeroID = async(req,res)=>{
    const resultat =await session.run("match(a:Customer{HeroId:$HeroID}) return a",{
     HeroID
    })
-   return res.status(200).json({subscribed:result.records.length});
+   return res.status(200).json({subscribed:resultat.records.length});
 }
 
 exports.commentPost = async(req,res)=>{

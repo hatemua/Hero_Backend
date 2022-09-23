@@ -878,7 +878,7 @@ app.post("/GetIndexProp", async (req, res) => {
   });
 });
 app.post("/CheckPassword", async (req, res) => {
-  const numeroTel = req.body.numeroTel;
+  const numeroTel = req.body.email;
   const password = req.body.password;
   
   const _activistManagement = new activistManagement();

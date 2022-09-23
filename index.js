@@ -892,11 +892,11 @@ app.post("/CheckPassword", async (req, res) => {
   const decPassword =AESEncyption(numeroTel+"+-*/"+password,password);
 
   console.log(decPassword);
-  console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
+  //console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
   const result=await session
   .run('match (c:Customer {email:$Email,password:$Password})RETURN c', { 
     Email:numeroTel,
-   Password:AESDecryption(numeroTel+"+-*/"+password,decPassword)
+   Password:decPassword
     
   });
     

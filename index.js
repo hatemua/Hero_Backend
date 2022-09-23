@@ -889,11 +889,14 @@ app.post("/CheckPassword", async (req, res) => {
   var session = driver.session({
     database: 'Hero'
   })
-  const decPassword =AESEncyption(password+"+-*/"+numeroTel,password);
+  const decPassword =AESEncyption(numeroTel+"+-*/"+password,password);
+
+  console.log(decPassword);
+  console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
   const result=await session
   .run('match (c:Customer {email:$Email,password:$Password})RETURN c', { 
     Email:numeroTel,
-   Password:AESDecryption(password+"+-*/"+numeroTel,decPassword)
+   Password:AESDecryption(numeroTel+"+-*/"+password,decPassword)
     
   });
     

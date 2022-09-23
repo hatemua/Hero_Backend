@@ -881,30 +881,32 @@ app.post("/CheckPassword", async (req, res) => {
   const numeroTel = req.body.email;
   const password = req.body.password;
   
-  const _activistManagement = new activistManagement();
-  _activistManagement.getCofDatafromNumTel(numeroTel).then((resp) => {
-    // convert a currency unit from wei to ether
-    decPassword = resp.password;
-    console.log (AESDecryption(numeroTel+"+-*/"+decPassword));
-    if (password == AESDecryption(numeroTel+"+-*/"+decPassword))
-    {
-      res.end(JSON.stringify(
-        {
-          mnomonic: AESDecryption(password+"+-*/"+numeroTel,resp.mnomonic),
-          address: AESDecryption(password+"+-*/"+numeroTel,resp.address),
-          autre: AESDecryption(password+"+-*/"+numeroTel, resp.autre),
-          numeroPhone:numeroTel,
-          
-        }
-      ));
-    }
-    else {
-    res.end(JSON.stringify({
-      error :"error"
-    }));
-    }
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+ 
+  var session = driver.session({
+    database: 'Hero'
+  })
+  const result=await session
+  .run('match (c:Customer {email:$Email,password:$Password})RETURN c', { 
+    Email:numeroTel,
+   Password:AESDecryption(numeroTel+"+-*/"+password)
     
   });
+    
+    if (result.records.length==0)
+    {
+      res.end(JSON.stringify({found:false}));
+      
+    }
+    else{
+      res.end(JSON.stringify({found:true}));
+
+    }
+   
+    
 });
 app.post("/GetIndexActiv", async (req, res) => {
   const _activistManagement = new activistManagement();

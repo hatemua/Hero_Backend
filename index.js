@@ -273,7 +273,7 @@ app.post("/CreateWallet", async (req, res) => {
  // });
    let MNEMONIC= AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase);
    let WalletAddress = pureWallet.address;
-   let Password = AESEncyption(phoneNumber+"+-*/",password);
+   let Password = AESEncyption(phoneNumber+"+-*/"+password,password);
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
   const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname,HeroId);
   console.log("************");
@@ -885,8 +885,8 @@ app.post("/CheckPassword", async (req, res) => {
   _activistManagement.getCofDatafromNumTel(numeroTel).then((resp) => {
     // convert a currency unit from wei to ether
     decPassword = resp.password;
-    console.log (AESDecryption(numeroTel+"+-*/",decPassword));
-    if (password == AESDecryption(numeroTel+"+-*/",decPassword))
+    console.log (AESDecryption(numeroTel+"+-*/"+decPassword));
+    if (password == AESDecryption(numeroTel+"+-*/"+decPassword))
     {
       res.end(JSON.stringify(
         {

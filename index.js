@@ -891,7 +891,7 @@ app.post("/CheckPassword", async (req, res) => {
   })
   //console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
   const result=await session
-  .run('match (c:Customer {email:$Email})RETURN c', { 
+  .run('match (c:Customer{email:$Email})RETURN c', { 
     Email:numeroTel,
     
   });
@@ -901,7 +901,7 @@ app.post("/CheckPassword", async (req, res) => {
       
     }
     else{
-      console.log(result.records[0]);
+      console.log(result.records);
       const AA =  AESDecryption(numeroTel+"+-*/"+password,password)
       const BB =  AESDecryption(numeroTel+"+-*/"+password,result.records[0].password)
       if(AA==BB)

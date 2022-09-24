@@ -890,7 +890,6 @@ app.post("/CheckPassword", async (req, res) => {
     database: 'Hero'
   })
   const decPassword =AESEncyption(numeroTel+"+-*/"+password,password);
-
   console.log(decPassword);
   //console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
   const result=await session
@@ -899,7 +898,7 @@ app.post("/CheckPassword", async (req, res) => {
    Password:decPassword
     
   });
-    
+    console.log(decPassword);
     if (result.records.length==0)
     {
       res.end(JSON.stringify({found:false}));

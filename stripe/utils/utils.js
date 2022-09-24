@@ -125,10 +125,10 @@ exports.getPriceId = async(amount)=>{
                 name = "ADVOCATE";
                 desc = "HERO advocate";
             }else{
-                name = "CHANGER";
-                desc = "HERO changer";
+                name = "HERO CHANGER";
+                desc = "Everything on HERO Advocate + Interactions";
             }
-            let product = await this.createProduct("prod"+name,"",desc+" "+amount);
+            let product = await this.createProduct(name,"",desc+" "+amount);
             console.log(product.id);
 
             let price = await this.addPrice (product.id,amount,"eur","Subscription",'month');

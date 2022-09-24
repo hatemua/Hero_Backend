@@ -903,7 +903,7 @@ app.post("/CheckPassword", async (req, res) => {
     }
     else{
       const BB =  AESDecryption(numeroTel+"+-*/"+password,result.records[0]._fields[0].properties.password)
-      if(AA==password)
+      if(BB==password)
       {      
         res.end(JSON.stringify({found:""}));
     }

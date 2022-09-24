@@ -896,14 +896,13 @@ app.post("/CheckPassword", async (req, res) => {
     
   });
   console.log ()
-  res.end(JSON.stringify(result.records));
     if (result.records.length==0)
     { 
       res.end(JSON.stringify({found:"Email not found"}));
       
     }
     else{
-      const BB =  AESDecryption(numeroTel+"+-*/"+password,result.records[0].properties.password)
+      const BB =  AESDecryption(numeroTel+"+-*/"+password,result.records[0]._fields[0].properties.password)
       if(AA==password)
       {      
         res.end(JSON.stringify({found:""}));

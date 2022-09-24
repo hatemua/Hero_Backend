@@ -38,7 +38,7 @@ exports.createSession = async(req,res,next)=>{
       line_items: [{
         price:priceId,
         quantity:1
-    }],
+      }],
       mode: mode,
       payment_method_types:["card","ideal"],
       currency: 'eur',

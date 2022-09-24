@@ -895,7 +895,8 @@ app.post("/CheckPassword", async (req, res) => {
     Email:numeroTel,
     
   });
-  console.log (result.records)
+  console.log ()
+  res.end(JSON.stringify(result.records));
     if (result.records.length==0)
     { 
       res.end(JSON.stringify({found:"Email not found"}));

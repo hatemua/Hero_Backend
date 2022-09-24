@@ -889,24 +889,29 @@ app.post("/CheckPassword", async (req, res) => {
   var session = driver.session({
     database: 'Hero'
   })
-  const decPassword =AESEncyption(numeroTel+"+-*/"+password,password);
   console.log(decPassword);
   //console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
   const result=await session
-  .run('match (c:Customer {email:$Email,password:$Password})RETURN c', { 
+  .run('match (c:Customer {email:$Email})RETURN c', { 
     Email:numeroTel,
-   Password:decPassword
     
   });
-    console.log(decPassword);
     if (result.records.length==0)
-    {
-      res.end(JSON.stringify({found:false}));
+    { 
+      res.end(JSON.stringify({found:"Email not found"}));
       
     }
     else{
-      res.end(JSON.stringify({found:true}));
-
+      const AA =  AESDecryption(numeroTel+"+-*/"+password,password)
+      const BB =  AESDecryption(numeroTel+"+-*/"+password,result.records[0].password)
+      if(AA==BB)
+      {      
+        res.end(JSON.stringify({found:""}));
+    }
+    else
+    {      
+      res.end(JSON.stringify({found:"please check your password"}));
+  }
     }
    
     

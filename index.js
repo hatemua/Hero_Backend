@@ -931,6 +931,34 @@ name:user.name
    
     
 });
+app.post("/CheckEmail", async (req, res) => {
+  const numeroTel = req.body.email;
+  const password = req.body.password;
+  
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+ 
+  var session = driver.session({
+    database: 'Hero'
+  })
+  //console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
+  const result=await session
+  .run('match (c:Customer{email:$Email})RETURN c', { 
+    Email:numeroTel,
+    
+  });
+  console.log ()
+    if (result.records.length==0)
+    { 
+      res.end(JSON.stringify({found:"Email not found"}));
+      
+    }
+ 
+   
+    
+});
 app.post("/GetIndexActiv", async (req, res) => {
   const _activistManagement = new activistManagement();
   _activistManagement.getIndex().then((resp) => {

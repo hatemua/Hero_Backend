@@ -949,13 +949,12 @@ app.post("/CheckEmail", async (req, res) => {
     Email:numeroTel,
     
   });
-  console.log ()
     if (result.records.length==0)
     { 
-      res.end(JSON.stringify({found:"Email not found"}));
+      res.end(JSON.stringify({found:false}));
       
     }
- 
+    res.end(JSON.stringify({found:true}));
    
     
 });

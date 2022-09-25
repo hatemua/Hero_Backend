@@ -3,6 +3,16 @@ const neo4j = require("neo4j-driver");
 const NodeCache = require( "node-cache" );
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30});
 const getTime = require("../../utils/getTime");
+const aes256 = require("aes256");
+const e = require("express");
+const AESDecryption =  (key , encrypted) => {
+ 
+    var decrypted = aes256.decrypt(key, encrypted);
+  
+      return (decrypted);
+    };
+  
+
 exports.getTransactions = async(req,res,next)=>{
     if(myCache.get("cu-tr")){
         return res.status(200).json(myCache.get("cu-tr"));
@@ -151,3 +161,42 @@ exports.commentPost = async(req,res)=>{
    
    return res.status(200).json({subscribed:result.records.length})
    }
+
+exports.changePassword = async(req,res)=>{
+    var {oldPassword,newPassword,email} = req.body;
+    email = email.trim();
+    newPassword = newPassword.trim();
+    oldPassword = oldPassword.trim();
+    var key = email+"+-*/"+oldPassword.toString();
+    try{
+        await initDriver();
+        var driver = getdriver();
+        var session = driver.session({
+                database: 'Hero'
+        })
+        var result = await session.run("match(c:Customer{email:$email}) return c",{
+            email
+        });
+        if (result.records.length==0){ 
+            return res.end(JSON.stringify({found:"Email not found"}));
+      
+        }
+        var Customer = result.records[0].get("c").properties;
+        var decrypt = aes256.decrypt(key,Customer.password).toString();
+        if(decrypt === oldPassword){
+            key = email+"+-*/"+newPassword.toString();
+            var encrypt = aes256.encrypt(key,newPassword);
+            console.log(encrypt)
+            await session.run("match(c:Customer{email:$email}) set c.password=$encrypt",{
+                email,
+                encrypt
+            })
+            return res.status(200).json("Password updated Successfully !");
+        }else{
+            return res.status(400).json("New Password dont't match!");
+        }
+        
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+}

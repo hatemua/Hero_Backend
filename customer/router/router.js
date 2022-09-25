@@ -8,5 +8,5 @@ router.post("/get-subscriptions",controller.getSubscription);
 router.post("/HeroIDExist",controller.getExistHeroID);
 router.post("/comment-post",controller.commentPost);
 router.post("/isSubscribed",controller.isSubscribed);
-
+router.post("/change-password",controller.changePassword);
 module.exports = router;

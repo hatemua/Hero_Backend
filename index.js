@@ -4,6 +4,7 @@ const https = require('https');
 // const formidable = require('formidable');
 const uniqid = require("uniqid");
 var path = require('path');
+const client = require("mailchimp-marketing");
 
 const Web3 = require("web3");
 const axios = require("axios");
@@ -88,7 +89,30 @@ const BalanceOf = async (contractAddress,user) => {
 };
 
 
+const sendEmailmailchimp = async (email) => {
+	try {
+	
 
+    client.setConfig({
+      apiKey: "843285995a8d1ec6313120717df05f3a-us8",
+      server: "us8",
+    });
+    
+    const run = async () => {
+      const response = await client.automations.getWorkflowEmailSubscriberQueue(
+        "8670455",
+        "hatem@darblockchain.io"
+      );
+      return response;
+    };
+
+  
+	} catch (err) {
+    console.log(err);
+   return {error:err};
+  }
+
+};
 
 
 
@@ -837,7 +861,14 @@ app.post("/balanceOf", async (req, res) => {
   });
 });
 
+app.post("/sendEmailmailchimp", async (req, res) => {
+  const email = req.body.email;
 
+  sendEmailmailchimp(email).then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/sendEmail", async (req, res) => {
   const Email = req.body.Email;
   console.log("A");

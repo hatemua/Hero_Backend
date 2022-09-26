@@ -4,7 +4,7 @@ const https = require('https');
 // const formidable = require('formidable');
 const uniqid = require("uniqid");
 var path = require('path');
-const client = require("@mailchimp/mailchimp_marketing");
+const client = require("mailchimp-marketing");
 
 const Web3 = require("web3");
 const axios = require("axios");

@@ -101,7 +101,7 @@ const sendEmailmailchimp = async (email) => {
     const run = async () => {
       const response = await client.automations.getWorkflowEmailSubscriberQueue(
         "8670455",
-        "hatem@darblockchain.io"
+        email
       );
       return response;
     };

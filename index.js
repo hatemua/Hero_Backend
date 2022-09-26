@@ -105,7 +105,7 @@ const sendEmailmailchimp = async (email) => {
       );
       return response;
     };
-
+    run();
   
 	
 };

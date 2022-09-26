@@ -90,7 +90,7 @@ const BalanceOf = async (contractAddress,user) => {
 
 
 const sendEmailmailchimp = async (email) => {
-	try {
+
 	
 
     client.setConfig({
@@ -107,11 +107,7 @@ const sendEmailmailchimp = async (email) => {
     };
 
   
-	} catch (err) {
-    console.log(err);
-   return {error:err};
-  }
-
+	
 };
 
 

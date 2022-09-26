@@ -95,7 +95,7 @@ const sendEmailmailchimp = async (email) => {
 
     client.setConfig({
       apiKey: "843285995a8d1ec6313120717df05f3a-us8",
-      server: "us8",
+      server: "us8"
     });
     
     const run = async () => {

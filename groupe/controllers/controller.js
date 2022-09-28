@@ -13,7 +13,7 @@ exports.createGroup = async(req,res,next)=>{
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
         })
         const test = await session
         var gr = await session.run("match(g:Groupe{Name:$grName})return g",{
@@ -45,7 +45,7 @@ exports.createGroup = async(req,res,next)=>{
         if (!err.statusCode) {
             err.statusCode = 500;
           }
-          return err;
+          return res.status(500).json(err)
     }
 }
 
@@ -58,7 +58,7 @@ exports.getGroupe = async(req,res,next)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     const query = await session.run("match(g:Groupe{Name:$grName})return g",{
@@ -74,7 +74,7 @@ exports.getMembers = async(req,res,next)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     var result = await session.run("match(a:Activist)-[:PART_OF]->(g:Groupe{Name:$grName}) return a",{
@@ -90,7 +90,7 @@ exports.getSupporters = async(req,res,next)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     var result = await session.run("match(c:Customer)-[:JOINED]->(g:Groupe{Name:$grName}) return c",{
@@ -114,7 +114,7 @@ exports.getAll = async(req,res)=>{
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
         })
         let groups=[];
         const {tags,locations} = req.body;
@@ -160,7 +160,7 @@ exports.addMedia = async(req,res,next)=>{
     await initDriver();
    var driver = getdriver();
    var session = driver.session({
-           database: 'Hero',
+           database: process.env.DBNAME ||'Hero',
            defaultAccessMode: neo4j.session.WRITE
    })
    await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
@@ -180,7 +180,7 @@ exports.getFeed = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;
@@ -205,7 +205,7 @@ exports.getComments = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;
@@ -227,7 +227,7 @@ exports.getLikes = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database:process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;
@@ -248,7 +248,7 @@ exports.getDislikes = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;

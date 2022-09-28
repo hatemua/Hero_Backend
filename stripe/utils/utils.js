@@ -109,7 +109,7 @@ exports.getPriceId = async(amount)=>{
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
         })
           const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
             amount

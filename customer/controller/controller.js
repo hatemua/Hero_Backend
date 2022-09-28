@@ -5,13 +5,7 @@ const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30});
 const getTime = require("../../utils/getTime");
 const aes256 = require("aes256");
 const e = require("express");
-const AESDecryption =  (key , encrypted) => {
- 
-    var decrypted = aes256.decrypt(key, encrypted);
-  
-      return (decrypted);
-    };
-  
+
 
 exports.getTransactions = async(req,res,next)=>{
     if(myCache.get("cu-tr")){
@@ -21,7 +15,7 @@ exports.getTransactions = async(req,res,next)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     const result = await session.run("match(c:Customer{walletAddress:$wallet}) match(t:Transaction{From:c.CustomerId}) return t",{
@@ -39,7 +33,7 @@ exports.reactPost = async(req,res)=>{
  await initDriver();
  var driver = getdriver();
  var session = driver.session({
-         database: 'Hero'
+         database: process.env.DBNAME ||'Hero'
  })
  const [q1,q2]= await Promise.all(
     [ await session.run(`match(c:Customer{email:$email})match(p:Post{id:$postId}) match(c)-[L:LIKE]->(p) return L`,{
@@ -95,7 +89,7 @@ exports.getSubscription = async(req,res)=>{
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
         })
         const email = req.body.email;
         const result = await session.run("match(a:Customer{email:$email})-[l:JOINED]-(g:Groupe) return g,l",{
@@ -122,7 +116,7 @@ exports.getExistHeroID = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
     })
    const resultat =await session.run("match(a:Customer{HeroId:$HeroID}) return a",{
     HeroID
@@ -135,7 +129,7 @@ exports.commentPost = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
     })
    await session.run("match(a:Customer{email:$email})match(p:Post{id:$postId})set p.comments=p.comments+1 merge (a)-[:COMMENTED{comment:$comment,time:$time,creator:$email}]->(p)",{
     postId,
@@ -152,7 +146,7 @@ exports.commentPost = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
     })
    const result = await session.run("match (n:Customer{email:$email})-[c:JOINED]-(p:Groupe{Name:$circlename}) return n",{
     email:email,
@@ -167,12 +161,12 @@ exports.changePassword = async(req,res)=>{
     email = email.trim();
     newPassword = newPassword.trim();
     oldPassword = oldPassword.trim();
-    var key = email+"+-*/"+oldPassword.toString();
+    var key = email+"+-*/"+oldPassword;
     try{
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-                database: 'Hero'
+                database: process.env.DBNAME ||'Hero'
         })
         var result = await session.run("match(c:Customer{email:$email}) return c",{
             email
@@ -184,6 +178,10 @@ exports.changePassword = async(req,res)=>{
         var Customer = result.records[0].get("c").properties;
         var decrypt = aes256.decrypt(key,Customer.password).toString();
         if(decrypt === oldPassword){
+            var regularExpression  = /^(?=.*\d)(?=.*[a-z])(?=.*[a-z]).{8,}$/gm;
+            if(!regularExpression.test(newPassword)){
+                return res.status(200).json("Your new password must be at least 8 characters and should include a combination of letters and at least one number and one special character (!$@%+-*/)")
+            }
             key = email+"+-*/"+newPassword.toString();
             var encrypt = aes256.encrypt(key,newPassword);
             console.log(encrypt)
@@ -193,7 +191,7 @@ exports.changePassword = async(req,res)=>{
             })
             return res.status(200).json("Password updated Successfully !");
         }else{
-            return res.status(400).json("New Password dont't match!");
+            return res.status(400).json("Please check password!");
         }
         
     }catch(err){

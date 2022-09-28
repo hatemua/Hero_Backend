@@ -7,7 +7,7 @@ exports.createTagsRelations = async(grName,tags)=>{
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-                database: 'Hero'
+                database: process.env.DBNAME ||'Hero'
         })
         await session.run("unwind $tags as tag match(g:Groupe{Name:$grName}) match(t:Tag{Name:tag}) merge(g)-[:INTEREST]->(t)",{
             grName,

@@ -10,11 +10,13 @@
   "dependencies": {
     "@celo-tools/celo-ethers-wrapper": "^0.1.1",
     "@celo/contractkit": "^2.0.0",
+    "@mailchimp/mailchimp_marketing": "^3.0.78",
     "aes256": "^1.1.0",
     "axios": "^0.27.2",
     "big-number": "^2.0.0",
     "bignumber": "^1.1.0",
     "bignumber.js": "^9.0.2",
+    "body-parser": "^1.20.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
     "debug": "~2.6.9",

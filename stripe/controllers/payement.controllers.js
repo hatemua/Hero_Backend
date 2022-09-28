@@ -30,7 +30,20 @@ exports.createSession = async(req,res,next)=>{
   const {mode,customerId,amount,grName}= req.body;
   //{price:  req.body.priceId, quantity: 1}
   try{
-  const priceId = await getPriceId(amount);
+    await initDriver();
+    var driver = getdriver();
+    var sessione= driver.session({
+      database: process.env.DBNAME ||'Hero'
+    })
+    const result = await sessione.run("match(c:Customer{CustomerId:$customerId})-[l:JOINED{amount:$amount}]-(g:Groupe{Name:$grName}) return l",{
+      customerId,
+      amount,
+      grName
+    })
+    if(result.records.length > 0 ){
+      return res.status(400).json("Already subscribed with this plan !");
+    }
+    const priceId = await getPriceId(amount);
   console.log(priceId);
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
@@ -65,7 +78,7 @@ exports.successPage = async (req, res) => {
   await initDriver();
   var driver = getdriver();
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero'
   })
   const customer = await stripe.customers.retrieve(sessione.customer);
   const ind = mergeString(customer.id,grName,new Date(),sessione.amount_total);
@@ -108,35 +121,35 @@ exports.successPage = async (req, res) => {
   return res.redirect('https://herocircle.app/welcome-circle:'+grName.replace(":",""));
 
 }
-exports.saveCard = async(req,res)=>{
-  try {
-    const {number,exp_month,exp_year,cvc,customerId} = req.body;
-    const paymentMethod = await stripe.paymentMethods.create({
-      type:"card",
-      card: {
-        number,
-        exp_month,
-        exp_year,
-        cvc,
-      },
-    });
-    const paymentMethod2 = await stripe.paymentMethods.attach(
-      paymentMethod.id,
-      {customer: customerId}
-    );
-    const customer = await stripe.customers.update(
-      customerId,
-      {invoice_settings: {default_payment_method
-          : paymentMethod.id}}
-    );
-  return res.status(200).json({customer});
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    return err;
-  }
-}
+// exports.saveCard = async(req,res)=>{
+//   try {
+//     const {number,exp_month,exp_year,cvc,customerId} = req.body;
+//     const paymentMethod = await stripe.paymentMethods.create({
+//       type:"card",
+//       card: {
+//         number,
+//         exp_month,
+//         exp_year,
+//         cvc,
+//       },
+//     });
+//     const paymentMethod2 = await stripe.paymentMethods.attach(
+//       paymentMethod.id,
+//       {customer: customerId}
+//     );
+//     const customer = await stripe.customers.update(
+//       customerId,
+//       {invoice_settings: {default_payment_method
+//           : paymentMethod.id}}
+//     );
+//   return res.status(200).json({customer});
+//   } catch (err) {
+//     if (!err.statusCode) {
+//       err.statusCode = 500;
+//     }
+//     return err;
+//   }
+// }
 
 // exports.createPortalSession =  async (req, res) => {
 //     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
@@ -144,7 +157,7 @@ exports.saveCard = async(req,res)=>{
 //     try {
 //       const session_id= req.body.sessionId;
 //       const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
-  
+//       console.log(checkoutSession)
 //     // This is the url to which the customer will be redirected when they are done
 //     // managing their billing with the portal.
   
@@ -158,7 +171,7 @@ exports.saveCard = async(req,res)=>{
 //         if (!err.statusCode) {
 //           err.statusCode = 500;
 //         }
-//         return err;
+//         return res.status(500).json(err)
 //     }
     
 
@@ -173,7 +186,7 @@ exports.monthPay = async(req,res,next)=>{
   await initDriver();
   var driver = getdriver();
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero'
   })
 
   var result = await session.run("match(c:Groupe) return c");
@@ -228,3 +241,35 @@ exports.monthPay = async(req,res,next)=>{
   })
   return res.status(200).json("EXcel file is ready !")
 }
+
+
+// exports.handleWebhooks= async(request,response)=>{
+//   const sig = request.headers['stripe-signature'];
+  
+//   const endpointSecret = "whsec_36bdc93754b80d5a5caa4d229d3f20c92edfdb0f67dfdad6409108e1b1921ee0";
+
+//   let event;
+//   try {
+//     event = await stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+//   } catch (err) {
+//     console.log(err.message)
+//     response.status(400).send(`Webhook Error: ${err.message}`);
+//     return;
+//   }
+
+//   // Handle the event
+//   console.log(event)
+//   console.log(event.type)
+//   switch (event.type) {
+//     case 'customer.subscription.updated':
+//       const subscription = event.data.object;
+//       console.log(" plan canceled !")
+//       break;
+//     // ... handle other event types
+//     default:
+//       console.log(`Unhandled event type ${event.type}`);
+//   }
+
+//   // Return a 200 response to acknowledge receipt of the event
+//   response.send();
+// }

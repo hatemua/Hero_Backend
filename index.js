@@ -1,6 +1,6 @@
 const express = require("express");
 const https = require('https');
-// const mysql = require('mysql');
+const mysql = require('mysql');
 // const formidable = require('formidable');
 const uniqid = require("uniqid");
 var path = require('path');
@@ -9,7 +9,7 @@ const Web3 = require("web3");
 const axios = require("axios");
 var aes256 = require("aes256");
 const cors = require('cors');
-// var nodemailer = require('nodemailer');
+var nodemailer = require('nodemailer');
 //const stripe = require('stripe')('sk_test_...');
 const { initDriver, getdriver } = require("./neo4j");
 const fs = require("fs");
@@ -19,9 +19,10 @@ const abiERC20 = require("./abi/abiERC20.json");
 const activistManagement = require("./utils/activistManagement");
 const DAO = require("./utils/DAO");
 var neo4j = require('neo4j-driver');
+const bodyParser = require("body-parser");
 const multer = require("multer")
 const app = express();  
-const stripeRoutes = require("./stripe/routes/payement.routes");
+const stripeRoutes = require("./stripe/routes/payement");
 const groupeRoutes = require("./groupe/routes/route");
 const activistRoutes = require("./activist/router/router");
 const customerRoutes = require("./customer/router/router");
@@ -29,9 +30,6 @@ var Datastore = require("nedb");
 const { createCustomer,addPrice,createProduct, createAccount } = require("./stripe/utils/utils");
 const findEmail = require("./utils/findEmail");
 var db = {};
-
-app.use(cors());
-app.use(express.json());
 const port = process.env.PORT;
 const { CeloProvider, CeloWallet, StaticCeloProvider } = require("@celo-tools/celo-ethers-wrapper");
 
@@ -43,10 +41,17 @@ const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0e
 const Neo4jPass = '87h0u74+-*/';
 db.coins = new Datastore("./utils/_db/coins.db");
 
-
+ 
 db.coins.loadDatabase();
+app.use((req, res, next) => {
+  if (req.originalUrl === '/webhook') {
+    next();
+  } else {
+    bodyParser.json()(req, res, next);
+  }
+});
+app.use(cors());
 
-app.use(express.json());
 
 
 
@@ -196,30 +201,36 @@ app.post("/TestDecrypt", async (req, res) => {
 });
 
 app.post("/createTag",async(req,res)=>{
-  const name = req.body.name;
-  await initDriver();
-  var driver = getdriver();
-  var session = driver.session({
-    database: 'Hero'
-  })
-  const tag = await session.run("match(t:Tag{Name:$name})return t",{
-    name
-  })
-  if(tag.records.length>0){
-    return res.status(400).json("Tag alerady exists !");
+  console.log("ddd")
+  try{
+    const name = req.body.name;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+      database: process.env.DBNAME ||'Hero'
+    })
+    const tag = await session.run("match(t:Tag{Name:$name})return t",{
+      name
+    })
+    if(tag.records.length>0){
+      return res.status(400).json("Tag alerady exists !");
+    }
+    await session.run("merge(t:Tag{Name:$name})",{
+      name
+    });
+    return res.status(200).json("Tag created successfully !");
+  
   }
-  await session.run("merge(t:Tag{Name:$name})",{
-    name
-  });
-  return res.status(200).json("Tag created successfully !");
-
+  catch(err){
+    return res.status(500).json(err.message)
+  }
 })
 app.post("/createLocation",async(req,res)=>{
   const name = req.body.name;
   await initDriver();
   var driver = getdriver();
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero'
   })
   const tag = await session.run("match(l:Location{Name:$name})return l",{
     name
@@ -233,6 +244,8 @@ app.post("/createLocation",async(req,res)=>{
   return res.status(200).json("Location created successfully !");
 
 })
+
+
 app.post("/CreateWallet", async (req, res) => {
   // var web3 = new Web3(new Web3.providers.HttpProvider('https://polygon-rpc.com'));
   // A=web3.eth.accounts.create("87h0u74+-*/");
@@ -246,16 +259,17 @@ app.post("/CreateWallet", async (req, res) => {
   const  name=req.body.name;
   const lastname=req.body.lastname;
   const HeroId = req.body.HeroId;
-  console.log(name,lastname);
+  var regularExpression  = /^(?=.*\d)(?=.*[a-z])(?=.*[a-z]).{8,}$/gm;
+  if(!regularExpression.test(password)){
+      return res.status(200).json("Your password must be at least 8 characters and should include a combination of letters and at least one number and one special character (!$@%+-*/)")
+  }
   let search=await SearchUser(phoneNumber);
   if (search == 0)
   {
-    if (googleId != "")
+    if (googleId == "")
     {
       password=googleId;
     }
-   
-    console.log("ok");
   const providerMumbai = new ethers.providers.JsonRpcProvider(
     ProviderNetwork
     );
@@ -263,7 +277,6 @@ app.post("/CreateWallet", async (req, res) => {
   const pureWallet = ethers.Wallet.createRandom();
   
   const wallet = new Wallet(pureWallet, providerMumbai);
-  console.log(password+"+"+phoneNumber);
   console.log(AESEncyption(password+"+"+phoneNumber,pureWallet._mnemonic().phrase));
   //const temp = await pinJSONToIPFS("98ec2b41b43bef139ebc","4d443842873fb35c1f2866312fcad6d397a4172a8f08527e3714e35c989365c2",{
    // mnomonic: AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase),
@@ -273,10 +286,12 @@ app.post("/CreateWallet", async (req, res) => {
  // });
    let MNEMONIC= AESEncyption(password+"+-*/"+phoneNumber,pureWallet._mnemonic().phrase);
    let WalletAddress = pureWallet.address;
+   console.log(phoneNumber+"+-*/"+password)
    let Password = AESEncyption(phoneNumber+"+-*/"+password,password);
+   console.log("Password",Password)
    let privKey = AESEncyption(password+"+-*/"+phoneNumber,pureWallet._signingKey().privateKey);
   const {customerId,state}=await InsertUserDB(phoneNumber,WalletAddress,privKey,MNEMONIC,Password,googleId,imageUrl,name,lastname,HeroId);
-  console.log("************");
+  
 
 
   const toblock = await Inscription(phoneNumber,"",pureWallet.address);
@@ -292,7 +307,6 @@ app.post("/CreateWallet", async (req, res) => {
   
   }
   else{
-    console.log(search);
 
     return res.status(200).json({
       mnomonic: search.Mnemoni,
@@ -486,7 +500,7 @@ const addMedia = async(groupe,url,desc,title,typeMedia,mobilizer)=>{
   await initDriver();
  var driver = getdriver();
  var session = driver.session({
-         database: 'Hero',
+         database: process.env.DBNAME ||'Hero',
          defaultAccessMode: neo4j.session.WRITE
  })
  await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time,mobilizer:$mobilizer,likes:$likes,dislikes:$dislikes,comments:$comments}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
@@ -517,7 +531,7 @@ app.post("/CreateWalletMobelizer", async (req, res) => {
   await initDriver();
   var driver = getdriver();
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero'
     })
   var Emailexistens = await findEmail(email);
   console.log(Emailexistens)
@@ -663,7 +677,7 @@ async function SearchUser(Email) {
   await initDriver();
   var driver = getdriver();
   var session = driver.session({
-    database: 'Hero',
+    database: process.env.DBNAME ||'Hero',
     defaultAccessMode: neo4j.session.READ
   })
   let result = await session
@@ -708,7 +722,7 @@ async function UpdateUserDB(Email,newEmail,name,HeroId,CountryTolive,url) {
   )
  
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero'
   })
   console.log(session)
   // const product = await createProduct("test",[],"testProducts");
@@ -753,7 +767,7 @@ async function getUserInfo(Email) {
   )
  
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero'
   })
   console.log(session)
   // const product = await createProduct("test",[],"testProducts");
@@ -783,20 +797,17 @@ async function InsertUserDB(Email,WalletAddress,privKey,MNEMONIC,Password,google
   //   neo4j.auth.basic('neo4j', '87h0u74+-*/')
   // )
    
-  //  await initDriver();
-  //  var driver = getdriver();
-  // var session = driver.session({
-  //   database: 'Hero',
-  //   defaultAccessMode: neo4j.session.WRITE
-  // })
-  var driver = neo4j.driver(
-    'neo4j://hegemony.donftify.digital',
-    neo4j.auth.basic('neo4j', '87h0u74+-*/')
-  )
- 
+   await initDriver();
+   var driver = getdriver();
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero',
+    defaultAccessMode: neo4j.session.WRITE
   })
+  // var driver = neo4j.driver(
+  //   'neo4j://hegemony.donftify.digital',
+  //   neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  // )
+ 
   console.log(session)
   const customer = await createCustomer(Email);
   // const product = await createProduct("test",[],"testProducts");
@@ -887,7 +898,7 @@ app.post("/CheckPassword", async (req, res) => {
   )
  
   var session = driver.session({
-    database: 'Hero'
+    database: process.env.DBNAME ||'Hero'
   })
   //console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
   const result=await session
@@ -957,16 +968,16 @@ app.post("/HistoryTransactions", async (req, res) => {
   res.end(JSON.stringify(Tx));
   
 });
-// const options = {
-//     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
-//     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
+const options = {
+    key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
+    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
   
-// };
-app.listen(process.env.PORT || 8000, () => {
-  console.log("Serveur à l'écoute on ");
-});
+};
+// app.listen(process.env.PORT || 8000, () => {
+//   console.log("Serveur à l'écoute on ");
+// });
 
 
 
-// const server = https.createServer(options,app);
-// server.listen(8080);
+const server = https.createServer(options,app);
+server.listen(8080);

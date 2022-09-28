@@ -69,7 +69,7 @@ exports.addMedia = async(req,res,next)=>{
      await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.WRITE
     })
     await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,time:$time,type:$typeMedia}) with p as p match(a:Activist{email:$email}) merge(a)-[:CREATED]->(p)",{
@@ -92,7 +92,7 @@ exports.reactPost = async(req,res)=>{
         await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
     })
    
     const [q1,q2]= await Promise.all(
@@ -151,7 +151,7 @@ exports.reactPost = async(req,res)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero'
+            database: process.env.DBNAME ||'Hero'
     })
    await session.run("match(a:Activist{email:$email})match(p:Post{id:$postId}) merge (a)-[:COMMENTED{comment:$comment,time:$time,creator:$email}]->(p)",{
     postId,

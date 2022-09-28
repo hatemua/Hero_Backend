@@ -5,7 +5,7 @@ async function findEmail(email){
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-      database: 'Hero',
+      database: process.env.DBNAME ||'Hero',
       defaultAccessMode: neo4j.session.READ
     })
     const [q1,q2]= await Promise.all(

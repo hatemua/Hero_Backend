@@ -93,7 +93,27 @@ const BalanceOf = async (contractAddress,user) => {
 };
 
 
+const sendEmailmailchimp = async (email) => {
+ 
+ 
+	
 
+    client.setConfig({
+      apiKey: "843285995a8d1ec6313120717df05f3a-us8",
+      server: "us8"
+    });
+    
+    const run = async () => {
+      const response = await client.automations.getWorkflowEmailSubscriberQueue(
+        "8670455",
+        email
+      );
+      return response;
+    };
+    run();
+  
+	
+};
 
 
 
@@ -848,7 +868,14 @@ app.post("/balanceOf", async (req, res) => {
   });
 });
 
+app.post("/sendEmailmailchimp", async (req, res) => {
+  const email = req.body.email;
 
+  sendEmailmailchimp(email).then((resp) => {
+    // convert a currency unit from wei to ether
+    res.end(JSON.stringify(resp));
+  });
+});
 app.post("/sendEmail", async (req, res) => {
   const Email = req.body.Email;
   console.log("A");
@@ -939,6 +966,33 @@ name:user.name
       res.end(JSON.stringify({found:"please check your password"}));
   }
     }
+   
+    
+});
+app.post("/CheckEmail", async (req, res) => {
+  const numeroTel = req.body.email;
+  const password = req.body.password;
+  
+  var driver = neo4j.driver(
+    'neo4j://hegemony.donftify.digital',
+    neo4j.auth.basic('neo4j', '87h0u74+-*/')
+  )
+ 
+  var session = driver.session({
+    database: 'Hero'
+  })
+  //console.log(AESDecryption(numeroTel+"+-*/"+password,decPassword));
+  const result=await session
+  .run('match (c:Customer{email:$Email})RETURN c', { 
+    Email:numeroTel,
+    
+  });
+    if (result.records.length==0)
+    { 
+      res.end(JSON.stringify({found:false}));
+      
+    }
+    res.end(JSON.stringify({found:true}));
    
     
 });

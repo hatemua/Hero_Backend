@@ -9,4 +9,5 @@ router.post("/HeroIDExist",controller.getExistHeroID);
 router.post("/comment-post",controller.commentPost);
 router.post("/isSubscribed",controller.isSubscribed);
 router.post("/change-password",controller.changePassword);
+router.post("/LostPassword",controller.LostPassword);
 module.exports = router;

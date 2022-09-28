@@ -51,7 +51,8 @@ exports.createGroup = async(req,res,next)=>{
 
 
 exports.getGroupe = async(req,res,next)=>{
-    const grName = req.params.grName;
+    const grName = req.params.grName.replace(":","");
+    console.log(grName);
     if(myCache.get("Get-Group")){
         return res.status(200).json(myCache.get("Get-Group"));
     }
@@ -61,9 +62,10 @@ exports.getGroupe = async(req,res,next)=>{
             database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
-    const query = await session.run("match(g:Groupe{Name:$grName})return g",{
+    const query = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Victories),(g)-[]-(l:Campaign) return g,k,l",{
         grName
     })
+    console.log(query.records[0]._fields[2]);
     const singleRecord = query.records[0];
     const node = singleRecord.get(0);
     myCache.set("Get-Group",node.properties);

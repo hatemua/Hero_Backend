@@ -198,3 +198,43 @@ exports.changePassword = async(req,res)=>{
         return res.status(500).json(err.message)
     }
 }
+
+
+exports.LostPassword = async(req,res)=>{
+    var {newPassword,email} = req.body;
+    email = email.trim();
+    newPassword = newPassword.trim();
+    var key = email+"+-*/"+newPassword;
+    try{
+        await initDriver();
+        var driver = getdriver();
+        var session = driver.session({
+                database: process.env.DBNAME ||'Hero'
+        })
+        var result = await session.run("match(c:Customer{email:$email}) return c",{
+            email
+        });
+        if (result.records.length==0){ 
+            return res.end(JSON.stringify({found:"Email not found"}));
+      
+        }
+        var Customer = result.records[0].get("c").properties;
+        var decrypt = aes256.decrypt(key,Customer.password).toString();
+            var regularExpression  = /^(?=.*\d)(?=.*[a-z])(?=.*[a-z]).{8,}$/gm;
+            if(!regularExpression.test(newPassword)){
+                return res.status(200).json("Your new password must be at least 8 characters and should include a combination of letters and at least one number and one special character (!$@%+-*/)")
+            }
+            key = email+"+-*/"+newPassword.toString();
+            var encrypt = aes256.encrypt(key,newPassword);
+            console.log(encrypt)
+            await session.run("match(c:Customer{email:$email}) set c.password=$encrypt",{
+                email,
+                encrypt
+            })
+            return res.status(200).json("Password updated Successfully !");
+     
+        
+    }catch(err){
+        return res.status(500).json(err.message)
+    }
+}

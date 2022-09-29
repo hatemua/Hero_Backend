@@ -88,7 +88,8 @@ exports.getMembers = async(req,res,next)=>{
 
 }
 exports.getSupporters = async(req,res,next)=>{
-    const grName = req.params.grName;
+    const grName = req.params.grName.replace(":","");
+    console.log(grName);
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
@@ -103,7 +104,10 @@ exports.getSupporters = async(req,res,next)=>{
         var supporter = {
             email:record.get(0).properties.email,
             customerId:record.get(0).properties.CustomerId,
-            walletAddress: record.get(0).properties.walletAddress
+            walletAddress: record.get(0).properties.walletAddress,
+            fullname :  record.get(0).properties.name + " " + record.get(0).properties.lastname,
+            profileImage : record.get(0).properties.imageUrl,
+            googleID : record.get(0).properties.googleId
         }
         supporters.push(supporter) 
     })

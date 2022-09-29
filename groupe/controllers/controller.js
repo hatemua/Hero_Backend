@@ -101,6 +101,8 @@ exports.getSupporters = async(req,res,next)=>{
     })
     let supporters = []
     result.records.map(record => {
+        if (record.get(0).properties.imageUrl != "")
+        {
         var supporter = {
             email:record.get(0).properties.email,
             customerId:record.get(0).properties.CustomerId,
@@ -110,6 +112,11 @@ exports.getSupporters = async(req,res,next)=>{
             googleID : record.get(0).properties.googleId
         }
         supporters.push(supporter) 
+        }
+        if(supporters.length == 3 )
+        {
+            return res.status(200).json(supporters);
+        }
     })
     return res.status(200).json(supporters);
 

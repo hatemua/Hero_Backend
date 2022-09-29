@@ -4,6 +4,7 @@ const mysql = require('mysql');
 // const formidable = require('formidable');
 const uniqid = require("uniqid");
 var path = require('path');
+var handlebars = require('handlebars');
 
 const Web3 = require("web3");
 const axios = require("axios");
@@ -115,28 +116,45 @@ const sendEmailmailchimp = async (email) => {
 	
 };
 
+var readHTMLFile = function(path, callback) {
+  fs.readFile(path, {encoding: 'utf-8'}, function (err, html) {
+      if (err) {
+         callback(err); 
+         throw err;
+          
+      }
+      else {
+          callback(null, html);
+      }
+  });
+};
 
 
-
-const sendEmail = async (Email) => {
+const sendEmail = async (Email,user,type) => {
     Code = Math.floor(Math.random() * 10000);
-    db.coins.insert({Email:Email,Code:Code}, function (err, newDocs) {});
+    db.coins.insert({Email:Email,Code:Code,type:type,date:new Date().getDate()}, function (err, newDocs) {});
+    var template = handlebars.compile(html);
+    var link = "https://herocircle.app/lostPassword:"+Code;
+    var replacements = {
+      fullname: user,
+         link:link
+    };
+    var htmlToSend = template(replacements);
     const transporter = nodemailer.createTransport({
       host: 'ssl0.ovh.net',
       port: 465,
       secure: true,
       auth: {
-          user: 'hatem@darblockchain.io',
+          user: 'hi@her',
           pass: 'Darblockchain.io'
       }
-  });
-  
+  });  
   // send email
   const A = await transporter.sendMail({
       from: 'hatem@darblockchain.io',
       to: Email,
-      subject: "Validation Code",
-      text: Code.toString()
+      subject: "Set your new password",
+      html: htmlToSend
   });
   console.log(A);
   return("ok");

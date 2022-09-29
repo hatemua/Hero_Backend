@@ -297,14 +297,11 @@ app.post("/CreateWallet", async (req, res) => {
   const  name=req.body.name;
   const lastname=req.body.lastname;
   const HeroId = req.body.HeroId;
-  var regularExpression  = /^(?=.*\d)(?=.*[a-z])(?=.*[a-z]).{8,}$/gm;
-  if(!regularExpression.test(password)){
-      return res.status(200).json("Your password must be at least 8 characters and should include a combination of letters and at least one number and one special character (!$@%+-*/)")
-  }
+  
   let search=await SearchUser(phoneNumber);
   if (search == 0)
   {
-    if (googleId == "")
+    if (googleId != "")
     {
       password=googleId;
     }

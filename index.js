@@ -1040,16 +1040,16 @@ app.post("/HistoryTransactions", async (req, res) => {
   res.end(JSON.stringify(Tx));
   
 });
-const options = {
-    key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
-    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
+// const options = {
+//     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
+//     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
   
-};
-/* app.listen(process.env.PORT || 8000, () => {
+// };
+ app.listen(process.env.PORT || 8000, () => {
    console.log("Serveur à l'écoute on ");
  });
-*/
 
 
-const server = https.createServer(options,app);
-server.listen(8080);
+
+// const server = https.createServer(options,app);
+// server.listen(8080);

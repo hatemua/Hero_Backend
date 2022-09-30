@@ -1,12 +1,50 @@
 const stripe = require('stripe')(process.env.STRIPEKEY);
 const { getPriceId,getCustomerId,mergeString } = require("../utils/utils");
 const { getdriver,initDriver }=require("../../neo4j");
-const neo4j = require("neo4j-driver")
+// const neo4j = require("neo4j-driver")
 const moment =require("moment");
-const getTime = require("../../utils/getTime")
+// const getTime = require("../../utils/getTime")
 const path = require('path');
 const writeXlsxFile = require('write-excel-file/node')
+const handlebars = require("handlebars");
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
+const fs = require("fs");
+const createTransporter = async () => {
+  const oauth2Client = new OAuth2(
+    "112603853738-firv146ngs4te6uonb9s25bnk6a77bk3.apps.googleusercontent.com",
+    "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",
+    "https://developers.google.com/oauthplayground"
+  );
 
+  oauth2Client.setCredentials({
+    refresh_token: "1//04WFBIcSeac0NCgYIARAAGAQSNwF-L9IrhMZted2r55axHJdBNsEzFAEC7ue7ehloeMSHtmUzjOlNWsR4cmVWQkP2wZKhpOI6Roo"
+  });
+
+  const accessToken = await new Promise((resolve, reject) => {
+    oauth2Client.getAccessToken((err, token) => {
+      if (err) {
+        reject();
+      }
+      resolve(token);
+    });
+  });
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: "hi@hero-labs.co",
+      accessToken,
+      clientId: "1//04WFBIcSeac0NCgYIARAAGAQSNwF-L9IrhMZted2r55axHJdBNsEzFAEC7ue7ehloeMSHtmUzjOlNWsR4cmVWQkP2wZKhpOI6Roo",
+      clientSecret: "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",
+      refreshToken: "1//04WFBIcSeac0NCgYIARAAGAQSNwF-L9IrhMZted2r55axHJdBNsEzFAEC7ue7ehloeMSHtmUzjOlNWsR4cmVWQkP2wZKhpOI6Roo"
+    }
+  });
+
+  return transporter;
+};
 const HEADER_ROW = [
   {
     value: 'Activist email',
@@ -101,55 +139,46 @@ exports.successPage = async (req, res) => {
     tr:false,
     in:ind
   });
-  await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date}]->(g)",{
+  const resul = await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date}]->(g) return c",{
     ci:customer.id,
     grName,
     amount :sessione.amount_total,
     date:moment().format()
   })
+  const supporter = resul.records[0].get("c").properties;
   await session.run("match(h:Holder)set h.balance=h.balance+$amount,h.nTransactions=h.nTransactions	+1 with h as h match(t:Transaction{SentDay:$ed}) merge(h)-[:GOT]->(t)",{
     ed:today,
     amount:sessione.amount_total
   });
   
-  await session.run("match(g:Groupe{Name:$grName})set g.balance=g.balance+$bwf",{
+  const result = await session.run("match(g:Groupe{Name:$grName})set g.balance=g.balance+$bwf return g",{
     grName,
     bwf
   })
+  const groupe = result.records[0].get("g").properties;
+  const sendEmail = async (emailOptions) => {
+    let emailTransporter = await createTransporter();
+    await emailTransporter.sendMail(emailOptions);
+};
+const html = fs.readFileSync(path.join(__dirname,"emailTemplates","welcomeUK.html"), 'utf8');
+var handlebarsTemplate = handlebars.compile(html);
+var handlebarsObj = {
+    groupe:groupe.Name,
+    name:supporter.name,
+};
+var compiledData = handlebarsTemplate(handlebarsObj)
+sendEmail({
+    subject: "Welcome to "+groupe.name+" !",
+    html:compiledData,
+    text:"Welcome !",
+    to: supporter.email,
+    from: "hi@hero-labs.co"
+  });
 
   
   return res.redirect('https://herocircle.app/welcome-circle:'+grName.replace(":",""));
 
 }
-// exports.saveCard = async(req,res)=>{
-//   try {
-//     const {number,exp_month,exp_year,cvc,customerId} = req.body;
-//     const paymentMethod = await stripe.paymentMethods.create({
-//       type:"card",
-//       card: {
-//         number,
-//         exp_month,
-//         exp_year,
-//         cvc,
-//       },
-//     });
-//     const paymentMethod2 = await stripe.paymentMethods.attach(
-//       paymentMethod.id,
-//       {customer: customerId}
-//     );
-//     const customer = await stripe.customers.update(
-//       customerId,
-//       {invoice_settings: {default_payment_method
-//           : paymentMethod.id}}
-//     );
-//   return res.status(200).json({customer});
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-//     return err;
-//   }
-// }
 
 // exports.createPortalSession =  async (req, res) => {
 //     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.

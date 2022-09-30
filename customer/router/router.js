@@ -9,5 +9,7 @@ router.post("/HeroIDExist",controller.getExistHeroID);
 router.post("/comment-post",controller.commentPost);
 router.post("/isSubscribed",controller.isSubscribed);
 router.post("/change-password",controller.changePassword);
-router.post("/LostPassword",controller.LostPassword);
+// router.post("/LostPassword",controller.LostPassword);
+router.post("/get-code",controller.getCode);
+router.post("/check-code",controller.LostPassword);
 module.exports = router;

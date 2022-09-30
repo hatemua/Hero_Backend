@@ -4,8 +4,53 @@ const NodeCache = require( "node-cache" );
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30});
 const getTime = require("../../utils/getTime");
 const aes256 = require("aes256");
-const e = require("express");
+const handlebars = require("handlebars");
+const nodemailer = require("nodemailer");
+const { google } = require("googleapis");
+const OAuth2 = google.auth.OAuth2;
+const fs = require("fs");
+const path = require("path");
+const { AsyncNedb } = require('nedb-async')
 
+const data = new AsyncNedb({
+  filename: 'data.db',
+  autoload: true,
+})
+
+const createTransporter = async () => {
+    const oauth2Client = new OAuth2(
+      "112603853738-firv146ngs4te6uonb9s25bnk6a77bk3.apps.googleusercontent.com",
+      "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",
+      "https://developers.google.com/oauthplayground"
+    );
+  
+    oauth2Client.setCredentials({
+      refresh_token: "1//04WFBIcSeac0NCgYIARAAGAQSNwF-L9IrhMZted2r55axHJdBNsEzFAEC7ue7ehloeMSHtmUzjOlNWsR4cmVWQkP2wZKhpOI6Roo"
+    });
+  
+    const accessToken = await new Promise((resolve, reject) => {
+      oauth2Client.getAccessToken((err, token) => {
+        if (err) {
+          reject();
+        }
+        resolve(token);
+      });
+    });
+  
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: "hi@hero-labs.co",
+        accessToken,
+        clientId: "1//04WFBIcSeac0NCgYIARAAGAQSNwF-L9IrhMZted2r55axHJdBNsEzFAEC7ue7ehloeMSHtmUzjOlNWsR4cmVWQkP2wZKhpOI6Roo",
+        clientSecret: "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",
+        refreshToken: "1//04WFBIcSeac0NCgYIARAAGAQSNwF-L9IrhMZted2r55axHJdBNsEzFAEC7ue7ehloeMSHtmUzjOlNWsR4cmVWQkP2wZKhpOI6Roo"
+      }
+    });
+  
+    return transporter;
+  };
 
 exports.getTransactions = async(req,res,next)=>{
     if(myCache.get("cu-tr")){
@@ -201,11 +246,22 @@ exports.changePassword = async(req,res)=>{
 
 
 exports.LostPassword = async(req,res)=>{
-    var {newPassword,email} = req.body;
+    var {newPassword,email,code} = req.body;
     email = email.trim();
     newPassword = newPassword.trim();
     var key = email+"+-*/"+newPassword;
     try{
+        let codeDoc = await data.asyncFindOne({code});
+        if(!codeDoc){
+            return res.status(400).json("Invalid code check your email !");
+        }
+        const validtime = codeDoc.date+3600;
+        const currentDate = new Date().getTime();
+        if(validtime> currentDate){
+            return res.status(400).json("Session closed !");
+        }
+
+
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
@@ -238,3 +294,53 @@ exports.LostPassword = async(req,res)=>{
         return res.status(500).json(err.message)
     }
 }
+
+
+
+exports.getCode = async(req,res,next)=>{
+    const email = req.body.email;
+
+    try{
+        await initDriver();
+        var driver = getdriver();
+        var session = driver.session({
+                database: process.env.DBNAME ||'Hero'
+        }) ;
+        const result = await session.run("match(c:Customer{email:$email}) return c",{
+            email
+        });
+        if(result.records.length ==0){
+            return res.status(400).json("A user with this email couldn't be found !");
+        }else{
+            const user = result.records[0].get("c").properties;
+
+            const sendEmail = async (emailOptions) => {
+                let emailTransporter = await createTransporter();
+                await emailTransporter.sendMail(emailOptions);
+            };
+            const html = fs.readFileSync(path.join(__dirname,"emailTemplates","resetPassword.html"), 'utf8');
+            var handlebarsTemplate = handlebars.compile(html);
+            var Code = Math.floor(Math.random() * 10000);
+            await data.asyncInsert({email:email,code:Code,type:"Password Reset",date:new Date().getTime()});
+            var handlebarsObj = {
+                title:"Password reset From Hero!",
+                fullname:user.name,
+                link:"https://herocircle.app/lostPassword/"+Code
+            };
+            var compiledData = handlebarsTemplate(handlebarsObj)
+            sendEmail({
+                subject: "Password Reset !",
+                html:compiledData,
+                text:"Password Reset !",
+                to: user.email,
+                from: "hi@hero-labs.co"
+              });
+
+            return res.status(200).json("Email sent successfully !")
+
+        }
+    }catch(err){
+        return res.status(500).json(err)
+    }
+}
+

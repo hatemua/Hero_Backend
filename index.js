@@ -137,7 +137,7 @@ const sendEmail = async (Email,user,type) => {
     var link = "https://herocircle.app/lostPassword:"+Code;
     var replacements = {
       fullname: user,
-         link:link
+      link:link
     };
     var htmlToSend = template(replacements);
     const transporter = nodemailer.createTransport({
@@ -297,14 +297,11 @@ app.post("/CreateWallet", async (req, res) => {
   const  name=req.body.name;
   const lastname=req.body.lastname;
   const HeroId = req.body.HeroId;
-  var regularExpression  = /^(?=.*\d)(?=.*[a-z])(?=.*[a-z]).{8,}$/gm;
-  if(!regularExpression.test(password)){
-      return res.status(200).json("Your password must be at least 8 characters and should include a combination of letters and at least one number and one special character (!$@%+-*/)")
-  }
+  
   let search=await SearchUser(phoneNumber);
   if (search == 0)
   {
-    if (googleId == "")
+    if (googleId != "")
     {
       password=googleId;
     }
@@ -1044,8 +1041,15 @@ app.post("/HistoryTransactions", async (req, res) => {
 //     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
 //     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
   
+<<<<<<< HEAD
 // };
  app.listen(process.env.PORT || 8000, () => {
+=======
+};
+
+/*
+app.listen(process.env.PORT || 8000, () => {
+>>>>>>> ca19d8173930f35c3fbb12708c59f195540d9467
    console.log("Serveur à l'écoute on ");
  });
 

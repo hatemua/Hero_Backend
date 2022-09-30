@@ -163,7 +163,7 @@ exports.successPage = async (req, res) => {
 const html = fs.readFileSync(path.join(__dirname,"emailTemplates","welcomeUK.html"), 'utf8');
 var handlebarsTemplate = handlebars.compile(html);
 var handlebarsObj = {
-    groupe:groupe.Name,
+    groupe:grName,
     name:supporter.name,
 };
 var compiledData = handlebarsTemplate(handlebarsObj)

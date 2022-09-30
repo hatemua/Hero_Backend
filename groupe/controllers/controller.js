@@ -109,7 +109,8 @@ exports.getSupporters = async(req,res,next)=>{
             walletAddress: record.get(0).properties.walletAddress,
             fullname :  record.get(0).properties.name + " " + record.get(0).properties.lastname,
             profileImage : record.get(0).properties.imageUrl,
-            googleID : record.get(0).properties.googleId
+            googleID : record.get(0).properties.googleId,
+            nbSupporters:result.records.length
         }
         supporters.push(supporter) 
         }

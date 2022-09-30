@@ -163,12 +163,12 @@ exports.successPage = async (req, res) => {
 const html = fs.readFileSync(path.join(__dirname,"emailTemplates","welcomeUK.html"), 'utf8');
 var handlebarsTemplate = handlebars.compile(html);
 var handlebarsObj = {
-    groupe:grName,
+    groupe:groupe.Name,
     name:supporter.name,
 };
 var compiledData = handlebarsTemplate(handlebarsObj)
 sendEmail({
-    subject: "Welcome to "+groupe.name+" !",
+    subject: "Welcome to "+groupe.Name+" !",
     html:compiledData,
     text:"Welcome !",
     to: supporter.email,

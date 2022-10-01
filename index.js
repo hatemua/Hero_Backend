@@ -515,7 +515,15 @@ app.post("/uploadUpdatesFile", upload.single("myFile"), async(req, res) =>{
   const obj = JSON.parse(JSON.stringify(req.body)); 
       console.log(res);
       let groupe = obj.circle.replace(":","");
-      let url = res.req.file.filename;
+      let url;
+      if (res.req.file == undefined)
+      {
+        url = "";
+      }
+      else
+      {
+      url = res.req.file.filename;
+      }
       let desc = obj.Description;
       let typeMedia=obj.typeMedia;
       let mobilizer = obj.mobilizer;

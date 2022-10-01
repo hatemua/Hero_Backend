@@ -119,11 +119,17 @@ if(result>0){
            postId,
            type
        });
-       await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1 return p`,{
+       await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1`,{
         postId
        });
-    return res.status(200).json("Reaction Added successfully !");
+
+
 }
+const x =await session.run(`match(p:Post{id:$postId}) return p`,{
+    postId
+   });
+return res.status(200).json(x.records);
+
 }else{
     return res.status(400).json("Type not accepted !");
 }

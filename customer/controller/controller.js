@@ -119,7 +119,7 @@ if(result>0){
            postId,
            type
        });
-       await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1`,{
+       await session.run(`match(p:Post{id:$postId})set p.${l}=p.${l}+1 return p`,{
         postId
        });
     return res.status(200).json("Reaction Added successfully !");

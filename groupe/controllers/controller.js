@@ -96,7 +96,7 @@ exports.getSupporters = async(req,res,next)=>{
             database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
-    var result = await session.run("match(c:Customer)-[:JOINED]->(g:Groupe{Name:$grName}) return c",{
+    var result = await session.run("match(c:Customer)-[l:JOINED]->(g:Groupe{Name:$grName}) return c order by l.date desc",{
         grName
     })
     let supporters = []

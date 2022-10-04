@@ -212,6 +212,7 @@ exports.changePassword = async(req,res)=>{
     email = email.trim();
     newPassword = newPassword.trim();
     oldPassword = oldPassword.trim();
+    
     var key = email+"+-*/"+oldPassword;
     try{
         await initDriver();
@@ -253,8 +254,11 @@ exports.changePassword = async(req,res)=>{
 
 exports.LostPassword = async(req,res)=>{
     var {newPassword,email,code} = req.body;
+
     email = email.trim();
     newPassword = newPassword.trim();
+    console.log(newPassword,email);
+    
     var key = email+"+-*/"+newPassword;
     try{
         let codeDoc = await data.asyncFindOne({code});
@@ -281,11 +285,7 @@ exports.LostPassword = async(req,res)=>{
       
         }
         var Customer = result.records[0].get("c").properties;
-        var decrypt = aes256.decrypt(key,Customer.password).toString();
-            var regularExpression  = /^(?=.*\d)(?=.*[a-z])(?=.*[a-z]).{8,}$/gm;
-            if(!regularExpression.test(newPassword)){
-                return res.status(200).json("Your new password must be at least 8 characters and should include a combination of letters and at least one number and one special character (!$@%+-*/)")
-            }
+          
             key = email+"+-*/"+newPassword.toString();
             var encrypt = aes256.encrypt(key,newPassword);
             console.log(encrypt)

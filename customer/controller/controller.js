@@ -258,10 +258,12 @@ exports.LostPassword = async(req,res)=>{
     email = email.trim();
     newPassword = newPassword.trim();
     console.log(newPassword,email);
-    
+    console.log(code);
     var key = email+"+-*/"+newPassword;
     try{
-        let codeDoc = await data.asyncFindOne({code});
+        let codeDoc = await data.asyncFindOne({code:code});
+        let codeDoc1 = await data.asyncFindOne({});
+        console.log(codeDoc1);
         if(!codeDoc){
             console.log("Invalid code check your email !");
             return res.status(400).json("Invalid code check your email !");

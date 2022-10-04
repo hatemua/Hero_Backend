@@ -331,7 +331,7 @@ exports.getCode = async(req,res,next)=>{
             var handlebarsObj = {
                 title:"Password reset From Hero!",
                 fullname:user.name,
-                link:"https://herocircle.app/lostPassword/"+Code
+                link:"https://herocircle.app/lostPassword?code="+Code+"&email="+email
             };
             var compiledData = handlebarsTemplate(handlebarsObj)
             sendEmail({

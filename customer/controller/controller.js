@@ -263,12 +263,15 @@ exports.LostPassword = async(req,res)=>{
     try{
         let codeDoc = await data.asyncFindOne({code});
         if(!codeDoc){
+            console.log("Invalid code check your email !");
             return res.status(400).json("Invalid code check your email !");
         }
         const validtime = codeDoc.date+3600;
         const currentDate = new Date().getTime();
         if(validtime> currentDate){
+            console.log("Session closed !");
             return res.status(400).json("Session closed !");
+            
         }
 
 
@@ -281,6 +284,7 @@ exports.LostPassword = async(req,res)=>{
             email
         });
         if (result.records.length==0){ 
+            console.log("Email not found");
             return res.end(JSON.stringify({found:"Email not found"}));
       
         }

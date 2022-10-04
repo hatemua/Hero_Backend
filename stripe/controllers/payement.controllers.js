@@ -111,8 +111,8 @@ exports.successPage = async (req, res) => {
  
   // return res.status(200).json(session);
   const {grName}= req.query;
-  console.log(req.query.grName);
   const sessione = await stripe.checkout.sessions.retrieve(req.query.session_id);
+  console.log(sessione)
   await initDriver();
   var driver = getdriver();
   var session = driver.session({
@@ -288,7 +288,7 @@ exports.monthPay = async(req,res,next)=>{
 
 //   // Handle the event
 //   console.log(event)
-//   console.log(event.type)
+//   // console.log(event.type)
 //   switch (event.type) {
 //     case 'customer.subscription.updated':
 //       const subscription = event.data.object;

@@ -293,7 +293,7 @@ exports.LostPassword = async(req,res)=>{
                 email,
                 encrypt
             })
-            return res.status(200).json({"Password updated Successfully !"});
+            return res.status(200).json("Password updated Successfully !");
      
         
     }catch(err){

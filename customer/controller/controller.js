@@ -10,9 +10,9 @@ const { google } = require("googleapis");
 const OAuth2 = google.auth.OAuth2;
 const fs = require("fs");
 const path = require("path");
-const { AsyncNedb } = require('nedb-async')
+let Datastore = require("nedb");
 
-const data = new AsyncNedb({
+const data = new Datastore({
   filename: 'data.db',
   autoload: true,
 })
@@ -261,14 +261,20 @@ exports.LostPassword = async(req,res)=>{
     console.log(code);
     var key = email+"+-*/"+newPassword;
     try{
-        let codeDoc = await data.asyncFindOne({code:code});
-        let codeDoc1 = await data.asyncFindOne({});
-        console.log(codeDoc);
-        if(codeDoc != null){
+
+        const codeDoc= await new Promise((resolve, reject) => { 
+             data.find({code:parseInt(code),email:email},function(err,doc)
+        {
+            resolve(doc);
+        })
+         }
+        )
+        console.log(codeDoc.length);
+        if(codeDoc.length == 0){
             console.log("Invalid code check your email !");
             return res.status(400).json("Invalid code check your email !");
         }
-        const validtime = codeDoc.date+3600;
+        const validtime = codeDoc[0].date+3600;
         const currentDate = new Date().getTime();
         if(validtime> currentDate){
             console.log("Session closed !");
@@ -333,7 +339,9 @@ exports.getCode = async(req,res,next)=>{
             const html = fs.readFileSync(path.join(__dirname,"emailTemplates","resetPassword.html"), 'utf8');
             var handlebarsTemplate = handlebars.compile(html);
             var Code = Math.floor(Math.random() * 10000);
-            await data.asyncInsert({email:email,code:Code,type:"Password Reset",date:new Date().getTime()});
+            data.insert({email:email,code:Code,type:"Password Reset",date:new Date().getTime()}, function (err, newDoc) {   // Callback is optional
+                console.log(newDoc);
+              });
             var handlebarsObj = {
                 title:"Password reset From Hero!",
                 fullname:user.name,

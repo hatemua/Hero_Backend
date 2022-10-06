@@ -53,6 +53,7 @@ app.use((req, res, next) => {
   }
 });
 app.use(cors());
+app.use("/videos", require("./modules/video/router"));
 
 
 
@@ -1054,7 +1055,7 @@ app.post("/HistoryTransactions", async (req, res) => {
 };*/
 app.listen(process.env.PORT || 8000, () => {
 
-console.log("Serveur à l'écoute on ");
+console.log("Serveur à l'écoute on ", process.env.PORT || 8000);
 
 });
 

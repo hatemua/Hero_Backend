@@ -24,6 +24,7 @@ const bodyParser = require("body-parser");
 const multer = require("multer")
 const app = express();  
 const stripeRoutes = require("./stripe/routes/payement");
+const videostream = require("./streaming/video/vdStream");
 const groupeRoutes = require("./groupe/routes/route");
 const activistRoutes = require("./activist/router/router");
 const customerRoutes = require("./customer/router/router");
@@ -234,6 +235,7 @@ app.use(stripeRoutes);
 app.use("/circle",groupeRoutes);
 app.use("/mobelizer",activistRoutes);
 app.use("/supporter",customerRoutes);
+app.use("/stream",videostream);
 app.post("/TestDecrypt", async (req, res) => {
   console.log(AESDecryption("0033143485548+-*/","WiKHiqsSUNJqFSg/5jCnDDEY064fCdgF"));
 });

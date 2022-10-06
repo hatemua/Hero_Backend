@@ -46,6 +46,7 @@ const {
 
 const { ethers, Wallet } = require("ethers");
 const { Console } = require("console");
+const { useModules } = require("./modules");
 const ProviderNetwork = "https://alfajores-forno.celo-testnet.org";
 const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey =
@@ -62,6 +63,8 @@ app.use((req, res, next) => {
   }
 });
 app.use(cors());
+//
+useModules({ server: app, prefix: "/api/v1" });
 
 const BalanceOf = async (contractAddress, user) => {
   try {

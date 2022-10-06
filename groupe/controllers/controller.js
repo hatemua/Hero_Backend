@@ -71,6 +71,49 @@ exports.getGroupe = async(req,res,next)=>{
     myCache.set("Get-Group",node.properties);
     return res.status(200).json(node.properties);
 }
+exports.getVideosByCirclesTag = async(req,res,next)=>{
+    const {tags,principal} = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: process.env.DBNAME ||'Hero',
+            defaultAccessMode: neo4j.session.READ
+    })
+    let query;
+    if (tags)
+    {
+    tags == tags.lowercase();   
+    query = await session.run("match(n:Groupe)-[]-(l:Videos) where $tags in n.Tags return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType",{
+        tags
+    })
+    }
+    else if(principal)
+    {
+        console.log(principal);
+
+        query = await session.run("match(n:Groupe)-[]-(l:Videos) where  n.priotity=1 return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType")  
+    }
+    /*console.log(query.records[0]._fields[0]);
+    const singleRecord = query.records[0];
+    const node = singleRecord.get(0);
+    myCache.set("Get-Group",node.properties);*/
+    const resu=[]
+    query.records.map(record => {
+        resu.push({
+                nameCircle:record.get(0),
+                circleDesc:record.get(1),
+
+                videoPath:record.get(2),
+                videoAffiche:record.get(3),
+                videoDefault:record.get(4),
+                videoId:record.get(5).low,
+                mimeType:  record.get(6)
+        })
+        
+        } )
+    //console.log(resu);
+    return res.status(200).json(resu);
+}
 exports.getMembers = async(req,res,next)=>{
     const grName = req.params.grName;
     await initDriver();

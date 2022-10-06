@@ -12,5 +12,8 @@ router.post("/feed",controller.getFeed);
 router.post("/get-comments",controller.getComments);
 router.post("/get-likes",controller.getLikes);
 router.post("/get-dislikes",controller.getDislikes);
+router.post("/getVideosByCirclesTag",controller.getVideosByCirclesTag);
+
 router.get("/:grName",controller.getGroupe);
+
 module.exports = router;

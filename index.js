@@ -24,6 +24,7 @@ const bodyParser = require("body-parser");
 const multer = require("multer")
 const app = express();
 const stripeRoutes = require("./stripe/routes/payement");
+const videostream = require("./streaming/video/vdStream");
 const groupeRoutes = require("./groupe/routes/route");
 const activistRoutes = require("./activist/router/router");
 const customerRoutes = require("./customer/router/router");
@@ -229,12 +230,14 @@ const pinJSONToIPFS = async(pinataApiKey, pinataSecretApiKey, JSONBody) => {
         });
 };
 app.use(stripeRoutes);
+app.use("/circle",groupeRoutes);
+app.use("/mobelizer",activistRoutes);
+app.use("/supporter",customerRoutes);
+app.use("/stream",videostream);
+
 app.use("/circle", groupeRoutes);
 app.use("/mobelizer", activistRoutes);
 app.use("/supporter", customerRoutes);
-app.post("/TestDecrypt", async(req, res) => {
-    console.log(AESDecryption("0033143485548+-*/", "WiKHiqsSUNJqFSg/5jCnDDEY064fCdgF"));
-});
 
 app.post("/createTag", async(req, res) => {
     console.log("ddd")
@@ -1038,18 +1041,19 @@ app.post("/HistoryTransactions", async(req, res) => {
     res.end(JSON.stringify(Tx));
 
 });
-/**const options = {
+const options = {
     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
   
-};*/
-app.listen(process.env.PORT || 8000, () => {
+};
+
+/*app.listen(process.env.PORT || 8000, () => {
 
     console.log("Serveur à l'écoute on ");
 
 });
+*/
 
 
-/*
 const server = https.createServer(options,app);
-server.listen(8080);*/
+server.listen(8082);

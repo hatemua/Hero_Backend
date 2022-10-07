@@ -1,42 +1,42 @@
-const {initDriver,getdriver} = require("../../neo4j");
+const { initDriver, getdriver } = require("../../neo4j");
 const neo4j = require("neo4j-driver");
-const {createAccount} = require("../../stripe/utils/utils");
+const { createAccount } = require("../../stripe/utils/utils");
 const { createTagsRelations } = require("../utils/util");
-const NodeCache = require( "node-cache" );
-const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30});
+const NodeCache = require("node-cache");
+const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30 });
 const uniqid = require("uniqid");
 const getTime = require("../../utils/getTime");
-exports.createGroup = async(req,res,next)=>{
-    const {grName,grDesc,country,tags} = req.body;
+exports.createGroup = async(req, res, next) => {
+    const { grName, grDesc, country, tags } = req.body;
     console.log("test")
     try {
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-            database: process.env.DBNAME ||'Hero'
+            database: process.env.DBNAME || 'Hero'
         })
         const test = await session
-        var gr = await session.run("match(g:Groupe{Name:$grName})return g",{
+        var gr = await session.run("match(g:Groupe{Name:$grName})return g", {
             grName
         })
         console.log(gr)
-        if(gr.records.length>0){
+        if (gr.records.length > 0) {
             return res.status(422).json("Groupe name already exists !");
         }
         console.log(gr.records.length)
-        //var account = await createAccount();
-        /*if(!account){
-            return res.status(500).send("stripe account creation failed !")
-        }*/
-        var result = await session.run("merge(g:Groupe{Name:$grName,Description:$grDesc,balance:$balance,accountId:$actId,members:$members})",{
+            //var account = await createAccount();
+            /*if(!account){
+                return res.status(500).send("stripe account creation failed !")
+            }*/
+        var result = await session.run("merge(g:Groupe{Name:$grName,Description:$grDesc,balance:$balance,accountId:$actId,members:$members})", {
             grName,
             grDesc,
-            balance:0,
-            actId:"",//account.id,
-            members:0
+            balance: 0,
+            actId: "", //account.id,
+            members: 0
         })
-        await createTagsRelations(grName,tags);
-        await session.run("match(g:Groupe{Name:$grName}) match(l:Location{Name:$country}) merge(g)-[:LOCATED_IN]->(l)",{
+        await createTagsRelations(grName, tags);
+        await session.run("match(g:Groupe{Name:$grName}) match(l:Location{Name:$country}) merge(g)-[:LOCATED_IN]->(l)", {
             grName,
             country
         });
@@ -44,78 +44,77 @@ exports.createGroup = async(req,res,next)=>{
     } catch (err) {
         if (!err.statusCode) {
             err.statusCode = 500;
-          }
-          return res.status(500).json(err)
+        }
+        return res.status(500).json(err)
     }
 }
 
 
-exports.getGroupe = async(req,res,next)=>{
-    const grName = req.params.grName.replace(":","");
+exports.getGroupe = async(req, res, next) => {
+    const grName = req.params.grName.replace(":", "");
     console.log(grName);
-    if(myCache.get("Get-Group")){
+    if (myCache.get("Get-Group")) {
         return res.status(200).json(myCache.get("Get-Group"));
     }
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: process.env.DBNAME ||'Hero',
-            defaultAccessMode: neo4j.session.READ
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
     })
-    const query = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Victories),(g)-[]-(l:Campaign) return g,k,l",{
+    const query = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Victories),(g)-[]-(l:Campaign) return g,k,l", {
         grName
     })
     console.log(query.records[0]._fields[2]);
     const singleRecord = query.records[0];
     const node = singleRecord.get(0);
-    myCache.set("Get-Group",node.properties);
+    console.log(node.properties)
+    myCache.set("Get-Group", node.properties);
     return res.status(200).json(node.properties);
 }
-exports.getMembers = async(req,res,next)=>{
+exports.getMembers = async(req, res, next) => {
     const grName = req.params.grName;
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: process.env.DBNAME ||'Hero',
-            defaultAccessMode: neo4j.session.READ
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
     })
-    var result = await session.run("match(a:Activist)-[:PART_OF]->(g:Groupe{Name:$grName}) return a",{
+    var result = await session.run("match(a:Activist)-[:PART_OF]->(g:Groupe{Name:$grName}) return a", {
         grName
     })
     let activists = []
-    result.records.map(record => activists.push(record.get(0).properties) )
+    result.records.map(record => activists.push(record.get(0).properties))
     return res.status(200).json(activists);
 
 }
-exports.getSupporters = async(req,res,next)=>{
-    const grName = req.params.grName.replace(":","");
+exports.getSupporters = async(req, res, next) => {
+    const grName = req.params.grName.replace(":", "");
     console.log(grName);
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: process.env.DBNAME ||'Hero',
-            defaultAccessMode: neo4j.session.READ
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
     })
-    var result = await session.run("match(c:Customer)-[l:JOINED]->(g:Groupe{Name:$grName}) return c order by l.date desc",{
+    var result = await session.run("match(c:Customer)-[l:JOINED]->(g:Groupe{Name:$grName}) return c order by l.date desc", {
         grName
     })
     let supporters = []
     result.records.map(record => {
-        if (record.get(0).properties.imageUrl != "")
-        {
-        var supporter = {
-            email:record.get(0).properties.email,
-            customerId:record.get(0).properties.CustomerId,
-            walletAddress: record.get(0).properties.walletAddress,
-            fullname :  record.get(0).properties.name + " " + record.get(0).properties.lastname,
-            profileImage : record.get(0).properties.imageUrl,
-            googleID : record.get(0).properties.googleId,
-            nbSupporters:result.records.length
+        if (record.get(0).properties.imageUrl != "") {
+            var supporter = {
+                email: record.get(0).properties.email,
+                customerId: record.get(0).properties.CustomerId,
+                walletAddress: record.get(0).properties.walletAddress,
+                fullname: record.get(0).properties.name + " " + record.get(0).properties.lastname,
+                profileImage: record.get(0).properties.imageUrl,
+                googleID: record.get(0).properties.googleId,
+                nbSupporters: result.records.length
+            }
+            supporters.push(supporter)
         }
-        supporters.push(supporter) 
-        }
-        if(supporters.length == 3 )
-        {
+        if (supporters.length == 3) {
             return res.status(200).json(supporters);
         }
     })
@@ -123,42 +122,41 @@ exports.getSupporters = async(req,res,next)=>{
 
 }
 
-exports.getAll = async(req,res)=>{
+exports.getAll = async(req, res) => {
     try {
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
-            database: process.env.DBNAME ||'Hero'
+            database: process.env.DBNAME || 'Hero'
         })
-        let groups=[];
-        const {tags,locations} = req.body;
-        if(tags.length==0 && locations.length != 0){
-            var result = await session.run("unwind $locations as loc match(g:Groupe)-[:LOCATED_IN]->(l:Location{Name:loc}) return g",{
+        let groups = [];
+        const { tags, locations } = req.body;
+        if (tags.length == 0 && locations.length != 0) {
+            var result = await session.run("unwind $locations as loc match(g:Groupe)-[:LOCATED_IN]->(l:Location{Name:loc}) return g", {
                 locations
             })
-        
-            result.records.map(record => groups.push(record.get(0).properties) )
+
+            result.records.map(record => groups.push(record.get(0).properties))
             return res.status(200).json(groups);
         }
-        if(locations.length==0 &&  tags.length != 0){
-            var result = await session.run("unwind $tags as tag match(g:Groupe)-[:INTEREST]->(t:Tag{Name:tag}) return g",{
+        if (locations.length == 0 && tags.length != 0) {
+            var result = await session.run("unwind $tags as tag match(g:Groupe)-[:INTEREST]->(t:Tag{Name:tag}) return g", {
                 tags
             })
-        
-            result.records.map(record => groups.push(record.get(0).properties) )
+
+            result.records.map(record => groups.push(record.get(0).properties))
             return res.status(200).json(groups);
-        }
-        else if(locations.length != 0 && tags.length != 0){
-            var result = await session.run("unwind $tags as tags unwind $locations as loc match(t:Tag{Name:tags})<-[:INTEREST]-(g:Groupe)-[:LOCATED_IN]->(l:Location{Name:loc}) return g",{
+        } else if (locations.length != 0 && tags.length != 0) {
+            var result = await session.run("unwind $tags as tags unwind $locations as loc match(t:Tag{Name:tags})<-[:INTEREST]-(g:Groupe)-[:LOCATED_IN]->(l:Location{Name:loc}) return g", {
                 tags,
                 locations
             })
-        
-            result.records.map(record => groups.push(record.get(0).properties) )
+
+            result.records.map(record => groups.push(record.get(0).properties))
             return res.status(200).json(groups);
-        }else{
+        } else {
             var result = await session.run("match(g:Groupe)return g");
-            result.records.map(record => groups.push(record.get(0).properties) );
+            result.records.map(record => groups.push(record.get(0).properties));
             return res.status(200).json(groups);
         }
     } catch (err) {
@@ -168,112 +166,143 @@ exports.getAll = async(req,res)=>{
 
 
 
-exports.addMedia = async(req,res,next)=>{
-    const {groupe,url,desc,title,typeMedia} = req.body;
+exports.addMedia = async(req, res, next) => {
+    const { groupe, url, desc, title, typeMedia } = req.body;
     const id = uniqid();
-    await initDriver();
-   var driver = getdriver();
-   var session = driver.session({
-           database: process.env.DBNAME ||'Hero',
-           defaultAccessMode: neo4j.session.WRITE
-   })
-   await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)",{
-       title,
-       url:url || "",
-       groupe,
-       desc,
-       id,
-       time:getTime(),
-       typeMedia:typeMedia||""
-   });
-   return res.status(200).json("Media added successfully !")
-}
-
-exports.getFeed = async(req,res)=>{
-    const {cercle,page}= req.body ;
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: process.env.DBNAME ||'Hero',
-            defaultAccessMode: neo4j.session.READ
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.WRITE
+    })
+    await session.run("merge(p:Post{id:$id,title:$title,description:$desc,media:$url,type:$typeMedia,time:$time}) with p as p match(g:Groupe{Name:$groupe}) merge(g)-[:CREATED]->(p)", {
+        title,
+        url: url || "",
+        groupe,
+        desc,
+        id,
+        time: getTime(),
+        typeMedia: typeMedia || ""
+    });
+    return res.status(200).json("Media added successfully !")
+}
+
+exports.getFeed = async(req, res) => {
+    const { cercle, page } = req.body;
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;
-    const skip = (page*limit)-limit;
+    const skip = (page * limit) - limit;
     const result = await session.run(`match(g:Groupe{Name:$cercle})-[:CREATED]->(n:Post)
     return n 
     order by n.time
     skip $skip
     limit toInteger($limit)
-    `,{
+    `, {
         cercle,
-        skip:neo4j.int(skip),
-        limit:neo4j.int(limit)
+        skip: neo4j.int(skip),
+        limit: neo4j.int(limit)
     })
     var posts = [];
-    result.records.map(record => posts.push(record.get(0).properties) )
+    result.records.map(record => posts.push(record.get(0).properties))
     return res.status(200).json(result.records)
 }
 
-exports.getComments = async(req,res)=>{
-    const {postId,page} = req.body;
+exports.getComments = async(req, res) => {
+    const { postId, page } = req.body;
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: process.env.DBNAME ||'Hero',
-            defaultAccessMode: neo4j.session.READ
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;
-    const skip = (page*limit)-limit;
-    const result = await session.run("match(p:Post{id:$postId})-[c:COMMENTED]-(n) return c skip $skip limit $limit",{
+    const skip = (page * limit) - limit;
+    const result = await session.run("match(p:Post{id:$postId})-[c:COMMENTED]-(n) return c skip $skip limit $limit", {
         postId,
-        skip:neo4j.int(skip),
-        limit:neo4j.int(limit)
+        skip: neo4j.int(skip),
+        limit: neo4j.int(limit)
     });
     var comments = [];
-    result.records.map(record => comments.push(record.get(0).properties) )
-    return res.status(200).json({comments})
+    result.records.map(record => comments.push(record.get(0).properties))
+    return res.status(200).json({ comments })
 
 }
 
 
-exports.getLikes = async(req,res)=>{
-    const {postId,page} = req.body;
+exports.getLikes = async(req, res) => {
+    const { postId, page } = req.body;
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database:process.env.DBNAME ||'Hero',
-            defaultAccessMode: neo4j.session.READ
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;
-    const skip = (page*limit)-limit;
-    const result = await session.run("match(p:Post{id:$postId})-[c:LIKE]-(n) return c skip $skip limit $limit",{
+    const skip = (page * limit) - limit;
+    const result = await session.run("match(p:Post{id:$postId})-[c:LIKE]-(n) return c skip $skip limit $limit", {
         postId,
-        skip:neo4j.int(skip),
-        limit:neo4j.int(limit)
+        skip: neo4j.int(skip),
+        limit: neo4j.int(limit)
     });
     var likes = [];
-    result.records.map(record => likes.push(record.get(0).properties) )
-    return res.status(200).json({likes})
+    result.records.map(record => likes.push(record.get(0).properties))
+    return res.status(200).json({ likes })
 
 }
 
-exports.getDislikes = async(req,res)=>{
-    const {postId,page} = req.body;
+exports.getDislikes = async(req, res) => {
+    const { postId, page } = req.body;
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: process.env.DBNAME ||'Hero',
-            defaultAccessMode: neo4j.session.READ
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
     })
     const limit = 10;
-    const skip = (page*limit)-limit;
-    const result = await session.run("match(p:Post{id:$postId})-[c:DISLIKE]-(n) return c skip $skip limit $limit",{
+    const skip = (page * limit) - limit;
+    const result = await session.run("match(p:Post{id:$postId})-[c:DISLIKE]-(n) return c skip $skip limit $limit", {
         postId,
-        skip:neo4j.int(skip),
-        limit:neo4j.int(limit)
+        skip: neo4j.int(skip),
+        limit: neo4j.int(limit)
     });
     var dislikes = [];
-    result.records.map(record => dislikes.push(record.get(0).properties) )
-    return res.status(200).json({dislikes})
+    result.records.map(record => dislikes.push(record.get(0).properties))
+    return res.status(200).json({ dislikes })
+
+}
+exports.getCirleInformation = async(req, res, next) => {
+    const grName = req.params.grName.replace(":", "");
+    console.log(grName);
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
+    })
+    const result = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Victories),(g)-[]-(l:Campaign) match(c:Customer)-[J:JOINED]->(g:Groupe{Name:$grName}) return c,g,k,l", {
+        grName
+    })
+
+    let Infos = []
+    result.records.map(record => {
+        var info = {
+            desciption: record.get(3).properties.Desciption,
+            name: record.get(1).properties.Name,
+            members: record.get(1).properties.members.low,
+            nbSupporters: result.records.length,
+            media: record.get(1).properties.Media,
+            imageUrl: record.get(0).properties.imageUrl
+        }
+        Infos.push(info)
+
+        if (Infos.length == result.records.length) {
+            return res.status(200).json(Infos);
+        }
+    })
 
 }

@@ -41,6 +41,8 @@ const ProviderNetwork = "https://alfajores-forno.celo-testnet.org";
 const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0eb";
 const Neo4jPass = '87h0u74+-*/';
+
+const dev=true;
 db.coins = new Datastore("./utils/_db/coins.db");
 
 
@@ -1041,19 +1043,24 @@ app.post("/HistoryTransactions", async(req, res) => {
     res.end(JSON.stringify(Tx));
 
 });
+if (!dev)
+{
 const options = {
     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
     cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
   
 };
-
-/*app.listen(process.env.PORT || 8000, () => {
+const server = https.createServer(options,app);
+server.listen(8082);
+}
+else
+{
+app.listen(process.env.PORT || 8000, () => {
 
     console.log("Serveur à l'écoute on ");
 
 });
-*/
+
+}
 
 
-const server = https.createServer(options,app);
-server.listen(8082);

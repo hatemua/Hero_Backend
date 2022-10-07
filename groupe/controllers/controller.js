@@ -95,7 +95,6 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
         defaultAccessMode: neo4j.session.READ
     })
     let queryPrincipal = await session.run("match (c:Tag) return c.title")
-    console.log(queryPrincipal.records);
     Tags = [];
     queryPrincipal.records.map(record => {
 
@@ -106,7 +105,6 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
         })
     });
 
-    console.log(Tags);
     let query;
     query = await session.run("match(n:Groupe)-[]-(l:Videos) where  n.priotity=1 return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType")
 
@@ -123,20 +121,21 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
     const singleRecord = query.records[0];
     const node = singleRecord.get(0);
     myCache.set("Get-Group",node.properties);*/
-    const resu = []
+    const MM = {}
     query.records.map(record => {
-        resu.push({
-            nameCircle: record.get(0),
-            circleDesc: record.get(1),
+            MM["Principal"] = {
+                nameCircle: record.get(0),
+                circleDesc: record.get(1),
 
-            videoPath: record.get(2),
-            videoAffiche: record.get(3),
-            videoDefault: record.get(4),
-            videoId: record.get(5).low,
-            mimeType: record.get(6)
-        })
+                videoPath: record.get(2),
+                videoAffiche: record.get(3),
+                videoDefault: record.get(4),
+                videoId: record.get(5).low,
+                mimeType: record.get(6)
+            }
+        }
 
-    })
+    )
 
     let str = "";
     for (var f = 0; f < Tags.length; f++) {
@@ -146,47 +145,45 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
             str = str + " OR " + "b.title='" + Tags[f] + "'";
         }
     }
-    console.log(str);
-    const resuFinal = [];
 
     let queryFinal = await session.run("match(n:Groupe)-[]-(l:Videos) match(n:Groupe)-[]-(b:Tag) where " + str + " return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType , b.title as tags")
 
-    resFinal = [];
     queryFinal.records.map(record => {
         resFinalTags = [];
-        MM = [];
         for (var l = 0; l < Tags.length; l++) {
             if (record._fields[record._fields.length - 1] == Tags[l]) {
-                resFinalTags.push({
+                resFinalTags = {
 
-                        nameCircle: record._fields[0],
-                        circleDesc: record._fields[1],
+                    nameCircle: record._fields[0],
+                    circleDesc: record._fields[1],
 
-                        videoPath: record._fields[2],
-                        videoAffiche: record._fields[3],
-                        videoDefault: record._fields[4],
-                        videoId: record._fields[5].low,
-                        mimeType: record._fields[6]
+                    videoPath: record._fields[2],
+                    videoAffiche: record._fields[3],
+                    videoDefault: record._fields[4],
+                    videoId: record._fields[5].low,
+                    mimeType: record._fields[6]
 
-                    }
+                }
 
-                );
+                MM[Tags[l]] = resFinalTags
+
             }
-            MM = [{ tags: Tags[l], datas: resFinalTags }]
 
         }
 
-        resFinal.push(MM);
     });
 
+    console.log("MM");
+    console.log(MM);
 
-
-
+    res.end(
+        JSON.stringify(
+            MM
+        )
+    );
 
     //console.log(resu);
-    const d = { principal: resu, withTags: resFinal };
 
-    return res.status(200).json(d);
 }
 exports.getMembers = async(req, res, next) => {
     const grName = req.params.grName;

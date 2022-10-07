@@ -414,7 +414,6 @@ exports.getCirleInformation = async(req, res, next) => {
     supporters.push({
         name: result.records[0].get(0).properties.name,
         picture: result.records[0].get(0).properties.imageUrl,
-
     })
 
     let histroies = [];
@@ -422,22 +421,21 @@ exports.getCirleInformation = async(req, res, next) => {
         result.records[0].get(2).properties.Description)
 
     let Infos = []
-    result.records.map(record => {
-        var info = {
-            name: record.get(1).properties.Name,
-            desciption: record.get(3).properties.Desciption,
-            video: record.get(1).properties.Media,
-            videoPoster: record.get(0).properties.imageUrl,
-            mobilizers: mobilizers,
-            supporters: supporters,
-            histroies: histroies,
-            nextHistory: record.get(2).properties.status,
-        }
-        Infos.push(info)
+    record = result.records[0]
+    console.log(record)
+    var info = {
+        name: record.get(1).properties.Name,
+        desciption: record.get(3).properties.Desciption,
+        video: record.get(1).properties.Media,
+        videoPoster: record.get(0).properties.imageUrl,
+        mobilizers: mobilizers,
+        supporters: supporters,
+        histroies: histroies,
+        nextHistory: record.get(2).properties.status,
+    }
 
-        if (Infos.length == result.records.length) {
-            return res.status(200).json(Infos);
-        }
-    })
+    return res.status(200).json(info);
+
+
 
 }

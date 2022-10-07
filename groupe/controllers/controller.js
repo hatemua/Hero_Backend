@@ -284,19 +284,42 @@ exports.getCirleInformation = async(req, res, next) => {
         database: process.env.DBNAME || 'Hero',
         defaultAccessMode: neo4j.session.READ
     })
-    const result = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Victories),(g)-[]-(l:Campaign) match(c:Customer)-[J:JOINED]->(g:Groupe{Name:$grName}) return c,g,k,l", {
+    const result = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Victories),(g)-[]-(l:Campaign),(g)-[]-(m:Activist) match(c:Customer)-[J:JOINED]->(g:Groupe{Name:$grName}) return c,g,k,l,m", {
         grName
+    })
+    let mobilizers = [];
+
+    mobilizers.push({
+        name: result.records[0].get(4).properties.Name,
+        address: result.records[0].get(4).properties.address,
+        picture: result.records[0].get(4).properties.imgProfil,
+
+    })
+
+    let supporters = [];
+    supporters.push({
+        name: result.records[0].get(0).properties.name,
+        picture: result.records[0].get(0).properties.imageUrl,
+
+    })
+
+    let histroies = [];
+    histroies.push({
+        histroies: result.records[0].get(2).properties.Description,
+
     })
 
     let Infos = []
     result.records.map(record => {
         var info = {
-            desciption: record.get(3).properties.Desciption,
             name: record.get(1).properties.Name,
-            members: record.get(1).properties.members.low,
-            nbSupporters: result.records.length,
-            media: record.get(1).properties.Media,
-            imageUrl: record.get(0).properties.imageUrl
+            desciption: record.get(3).properties.Desciption,
+            video: record.get(1).properties.Media,
+            videoPoster: record.get(0).properties.imageUrl,
+            mobilizers: mobilizers,
+            supporters: supporters,
+            histroies: histroies,
+            nextHistory: record.get(2).properties.status,
         }
         Infos.push(info)
 

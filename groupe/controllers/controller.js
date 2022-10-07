@@ -421,10 +421,8 @@ exports.getCirleInformation = async(req, res, next) => {
     })
 
     let histroies = [];
-    histroies.push({
-        histroies: result.records[0].get(2).properties.Description,
-
-    })
+    histroies.push(
+        result.records[0].get(2).properties.Description)
 
     let Infos = []
     result.records.map(record => {

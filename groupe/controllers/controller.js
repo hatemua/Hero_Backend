@@ -6,6 +6,7 @@ const NodeCache = require( "node-cache" );
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30});
 const uniqid = require("uniqid");
 const getTime = require("../../utils/getTime");
+const { checkProperties } = require("ethers/lib/utils");
 exports.createGroup = async(req,res,next)=>{
     const {grName,grDesc,country,tags} = req.body;
     console.log("test")
@@ -71,28 +72,55 @@ exports.getGroupe = async(req,res,next)=>{
     myCache.set("Get-Group",node.properties);
     return res.status(200).json(node.properties);
 }
-exports.getVideosByCirclesTag = async(req,res,next)=>{
-    const {tags,principal} = req.body;
+const getvideoByTag = async (Tags) => {
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
             database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
+    query = await session.run("match(n:Groupe)-[]-(l:Videos) where $tags in n.Tags return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType",{
+        tags:Tags
+    })
+  
+  
+    return query;
+}
+exports.getVideosByCirclesTag = async(req,res,next)=>{
+    
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: process.env.DBNAME ||'Hero',
+            defaultAccessMode: neo4j.session.READ
+    })
+    let queryPrincipal = await session.run("match (c:Tag) return c.title")  
+    console.log(queryPrincipal.records);
+    Tags=[];
+    queryPrincipal.records.map(record => {
+        
+        record._fields.map( tag => {
+            if (tag!=null)
+            {
+            Tags.push(tag);
+            }
+        }
+        )
+    });
+
+    console.log(Tags);
     let query;
-    if (tags)
-    {
-    tags == tags.lowercase();   
+    query = await session.run("match(n:Groupe)-[]-(l:Videos) where  n.priotity=1 return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType")  
+    
+    /*tags == tags.lowercase();   
     query = await session.run("match(n:Groupe)-[]-(l:Videos) where $tags in n.Tags return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType",{
         tags
     })
-    }
-    else if(principal)
-    {
-        console.log(principal);
+    }*/
+   
+        //console.log(principal);
 
-        query = await session.run("match(n:Groupe)-[]-(l:Videos) where  n.priotity=1 return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType")  
-    }
+    
     /*console.log(query.records[0]._fields[0]);
     const singleRecord = query.records[0];
     const node = singleRecord.get(0);
@@ -111,8 +139,63 @@ exports.getVideosByCirclesTag = async(req,res,next)=>{
         })
         
         } )
+
+        let str = "";
+        for (var f=0 ; f< Tags.length ; f++)
+        {  
+            if(str=="")
+            {
+                str="b.title='"+Tags[f]+"'";
+            }
+            else{
+            str=str + " OR " + "b.title='"+Tags[f]+"'";
+            }
+        }
+        console.log(str);
+    const resuFinal = [];
+    
+    let queryFinal = await session.run("match(n:Groupe)-[]-(l:Videos) match(n:Groupe)-[]-(b:Tag) where "+str+" return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType , b.title as tags"
+    )  
+     
+    resFinal=[];
+    queryFinal.records.map(record => {
+        resFinalTags=[];
+        MM=[];
+            for (var l=0 ; l< Tags.length;l++ )
+                {
+                   if (record._fields[record._fields.length-1] == Tags[l])
+                   {
+                    resFinalTags.push(
+                        {
+                            
+                                nameCircle:record._fields[0],
+                                circleDesc:record._fields[1],
+                
+                                videoPath:record._fields[2],
+                                videoAffiche:record._fields[3],
+                                videoDefault:record._fields[4],
+                                videoId:record._fields[5].low,
+                                mimeType:  record._fields[6]
+                        
+                        }
+                        
+                        );
+                   }
+                   MM=[{tags:Tags[l],datas:resFinalTags}]
+
+                }
+            
+                resFinal.push(MM);
+    });
+
+      
+
+
+ 
     //console.log(resu);
-    return res.status(200).json(resu);
+    const d = {principal:resu,withTags:resFinal};
+    
+    return res.status(200).json(d);
 }
 exports.getMembers = async(req,res,next)=>{
     const grName = req.params.grName;

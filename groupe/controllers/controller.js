@@ -433,9 +433,5 @@ exports.getCirleInformation = async(req, res, next) => {
         histroies: histroies,
         nextHistory: record.get(2).properties.status,
     }
-
     return res.status(200).json(info);
-
-
-
 }

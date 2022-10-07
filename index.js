@@ -230,21 +230,15 @@ const pinJSONToIPFS = async(pinataApiKey, pinataSecretApiKey, JSONBody) => {
         });
 };
 app.use(stripeRoutes);
-<<<<<<< HEAD
 app.use("/circle",groupeRoutes);
 app.use("/mobelizer",activistRoutes);
 app.use("/supporter",customerRoutes);
 app.use("/stream",videostream);
 app.post("/TestDecrypt", async (req, res) => {
   console.log(AESDecryption("0033143485548+-*/","WiKHiqsSUNJqFSg/5jCnDDEY064fCdgF"));
-=======
 app.use("/circle", groupeRoutes);
 app.use("/mobelizer", activistRoutes);
 app.use("/supporter", customerRoutes);
-app.post("/TestDecrypt", async(req, res) => {
-    console.log(AESDecryption("0033143485548+-*/", "WiKHiqsSUNJqFSg/5jCnDDEY064fCdgF"));
->>>>>>> backend_Dev/252_getcircleinformation
-});
 
 app.post("/createTag", async(req, res) => {
     console.log("ddd")

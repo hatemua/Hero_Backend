@@ -1053,8 +1053,7 @@ if (dev=="Test")
 {
 const options = {
     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
-    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
-  
+    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')  
 };
 const server = https.createServer(options,app);
 server.listen(8082);

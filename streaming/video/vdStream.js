@@ -14,7 +14,7 @@ router.get("/get-video/:vdName", async function (req, res) {
     /*if(path.extname(videoPath) != ".mp4"){
         return res.status(400).json("Invalid video Format !")
     }*/
-    const range = req.headers.range;
+    let range = req.headers.range;
     if (!range) {
         range=0;
     }

@@ -42,7 +42,7 @@ const contractAddress = "0x79c0A6Fa247216bF70EEc3E85E554Ee6cD04Fa66";
 const privKey = "713b86cbd9689ccc2bd09bf4ca9030e4e3b4e484d7161b05dc45239ebdcaa0eb";
 const Neo4jPass = '87h0u74+-*/';
 
-const dev=true;
+const dev=process.env.DEV;
 db.coins = new Datastore("./utils/_db/coins.db");
 
 
@@ -1049,7 +1049,7 @@ app.post("/HistoryTransactions", async(req, res) => {
     res.end(JSON.stringify(Tx));
 
 });
-if (!dev)
+if (dev=="Test")
 {
 const options = {
     key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
@@ -1059,7 +1059,7 @@ const options = {
 const server = https.createServer(options,app);
 server.listen(8082);
 }
-else
+else if(dev == "Dev")
 {
 app.listen(process.env.PORT || 8000, () => {
 

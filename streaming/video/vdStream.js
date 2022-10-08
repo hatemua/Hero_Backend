@@ -67,7 +67,7 @@ const path = "uploads/"+vdName
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
       'Content-Length': chunksize,
-      'Content-Type': 'video/mp4',
+      'Content-Type': 'video/avi',
     }
 
     res.writeHead(206, head)
@@ -75,7 +75,7 @@ const path = "uploads/"+vdName
   } else {
     const head = {
       'Content-Length': fileSize,
-      'Content-Type': 'video/mp4',
+      'Content-Type': 'video/avi',
     }
     res.writeHead(200, head)
     fs.createReadStream(path).pipe(res)

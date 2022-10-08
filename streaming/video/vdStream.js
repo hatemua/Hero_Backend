@@ -48,7 +48,6 @@ const path = "uploads/"+vdName
   console.log(stat);
   const fileSize = stat.size
   const range = "0"
-  if (range) {
     const parts = range.replace(/bytes=/, "").split("-")
     const start = parseInt(parts[0], 10)
     const end = parts[1]
@@ -71,14 +70,14 @@ const path = "uploads/"+vdName
 
     res.writeHead(206, head)
     file.pipe(res)
-  } else {
+ /* } else {
     const head = {
       'Content-Length': fileSize,
       'Content-Type': 'video/avi',
     }
     res.writeHead(200, head)
     fs.createReadStream(path).pipe(res)
-  }
+  }*/
 
 });
 module.exports = router;

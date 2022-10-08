@@ -20,7 +20,7 @@ router.get("/get-video/:vdName", async function (req, res) {
     }
     const videoSize = fs.statSync(videoPath).size;
     const CHUNK_SIZE = 10 ** 6;
-    const start = Number(range.replace(/\D/g, ""));
+    const start = 0;
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
     const contentLength = end - start + 1;
     const headers = {

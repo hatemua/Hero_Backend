@@ -174,6 +174,23 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
         
     });
     console.log(Tags[l],resFinalTags)
+    if(resFinalTags.length <= 6)
+    {
+        for (let ind=0;ind<= 6- resFinalTags.length ;ind++)
+        {
+            resFinalTags.push({nameCircle: "",
+                    circleDesc: "",
+
+                    videoPath: "",
+                    videoAffiche: "",
+                    videoDefault: "",
+                    videoId: "",
+                    mimeType: "",
+                    tag:""
+        }
+                    ) 
+        }
+    }
     x.push({tag:Tags[l],videos:resFinalTags})
 }
 

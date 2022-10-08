@@ -388,6 +388,12 @@ app.get("/getFile:file", async(req, response) => {
         case '.wav':
             contentType = 'audio/wav';
             break;
+        case '.mp4':
+              contentType = 'audio/mp4';
+              break;
+       case '.avi':
+                contentType = 'audio/avi';
+                break;
     }
     console.log("./uploads/" + file);
     fs.readFile("./uploads/" + file, function(error, content) {

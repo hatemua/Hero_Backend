@@ -16,7 +16,7 @@ router.get("/get-video/:vdName", async function (req, res) {
     }*/
     const range = req.headers.range;
     if (!range) {
-        res.status(400).json("Requires Range header");
+        range=0;
     }
     const videoSize = fs.statSync(videoPath).size;
     const CHUNK_SIZE = 10 ** 6;

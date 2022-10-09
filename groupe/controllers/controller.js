@@ -126,11 +126,12 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
             MM["Principal"] = {
                 nameCircle: record.get(0),
                 circleDesc: record.get(1),
-
+                
                 videoPath: record.get(2),
                 videoAffiche: record.get(3),
                 videoDefault: record.get(4),
                 videoId: record.get(5).low,
+
                 mimeType: record.get(6)
             }
         }
@@ -146,7 +147,7 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
         }
     }
 
-    let queryFinal = await session.run("match(n:Groupe)-[]-(l:Videos) match(n:Groupe)-[]-(b:Tag) where " + str + " return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType , b.title as tags")
+    let queryFinal = await session.run("match(n:Groupe)-[]-(l:Videos) match(n:Groupe)-[]-(b:Tag) where " + str + " return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType ,l.VideoCard as VideoCard, b.title as tags")
     let x =[];
     for (var l = 0; l < Tags.length; l++) {
         resFinalTags = [];
@@ -157,12 +158,12 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
 
                     nameCircle: record._fields[0],
                     circleDesc: record._fields[1],
-
                     videoPath: record._fields[2],
                     videoAffiche: record._fields[3],
                     videoDefault: record._fields[4],
                     videoId: record._fields[5].low,
                     mimeType: record._fields[6],
+                    VideoCard: record._fields[7],
                     tag:record._fields[record._fields.length - 1]
 
                 })
@@ -180,12 +181,12 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
         {
             resFinalTags.push({nameCircle: "",
                     circleDesc: "",
-
                     videoPath: "",
                     videoAffiche: "",
                     videoDefault: "",
                     videoId: "",
                     mimeType: "",
+                    VideoCard: "",
                     tag:""
         }
                     ) 

@@ -65,7 +65,7 @@ const path = "uploads/"+vdName
       'Content-Range': `bytes ${start}-${end}/${fileSize}`,
       'Accept-Ranges': 'bytes',
       'Content-Length': chunksize,
-      'Content-Type': 'video/avi',
+      'Content-Type': 'video/mp4',
     }
 
     res.writeHead(206, head)

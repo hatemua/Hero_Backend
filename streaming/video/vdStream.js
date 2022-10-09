@@ -47,7 +47,7 @@ const path = "uploads/"+vdName
   const stat = fs.statSync(path)
   console.log(stat);
   const fileSize = stat.size
-  const range = "0"
+  const range = req.headers.range;
     const parts = range.replace(/bytes=/, "").split("-")
     const start = parseInt(parts[0], 10)
     const end = parts[1]

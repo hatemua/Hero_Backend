@@ -126,7 +126,7 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
             MM["Principal"] = {
                 nameCircle: record.get(0),
                 circleDesc: record.get(1),
-                
+
                 videoPath: record.get(2),
                 videoAffiche: record.get(3),
                 videoDefault: record.get(4),
@@ -148,11 +148,11 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
     }
 
     let queryFinal = await session.run("match(n:Groupe)-[]-(l:Videos) match(n:Groupe)-[]-(b:Tag) where " + str + " return n.Name as circleName,n.Description as circleDesc,l.path as videoPath,l.affiche as videoAffiche,l.default as videoDefault,l.id as videoId,l.MimeType as mimeType ,l.VideoCard as VideoCard, b.title as tags")
-    let x =[];
+    let x = [];
     for (var l = 0; l < Tags.length; l++) {
         resFinalTags = [];
-    queryFinal.records.map(record => {
-        
+        queryFinal.records.map(record => {
+
             if (record._fields[record._fields.length - 1] == Tags[l]) {
                 resFinalTags.push({
 
@@ -164,7 +164,7 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
                     videoId: record._fields[5].low,
                     mimeType: record._fields[6],
                     VideoCard: record._fields[7],
-                    tag:record._fields[record._fields.length - 1]
+                    tag: record._fields[record._fields.length - 1]
 
                 })
 
@@ -172,14 +172,13 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
             }
 
 
-        
-    });
-    console.log(Tags[l],resFinalTags)
-    if(resFinalTags.length <= 6)
-    {
-        for (let ind=0;ind<= 6- resFinalTags.length ;ind++)
-        {
-            resFinalTags.push({nameCircle: "",
+
+        });
+        console.log(Tags[l], resFinalTags)
+        if (resFinalTags.length <= 6) {
+            for (let ind = 0; ind <= 6 - resFinalTags.length; ind++) {
+                resFinalTags.push({
+                    nameCircle: "",
                     circleDesc: "",
                     videoPath: "",
                     videoAffiche: "",
@@ -187,21 +186,18 @@ exports.getVideosByCirclesTag = async(req, res, next) => {
                     videoId: "",
                     mimeType: "",
                     VideoCard: "",
-                    tag:""
+                    tag: ""
+                })
+            }
         }
-                    ) 
-        }
+        x.push({ tag: Tags[l], videos: resFinalTags })
     }
-    x.push({tag:Tags[l],videos:resFinalTags})
-}
 
     console.log("MM");
     console.log(x);
 
     res.end(
-        JSON.stringify(
-            {Principal:MM.Principal,Videos:x}
-        )
+        JSON.stringify({ Principal: MM.Principal, Videos: x })
     );
 
     //console.log(resu);

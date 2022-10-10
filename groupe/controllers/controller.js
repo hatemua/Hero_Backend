@@ -416,6 +416,7 @@ exports.getCirleInformation = async(req, res, next) => {
         database: process.env.DBNAME || 'Hero',
         defaultAccessMode: neo4j.session.READ
     })
+
     const result = await session.run("match(g:Groupe{Name:$grName})-[]-(l:Campaign),(g)-[]-(m:Activist) match(c:Customer)-[J:JOINED]->(g:Groupe{Name:$grName}) return c,g,l,m", {
         grName
     })
@@ -451,7 +452,7 @@ exports.getCirleInformation = async(req, res, next) => {
     console.log(record)
     var info = {
         name: record.get(1).properties.Name,
-        desciption: record.get(3).properties.Desciption,
+        desciption: record.get(2).properties.Desciption,
         video: record.get(1).properties.Media,
         videoPoster: record.get(0).properties.imageUrl,
         mobilizers: mobilizers,

@@ -398,28 +398,36 @@ exports.getCirleInformation = async(req, res, next) => {
         database: process.env.DBNAME || 'Hero',
         defaultAccessMode: neo4j.session.READ
     })
-    const result = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Victories),(g)-[]-(l:Campaign),(g)-[]-(m:Activist) match(c:Customer)-[J:JOINED]->(g:Groupe{Name:$grName}) return c,g,k,l,m", {
+    const result = await session.run("match(g:Groupe{Name:$grName})-[]-(l:Campaign),(g)-[]-(m:Activist) match(c:Customer)-[J:JOINED]->(g:Groupe{Name:$grName}) return c,g,l,m", {
+        grName
+    })
+    const result2 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Moments) where k.Status='before' return g,k", {
+        grName
+    })
+    const result3 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Moments) where k.Status='next' return g,k", {
+        grName
+    })
+    const result4 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Activist)  return g,k", {
+        grName
+    })
+    const result5 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Customer)  return g,k", {
         grName
     })
     let mobilizers = [];
-
-    mobilizers.push({
-        name: result.records[0].get(4).properties.Name,
-        address: result.records[0].get(4).properties.address,
-        picture: result.records[0].get(4).properties.imgProfil,
-
-    })
-
+    result4.records.map(record => mobilizers.push({
+        name: record.get(1).properties.Name,
+        address: record.get(1).properties.address,
+        picture: record.get(1).properties.imgProfil,
+        media: record.get(1).properties.Media,
+        Socials: record.get(1).properties.Socials,
+    }))
     let supporters = [];
-    supporters.push({
-        name: result.records[0].get(0).properties.name,
-        picture: result.records[0].get(0).properties.imageUrl,
-    })
-
+    result5.records.map(record => supporters.push({
+        name: record.get(1).properties.name,
+        picture: record.get(1).properties.imageUrl,
+    }))
     let histroies = [];
-    histroies.push(
-        result.records[0].get(2).properties.Description)
-
+    result2.records.map(record => histroies.push(record.get(1).properties.Description))
     let Infos = []
     record = result.records[0]
     console.log(record)
@@ -431,7 +439,7 @@ exports.getCirleInformation = async(req, res, next) => {
         mobilizers: mobilizers,
         supporters: supporters,
         histroies: histroies,
-        nextHistory: record.get(2).properties.status,
+        nextHistory: result3.records[0].get(1).properties.Description
     }
     return res.status(200).json(info);
 }

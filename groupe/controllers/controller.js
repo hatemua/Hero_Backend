@@ -452,7 +452,7 @@ exports.getCirleInformation = async(req, res, next) => {
     let histroies = [];
     result2.records.map(record => histroies.push(record.get(1).properties.description))
     let nextHistroies;
-    nextHistroies = "The UK government declared a climate emergency after a shut down of London for 10 days."
+    nextHistroies = "Don’t miss out on the next one! Support this Circle and acces exclusive updates."
     record = result.records[0]
     console.log(record)
     var info = {

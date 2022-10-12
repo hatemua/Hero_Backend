@@ -459,7 +459,7 @@ exports.getCirleInformation = async(req, res, next) => {
         name: record.get(1).properties.Name,
         desciption: record.get(2).properties.Desciption,
         video: result6.records[0].get(1).properties.path,
-        videoPoster: record.get(0).properties.imageUrl,
+        videoPoster: result6.records[0].get(1).properties.affiche,
         mobilizers: mobilizers,
         supporters: supporters,
         histroies: histroies,

@@ -74,8 +74,29 @@ exports.getActivistByAccID= async(req,res,next)=>{
     var result = await session.run("match(a:Activist{accountId:$accountId})-[]-(c:Moments) return a.Name as name,a.accountId as username,a.address as address,a.description as description,a.Socials as Socials,a.Media as video,a.imgProfil as videoPoster,c.description as historicMoments",{accountId});
     
     let Memories=[]
-    result.records.map(record => Memories.push(record._fields[7]) )
-    let activist = {
+    result.records?.map(record => Memories.push(record._fields[7]) )
+    let activist={}
+    if (Memories.length==0)
+    {       var result = await session.run("match(a:Activist{accountId:$accountId}) return a.Name as name,a.accountId as username,a.address as address,a.description as description,a.Socials as Socials,a.Media as video,a.imgProfil as videoPoster",{accountId});
+        
+        activist = {
+            name: result.records[0]._fields[0],
+        username: result.records[0]._fields[1],
+        address: result.records[0]._fields[2],
+        description:
+        result.records[0]._fields[3],
+        socialNetworks: JSON.parse(result.records[0]._fields[4]),
+        video: result.records[0]._fields[5],
+        videoPoster: result.records[0]._fields[6],
+        historicMoments: Memories,
+        nextMoment:
+          "Don’t miss out on the next one! Support this Circle and acces exclusive updates.",
+    
+        };
+        return res.status(200).json(activist)
+
+    }
+    activist = {
         name: result.records[0]._fields[0],
     username: result.records[0]._fields[1],
     address: result.records[0]._fields[2],

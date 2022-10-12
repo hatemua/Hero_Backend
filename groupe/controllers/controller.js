@@ -462,7 +462,7 @@ exports.getCirleInformation = async(req, res, next) => {
         mobilizers: mobilizers,
         supporters: supporters,
         histroies: histroies,
-        nextHistory: nextHistroies
+        nextHistory: nextHistroies,
     }
     return res.status(200).json(info);
 }

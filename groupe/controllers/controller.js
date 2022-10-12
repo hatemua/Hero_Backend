@@ -420,16 +420,19 @@ exports.getCirleInformation = async(req, res, next) => {
     const result = await session.run("match(g:Groupe{Name:$grName})-[]-(l:Campaign),(g)-[]-(m:Activist) match(c:Customer)-[J:JOINED]->(g:Groupe{Name:$grName}) return c,g,l,m", {
         grName
     })
-    const result2 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Moments) where k.Status='before' return g,k", {
+    const result2 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Moments) return g,k", {
         grName
     })
-    const result3 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Moments) where k.Status='next' return g,k", {
+    const result3 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Moments)  return g,k", {
         grName
     })
     const result4 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Activist)  return g,k", {
         grName
     })
     const result5 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Customer)  return g,k", {
+        grName
+    })
+    const result6 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Videos)  return g,k", {
         grName
     })
     let mobilizers = [];
@@ -446,19 +449,19 @@ exports.getCirleInformation = async(req, res, next) => {
         picture: record.get(1).properties.imageUrl,
     }))
     let histroies = [];
-    result2.records.map(record => histroies.push(record.get(1).properties.Description))
-    let Infos = []
+    result2.records.map(record => histroies.push(record.get(1).properties.description))
+    let nextHistroies = [];
     record = result.records[0]
     console.log(record)
     var info = {
         name: record.get(1).properties.Name,
         desciption: record.get(2).properties.Desciption,
-        video: record.get(1).properties.Media,
+        video: result6.records[0].get(1).properties.path,
         videoPoster: record.get(0).properties.imageUrl,
         mobilizers: mobilizers,
         supporters: supporters,
         histroies: histroies,
-        nextHistory: result3.records[0].get(1).properties.Description
+        nextHistory: result3.records[0].get(1).properties.description
     }
     return res.status(200).json(info);
 }

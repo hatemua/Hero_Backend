@@ -232,14 +232,12 @@ const pinJSONToIPFS = async(pinataApiKey, pinataSecretApiKey, JSONBody) => {
         });
 };
 app.use(stripeRoutes);
-app.use("/circle",groupeRoutes);
 app.use("/mobelizer",activistRoutes);
 app.use("/supporter",customerRoutes);
 app.use("/stream",videostream);
 
 app.use("/circle", groupeRoutes);
-app.use("/mobelizer", activistRoutes);
-app.use("/supporter", customerRoutes);
+
 
 app.post("/createTag", async(req, res) => {
     console.log("ddd")

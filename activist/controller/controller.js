@@ -5,6 +5,7 @@ const NodeCache = require( "node-cache" );
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30});
 const uniqid = require("uniqid");
 const getTime = require("../../utils/getTime");
+
 exports.getActivist = async(req,res,next)=>{
     if(myCache.get("ac")){
         return res.status(200).json(myCache.get("ac-All"))
@@ -13,7 +14,7 @@ exports.getActivist = async(req,res,next)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     var result = await session.run("match(a:Activist{wallet:$wallet})-[:PART_OF]->(g:Groupe) return g,a",{
@@ -34,7 +35,7 @@ exports.getTransactions = async(req,res,next)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     const result = await session.run("match(c:Activist{wallet:$wallet})-[:PART_OF]->(g:Groupe) match(t:Transaction{To:g.Name}) return t",{
@@ -52,7 +53,7 @@ exports.getActivists= async(req,res,next)=>{
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
-            database: 'Hero',
+            database: process.env.DBNAME ||'Hero',
             defaultAccessMode: neo4j.session.READ
     })
     var result = await session.run("match(a:Activist) return a");
@@ -62,7 +63,7 @@ exports.getActivists= async(req,res,next)=>{
     return res.status(200).json(activists)
 
 }
-exports.getActivistByAccID= async(req,res,next)=>{
+exports.getActivistByAccID = async(req,res,next)=>{
     const accountId = req.body.accountId;
     await initDriver();
 

@@ -72,7 +72,7 @@ exports.getActivistByAccID = async(req,res,next)=>{
         database: process.env.DBNAME ||'Hero',
         defaultAccessMode: neo4j.session.WRITE
 })
-    var result = await session.run("match(a:Activist{accountId:$accountId})-[]-(c:Moments) return a.Name as name,a.accountId as username,a.address as address,a.description as description,a.Socials as Socials,a.Media as video,a.imgProfil as videoPoster,c.description as historicMoments,a.videoPoster as videoPoster",{accountId});
+    var result = await session.run("match(a:Activist{accountId:$accountId})-[]-(c:Moments) return a.Name as name,a.accountId as username,a.address as address,a.description as description,a.Socials as Socials,a.Media as video,a.videoPoster as videoPoster,c.description as historicMoments",{accountId});
     
     let Memories=[]
     result.records?.map(record => Memories.push(record._fields[7]) )

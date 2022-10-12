@@ -442,6 +442,7 @@ exports.getCirleInformation = async(req, res, next) => {
         picture: record.get(1).properties.imgProfil,
         media: record.get(1).properties.Media,
         Socials: record.get(1).properties.Socials,
+        accountId : record.get(1).properties.accountId
     }))
     let supporters = [];
     result5.records.map(record => supporters.push({

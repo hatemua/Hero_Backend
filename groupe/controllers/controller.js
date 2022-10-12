@@ -457,13 +457,13 @@ exports.getCirleInformation = async(req, res, next) => {
     console.log(record)
     var info = {
         name: record.get(1).properties.Name,
-        desciption: record.get(2).properties.Desciption,
+        desciption: record.get(1).properties.Description,
         video: result6.records[0].get(1).properties.path,
         videoPoster: result6.records[0].get(1).properties.affiche,
         mobilizers: mobilizers,
         supporters: supporters,
         histroies: histroies,
-        nextHistory: nextHistroies
+        nextHistory: nextHistroies,
     }
     return res.status(200).json(info);
 }

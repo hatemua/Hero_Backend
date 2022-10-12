@@ -104,15 +104,17 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
     }
 }
 
-exports.getPriceId = async(amount)=>{
-    //try {
+exports.getPriceId = async(amount,productId)=>{
+    console.log(productId)
+    try {
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
             database: process.env.DBNAME ||'Hero',
         })
-          const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
-            amount
+          const result = await session.run("match(p:Product{productId:$productId})-[:PRICED]->(pr:Price{amount:$amount}) return pr",{
+            amount,
+            productId
           });
           if (result.records.length == 0)
           {
@@ -128,27 +130,25 @@ exports.getPriceId = async(amount)=>{
                 name = "HERO CHANGER";
                 desc = "Everything on HERO Advocate + Interactions";
             }
-            let product = await this.createProduct(name,"",desc+" "+amount);
-            console.log(product.id);
 
-            let price = await this.addPrice (product.id,amount,"eur","Subscription",'month');
+            let price = await this.addPrice (productId,amount,"eur","Subscription",'month');
             console.log(price);
-             await session.run("merge(g:Product{Name:$Name,productId:$productId})-[k:HAVE]->(s:Price{amount:$amount,priceId:$priceId})",{
-                Name:"prod"+amount,
-                productId:product.id,
-                amount:amount,
+             await session.run(`match(p:Product{productId:$productId}) with p as p merge(p)-[:PRICED]-(pr:Price{amount:$amount,priceId:$priceId})`,{
+                productId:productId,
+                amount,
                 priceId:price.id
               });
             return price.id;
           }
           else
           {
-          return result.records[0].get("prId");
+          return result.records[0].get("pr").properties.priceId;
           }
-   /* } catch (error) {
+   } catch (error) {
+        console.log(error)
         return false;
-    }*/
-   
+    
+   }
 }
 exports.getCustomerId = async(email)=>{
     try {

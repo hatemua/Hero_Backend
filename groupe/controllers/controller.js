@@ -1,12 +1,12 @@
 const { initDriver, getdriver } = require("../../neo4j");
 const neo4j = require("neo4j-driver");
-const { createAccount } = require("../../stripe/utils/utils");
 const { createTagsRelations } = require("../utils/util");
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 0, checkperiod: 30 });
 const uniqid = require("uniqid");
 const getTime = require("../../utils/getTime");
 const { checkProperties } = require("ethers/lib/utils");
+const { createProduct } = require("../../stripe/utils/utils");
 exports.createGroup = async(req, res, next) => {
     const { grName, grDesc, country, tags } = req.body;
     console.log("test")
@@ -16,7 +16,6 @@ exports.createGroup = async(req, res, next) => {
         var session = driver.session({
             database: process.env.DBNAME || 'Hero'
         })
-        const test = await session
         var gr = await session.run("match(g:Groupe{Name:$grName})return g", {
             grName
         })
@@ -25,22 +24,28 @@ exports.createGroup = async(req, res, next) => {
             return res.status(422).json("Groupe name already exists !");
         }
         console.log(gr.records.length)
-            //var account = await createAccount();
-            /*if(!account){
-                return res.status(500).send("stripe account creation failed !")
-            }*/
-        var result = await session.run("merge(g:Groupe{Name:$grName,Description:$grDesc,balance:$balance,accountId:$actId,members:$members})", {
+            var product = await createProduct(grName,'',grDesc);
+            if(!product){
+                return res.status(500).send("stripe product creation failed !")
+            }
+        var result = await session.run("merge(g:Groupe{Name:$grName,Description:$grDesc,balance:$balance,accountId:$actId,members:$members}) merge(p:Product{Name:$Name,productId:$productId})", {
             grName,
             grDesc,
             balance: 0,
             actId: "", //account.id,
-            members: 0
+            members: 0,
+            Name:grName,
+            productId:product.id
         })
         await createTagsRelations(grName, tags);
         await session.run("match(g:Groupe{Name:$grName}) match(l:Location{Name:$country}) merge(g)-[:LOCATED_IN]->(l)", {
             grName,
             country
         });
+        await session.run("match(g:Groupe{Name:$grName})match(p:Product{productId:$productId}) merge(g)-[:HAVE]->(p)",{
+            grName,
+            productId:product.id
+        })
         return res.status(200).json("Groupe created Successfully !");
     } catch (err) {
         if (!err.statusCode) {
@@ -50,7 +55,27 @@ exports.createGroup = async(req, res, next) => {
     }
 }
 
-
+exports.getPrices = async(req,res)=>{
+    try{
+        const {grName} = req.body;
+        await initDriver();
+        var driver = getdriver();
+        var session = driver.session({
+        database: process.env.DBNAME || 'Hero',
+        defaultAccessMode: neo4j.session.READ
+        })
+        const prices = [];
+        const result = await session.run("match(g:Groupe{Name:$grName})-[:HAVE]->(p:Product)-[:PRICED]->(pr:Price) return pr",{
+            grName
+        });
+        result.records.map(record => {
+            prices.push(record.get(0).properties)
+        })
+        return res.status(200).json(prices)
+    }catch(err){
+        return res.status(500).json(err)
+    }
+}
 exports.getGroupe = async(req, res, next) => {
     const grName = req.params.grName.replace(":", "");
     console.log(grName);

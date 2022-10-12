@@ -450,7 +450,8 @@ exports.getCirleInformation = async(req, res, next) => {
     }))
     let histroies = [];
     result2.records.map(record => histroies.push(record.get(1).properties.description))
-    let nextHistroies = [];
+    let nextHistroies;
+    nextHistroies = "The UK government declared a climate emergency after a shut down of London for 10 days."
     record = result.records[0]
     console.log(record)
     var info = {
@@ -461,7 +462,7 @@ exports.getCirleInformation = async(req, res, next) => {
         mobilizers: mobilizers,
         supporters: supporters,
         histroies: histroies,
-        nextHistory: result3.records[0].get(1).properties.description
+        nextHistory: nextHistroies
     }
     return res.status(200).json(info);
 }

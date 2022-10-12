@@ -442,6 +442,7 @@ exports.getCirleInformation = async(req, res, next) => {
         picture: record.get(1).properties.imgProfil,
         media: record.get(1).properties.Media,
         Socials: record.get(1).properties.Socials,
+        accountId : record.get(1).properties.accountId
     }))
     let supporters = [];
     result5.records.map(record => supporters.push({
@@ -458,7 +459,7 @@ exports.getCirleInformation = async(req, res, next) => {
         name: record.get(1).properties.Name,
         desciption: record.get(1).properties.Description,
         video: result6.records[0].get(1).properties.path,
-        videoPoster: record.get(0).properties.imageUrl,
+        videoPoster: result6.records[0].get(1).properties.affiche,
         mobilizers: mobilizers,
         supporters: supporters,
         histroies: histroies,

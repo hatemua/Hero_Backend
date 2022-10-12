@@ -91,9 +91,10 @@ exports.getActivistByAccID = async(req,res,next)=>{
         video: result.records[0]._fields[5],
         videoPoster: result.records[0]._fields[6],
         historicMoments: Memories,
+        circle : result1.records[0]._fields[0],
+
         nextMoment:
-          "Don’t miss out on the next one! Support this Circle and acces exclusive updates.",
-        circle : result1.records[0]._fields[0]
+          "Don’t miss out on the next one! Support this Circle and acces exclusive updates."
     
         };
         return res.status(200).json(activist)
@@ -109,6 +110,8 @@ exports.getActivistByAccID = async(req,res,next)=>{
     video: result.records[0]._fields[5],
     videoPoster: result.records[0]._fields[6],
     historicMoments: Memories,
+    circle : result1.records[0]._fields[0],
+
     nextMoment:
       "Don’t miss out on the next one! Support this Circle and acces exclusive updates.",
 

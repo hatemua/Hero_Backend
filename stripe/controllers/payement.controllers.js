@@ -85,7 +85,7 @@ exports.createSession = async(req,res,next)=>{
   console.log(priceId);
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
-      cancel_url: `${process.env.DOMAINFront}/circle-feed`,
+      cancel_url: `${process.env.DOMAINFront}/circleLanding:${grName}`,
       line_items: [{
         price:priceId,
         quantity:1
@@ -176,7 +176,7 @@ sendEmail({
   });
 
   
-  return res.redirect('https://herocircle.app/welcome-circle:'+grName.replace(":",""));
+  return res.redirect(process.env.DOMAINFront+"/circleLanding:"+grName.replace(":",""));
 
 }
 

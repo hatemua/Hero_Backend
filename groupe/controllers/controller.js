@@ -426,7 +426,7 @@ exports.getCirleInformation = async(req, res, next) => {
     const result3 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Moments)  return g,k", {
         grName
     })
-    const result4 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Activist)  return g,k", {
+    const result4 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Activist)  return g,k ORDER BY k.priority" , {
         grName
     })
     const result5 = await session.run("match(g:Groupe{Name:$grName})-[]-(k:Customer)  return g,k", {
@@ -442,7 +442,8 @@ exports.getCirleInformation = async(req, res, next) => {
         picture: record.get(1).properties.imgProfil,
         media: record.get(1).properties.Media,
         Socials: record.get(1).properties.Socials,
-        accountId : record.get(1).properties.accountId
+        accountId : record.get(1).properties.accountId,
+        priority : record.get(1).properties.priority
     }))
     let supporters = [];
     result5.records.map(record => supporters.push({

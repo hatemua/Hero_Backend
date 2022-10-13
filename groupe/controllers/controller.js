@@ -461,7 +461,7 @@ exports.getCirleInformation = async(req, res, next) => {
         desciption: record.get(1).properties.Description,
         video: result6.records[0].get(1).properties.path,
         videoPoster: result6.records[0].get(1).properties.affiche,
-        mobilizers: mobilizers,
+        mobilizers: mobilizers.reverse(),
         supporters: supporters,
         histroies: histroies,
         nextHistory: nextHistroies,

@@ -127,9 +127,7 @@ exports.successPage = async (req, res) => {
   const resu = await session.run("match(t:Transaction{Index:$ind})return t",{
     ind
   })
-  if(resu.records.length>0){
-    return res.status(200).json({message:"already transaction added !"});
-  }
+  
   const bwf = sessione.amount_total - ((sessione.amount_total*15)/100);
   await session.run("merge(t:Transaction{From:$fr,To:$to,Amount:$amount,SentDay:$today,Subscribed:$sub,EndDay:$ed,Transfered:$tr,Index:$in})",{
     fr:customer.id,

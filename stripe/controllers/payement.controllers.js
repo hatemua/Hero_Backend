@@ -67,8 +67,7 @@ exports.createSession = async(req,res,next)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
   const {mode,customerId,amount,grName,source}= req.body;
   //{price:  req.body.priceId, quantity: 1}
-  if (source)
-  {}
+ 
   try{
     await initDriver();
     var driver = getdriver();

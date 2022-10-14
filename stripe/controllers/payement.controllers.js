@@ -65,8 +65,10 @@ const HEADER_ROW = [
 ]
 exports.createSession = async(req,res,next)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
-  const {mode,customerId,amount,grName}= req.body;
+  const {mode,customerId,amount,grName,source}= req.body;
   //{price:  req.body.priceId, quantity: 1}
+  if (source)
+  {}
   try{
     await initDriver();
     var driver = getdriver();
@@ -89,8 +91,8 @@ exports.createSession = async(req,res,next)=>{
     const priceId = await getPriceId(amount,product.productId);
     console.log(priceId);
     const session = await stripe.checkout.sessions.create({
-      success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
-      cancel_url: `${process.env.DOMAINFront}/circleLanding:${grName}`,
+      success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName.replace(/ /g,"%20")}`,
+      cancel_url: `${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`,
       line_items: [{
         price:priceId,
         quantity:1

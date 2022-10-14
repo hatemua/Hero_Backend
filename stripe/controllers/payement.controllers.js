@@ -113,7 +113,7 @@ exports.successPage = async (req, res) => {
  
   // return res.status(200).json(session);
   const {grName}= req.query;
-  grName=grName.replace(":","");
+  let grNam1=grName.replace(":","");
   const sessione = await stripe.checkout.sessions.retrieve(req.query.session_id);
   console.log(sessione)
   await initDriver();
@@ -132,7 +132,7 @@ exports.successPage = async (req, res) => {
   const bwf = sessione.amount_total - ((sessione.amount_total*15)/100);
   await session.run("merge(t:Transaction{From:$fr,To:$to,Amount:$amount,SentDay:$today,Subscribed:$sub,EndDay:$ed,Transfered:$tr,Index:$in})",{
     fr:customer.id,
-    to:grName,
+    to:grNam1,
     amount:bwf,
     today,
     ed,
@@ -142,7 +142,7 @@ exports.successPage = async (req, res) => {
   });
   const resul = await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date}]->(g) return c",{
     ci:customer.id,
-    grName,
+    grNam1,
     amount :sessione.amount_total,
     date:moment().format()
   })
@@ -154,7 +154,7 @@ exports.successPage = async (req, res) => {
   });
   
   const result = await session.run("match(g:Groupe{Name:$grName})set g.balance=g.balance+$bwf return g",{
-    grName,
+    grNam1,
     bwf
   })
   const groupe = result.records[0].get("g").properties;

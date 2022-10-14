@@ -84,10 +84,10 @@ exports.createSession = async(req,res,next)=>{
     }
    
     const priceId = await getPriceId(amount);
-    console.log(`${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`);
+    console.log(`${process.env.DOMAINFront}/circleLanding${grName.replace(/ /g,"%20")}`);
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName.replace(/ /g,"%20")}`,
-      cancel_url: `${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`,
+      cancel_url: `${process.env.DOMAINFront}/circleLanding${grName.replace(/ /g,"%20")}`,
       line_items: [{
         price:priceId,
         quantity:1

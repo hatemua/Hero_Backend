@@ -141,8 +141,8 @@ exports.getPriceId = async(amount)=>{
           }
           else
           {
-          return result.records[0].get("pr").properties.priceId;
-          }
+            return result.records[0].get("prId");
+        }
    } catch (error) {
         console.log(error)
         return false;

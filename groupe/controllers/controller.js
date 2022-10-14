@@ -9,7 +9,6 @@ const { checkProperties } = require("ethers/lib/utils");
 const { createProduct } = require("../../stripe/utils/utils");
 exports.createGroup = async(req, res, next) => {
     const { grName, grDesc, country, tags } = req.body;
-    console.log("test")
     try {
         await initDriver();
         var driver = getdriver();
@@ -19,33 +18,22 @@ exports.createGroup = async(req, res, next) => {
         var gr = await session.run("match(g:Groupe{Name:$grName})return g", {
             grName
         })
-        console.log(gr)
         if (gr.records.length > 0) {
             return res.status(422).json("Groupe name already exists !");
         }
-        console.log(gr.records.length)
-            var product = await createProduct(grName,'',grDesc);
-            if(!product){
-                return res.status(500).send("stripe product creation failed !")
-            }
-        var result = await session.run("merge(g:Groupe{Name:$grName,Description:$grDesc,balance:$balance,accountId:$actId,members:$members}) merge(p:Product{Name:$Name,productId:$productId})", {
+        var result = await session.run("merge(g:Groupe{Name:$grName,Description:$grDesc,balance:$balance,accountId:$actId,members:$members})", {
             grName,
             grDesc,
             balance: 0,
             actId: "", //account.id,
             members: 0,
-            Name:grName,
-            productId:product.id
+            Name:grName
         })
         await createTagsRelations(grName, tags);
         await session.run("match(g:Groupe{Name:$grName}) match(l:Location{Name:$country}) merge(g)-[:LOCATED_IN]->(l)", {
             grName,
             country
         });
-        await session.run("match(g:Groupe{Name:$grName})match(p:Product{productId:$productId}) merge(g)-[:HAVE]->(p)",{
-            grName,
-            productId:product.id
-        })
         return res.status(200).json("Groupe created Successfully !");
     } catch (err) {
         if (!err.statusCode) {

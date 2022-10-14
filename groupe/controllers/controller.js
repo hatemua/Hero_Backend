@@ -53,7 +53,7 @@ exports.getPrices = async(req,res)=>{
         defaultAccessMode: neo4j.session.READ
         })
         const prices = [];
-        const result = await session.run("match(g:Groupe{Name:$grName})-[:HAVE]->(p:Product)-[:PRICED]->(pr:Price) return pr",{
+        const result = await session.run("match(g:Groupe{Name:$grName})-[:HAVE]->(pr:Price) return pr",{
             grName
         });
         result.records.map(record => {

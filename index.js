@@ -1056,6 +1056,15 @@ const options = {
 const server = https.createServer(options,app);
 server.listen(8082);
 }
+else if (dev=="Prod")
+{
+const options = {
+    key: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
+    cert: fs.readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')  
+};
+const server = https.createServer(options,app);
+server.listen(8080);
+}
 else if(dev == "Dev")
 {
 app.listen(process.env.PORT || 8000, () => {

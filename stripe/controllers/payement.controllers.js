@@ -82,11 +82,8 @@ exports.createSession = async(req,res,next)=>{
     if(result.records.length > 0 ){
       return res.status(400).json("Already subscribed to this Cercle !");
     }
-    const resultProduct = await sessione.run("match(g:Groupe{Name:$grName})-[:HAVE]->(p:Product) return p",{
-      grName
-    })
-    const product = resultProduct.records[0].get('p').properties;
-    const priceId = await getPriceId(amount,product.productId);
+   
+    const priceId = await getPriceId(amount);
     console.log(`${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`);
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName.replace(/ /g,"%20")}`,

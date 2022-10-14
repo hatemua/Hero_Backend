@@ -104,17 +104,15 @@ exports.addPrice = async(prodId,amount,curr,mode,duree)=>{
     }
 }
 
-exports.getPriceId = async(amount,productId)=>{
-    console.log(productId)
+exports.getPriceId = async(amount)=>{
     try {
         await initDriver();
         var driver = getdriver();
         var session = driver.session({
             database: process.env.DBNAME ||'Hero',
         })
-          const result = await session.run("match(p:Product{productId:$productId})-[:PRICED]->(pr:Price{amount:$amount}) return pr",{
-            amount,
-            productId
+        const result = await session.run("match(pr:Price{amount:$amount}) return pr.priceId as prId",{
+            amount
           });
           if (result.records.length == 0)
           {

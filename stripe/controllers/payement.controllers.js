@@ -82,16 +82,7 @@ exports.createSession = async(req,res,next)=>{
       return res.status(400).json("Already subscribed to this Cercle !");
     }
     const priceId = await getPriceId(amount);
-    const findPrice = await sessione.run("match(g:Groupe{Name:$grName})-[l:HAVE]->(p:Price{amount:$amount}) return l",{
-      grName,
-      amount
-    });
-    if(findPrice.records.length ==0){
-      await sessione.run("match(g:Groupe{Name:$grName})match(p:Price{amount:$amount}) merge(g)-[:HAVE]->(p)",{
-        grName,
-        amount
-      })
-    }
+    
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAIN}8080/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
       cancel_url: `https://herocircle.app/circle-feed`,
@@ -315,7 +306,7 @@ exports.cancelSubscription = async(req,res)=>{
 
 exports.changePlan = async(req,res)=>{
   try{
-    const {email,subscriptionId,newPriceId,amount} = req.body;  
+    const {email,subscriptionId,amount} = req.body;  
     await initDriver();
     var driver = getdriver();
     var session = driver.session({
@@ -339,6 +330,7 @@ exports.changePlan = async(req,res)=>{
         subscriptionId
       }) 
       const cercle = resultGroupe.records[0].get("g").properties;
+      const newPriceId = await getPriceId(amount);
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
       stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: false,

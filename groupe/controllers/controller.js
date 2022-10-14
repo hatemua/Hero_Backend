@@ -43,27 +43,27 @@ exports.createGroup = async(req, res, next) => {
     }
 }
 
-exports.getPrices = async(req,res)=>{
-    try{
-        const {grName} = req.body;
-        await initDriver();
-        var driver = getdriver();
-        var session = driver.session({
-        database: process.env.DBNAME || 'Hero',
-        defaultAccessMode: neo4j.session.READ
-        })
-        const prices = [];
-        const result = await session.run("match(g:Groupe{Name:$grName})-[:HAVE]->(pr:Price) return pr",{
-            grName
-        });
-        result.records.map(record => {
-            prices.push(record.get(0).properties)
-        })
-        return res.status(200).json(prices)
-    }catch(err){
-        return res.status(500).json(err)
-    }
-}
+// exports.getPrices = async(req,res)=>{
+//     try{
+//         const {grName} = req.body;
+//         await initDriver();
+//         var driver = getdriver();
+//         var session = driver.session({
+//         database: process.env.DBNAME || 'Hero',
+//         defaultAccessMode: neo4j.session.READ
+//         })
+//         const prices = [];
+//         const result = await session.run("match(g:Groupe{Name:$grName})-[:HAVE]->(pr:Price) return pr",{
+//             grName
+//         });
+//         result.records.map(record => {
+//             prices.push(record.get(0).properties)
+//         })
+//         return res.status(200).json(prices)
+//     }catch(err){
+//         return res.status(500).json(err)
+//     }
+// }
 exports.getGroupe = async(req, res, next) => {
     const grName = req.params.grName.replace(":", "");
     console.log(grName);

@@ -15,5 +15,5 @@ router.post("/get-dislikes", controller.getDislikes);
 router.post("/getVideosByCirclesTag", controller.getVideosByCirclesTag);
 router.get("/CircleInformation/:grName", controller.getCirleInformation);
 router.get("/:grName", controller.getGroupe);
-router.post("/get-prices",controller.getPrices);
+// router.post("/get-prices",controller.getPrices);
 module.exports = router;

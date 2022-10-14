@@ -145,6 +145,7 @@ exports.successPage = async (req, res) => {
     amount :sessione.amount_total,
     date:moment().format()
   })
+  console.log(resul);
   const supporter = resul.records[0].get("c").properties;
   await session.run("match(h:Holder)set h.balance=h.balance+$amount,h.nTransactions=h.nTransactions	+1 with h as h match(t:Transaction{SentDay:$ed}) merge(h)-[:GOT]->(t)",{
     ed:today,

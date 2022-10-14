@@ -113,6 +113,7 @@ exports.successPage = async (req, res) => {
  
   // return res.status(200).json(session);
   const {grName}= req.query;
+  grName=grName.replace(":","");
   const sessione = await stripe.checkout.sessions.retrieve(req.query.session_id);
   console.log(sessione)
   await initDriver();

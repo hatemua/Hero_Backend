@@ -142,7 +142,7 @@ exports.successPage = async (req, res) => {
   });
   const resul = await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date}]->(g) return c",{
     ci:customer.id,
-    grNam1,
+    grName:grNam1,
     amount :sessione.amount_total,
     date:moment().format()
   })
@@ -154,7 +154,7 @@ exports.successPage = async (req, res) => {
   });
   
   const result = await session.run("match(g:Groupe{Name:$grName})set g.balance=g.balance+$bwf return g",{
-    grNam1,
+    grName:grNam1,
     bwf
   })
   const groupe = result.records[0].get("g").properties;

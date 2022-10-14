@@ -139,12 +139,11 @@ exports.successPage = async (req, res) => {
     tr:false,
     in:ind
   });
-  const resul = await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date,subscription:$subscriptionId}]->(g) return c",{
+  const resul = await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date}]->(g) return c",{
     ci:customer.id,
     grName,
     amount :sessione.amount_total,
-    date:moment().format(),
-    subscriptionId:sessione.subscription
+    date:moment().format()
   })
   const supporter = resul.records[0].get("c").properties;
   await session.run("match(h:Holder)set h.balance=h.balance+$amount,h.nTransactions=h.nTransactions	+1 with h as h match(t:Transaction{SentDay:$ed}) merge(h)-[:GOT]->(t)",{

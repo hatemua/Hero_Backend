@@ -82,13 +82,17 @@ exports.createSession = async(req,res,next)=>{
     if(result.records.length > 0 ){
       return res.status(400).json("Already subscribed to this Cercle !");
     }
-    const resultProduct = await sessione.run("match(g:Groupe{Name:$grName})-[:HAVE]->(p:Product) return p",{
-      grName
-    })
-    const product = resultProduct.records[0].get('p').properties;
-    console.log("ddddd",product);
-    const priceId = await getPriceId(amount,product.productId);
-    console.log(`${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`);
+    const priceId = await getPriceId(amount);
+    const findPrice = await sessione.run("match(g:Groupe{Name:$grName})-[l:HAVE]->(p:Price{amount:$amount}) return l",{
+      grName,
+      amount
+    });
+    if(findPrice.records.length ==0){
+      await sessione.run("match(g:Groupe{Name:$grName})match(p:Price{amount:$amount}) merge(g)-[:HAVE]->(p)",{
+        grName,
+        amount
+      })
+    }
     const session = await stripe.checkout.sessions.create({
       success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName.replace(/ /g,"%20")}`,
       cancel_url: `${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`,
@@ -325,14 +329,17 @@ exports.changePlan = async(req,res)=>{
     }) 
     
     if(result.records.length == 0 ){
-      const oldSubscription = result.records[0].get("j").properties;
-      const resultGroupe = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId,amount:$amount}]->(g:Groupe) return g",{
+      const result1 = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe) return j",{
         email,
         subscriptionId,
         amount
       }) 
+      const oldSubscription = result1.records[0].get("j").properties;
+      const resultGroupe = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe) return g",{
+        email,
+        subscriptionId
+      }) 
       const cercle = resultGroupe.records[0].get("g").properties;
-      
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
       stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: false,
@@ -347,12 +354,11 @@ exports.changePlan = async(req,res)=>{
         name:cercle.Name,
         calc:newGroupeBalance
       });
-      // await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId,amount:$amount}]->(g:Groupe) set j.amount=$Newamount",{
-      //   email,
-      // subscriptionId,
-      // amount,
-      // new
-      // })
+      await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe) set j.amount=$amount",{
+        email,
+      subscriptionId,
+      amount
+      })
       
 
       return res.status(200).json("Plan updated !")
@@ -364,6 +370,7 @@ exports.changePlan = async(req,res)=>{
 
     
   }catch(err){
+    console.log(err)
     return res.status(500).json(err);
   }
 }

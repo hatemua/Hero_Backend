@@ -3,7 +3,6 @@ const { readFileSync } = require ('fs');
 const WebSocketServer  = require ('ws').Server;
 
 const server = createServer({
-
   key: readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/privkey2.pem'),
 cert: readFileSync('/opt/lampp/htdocs/HeroCoin/hegemony.donftify.digital/fullchain2.pem')
 });

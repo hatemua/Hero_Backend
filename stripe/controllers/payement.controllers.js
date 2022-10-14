@@ -65,27 +65,34 @@ const HEADER_ROW = [
 ]
 exports.createSession = async(req,res,next)=>{
   // const {mode,customerId,amount,idActivist}= req.body; for later changement
-  const {mode,customerId,amount,grName}= req.body;
+  const {mode,customerId,amount,grName,source}= req.body;
   //{price:  req.body.priceId, quantity: 1}
+  if (source)
+  {}
   try{
     await initDriver();
     var driver = getdriver();
     var sessione= driver.session({
       database: process.env.DBNAME ||'Hero'
     })
-    const result = await sessione.run("match(c:Customer{CustomerId:$customerId})-[l:JOINED{amount:$amount}]-(g:Groupe{Name:$grName}) return l",{
+    const result = await sessione.run("match(c:Customer{CustomerId:$customerId})-[l:JOINED]-(g:Groupe{Name:$grName}) return l",{
       customerId,
       amount,
       grName
     })
     if(result.records.length > 0 ){
-      return res.status(400).json("Already subscribed with this plan !");
+      return res.status(400).json("Already subscribed to this Cercle !");
     }
-    const priceId = await getPriceId(amount);
-  console.log(priceId);
+    const resultProduct = await sessione.run("match(g:Groupe{Name:$grName})-[:HAVE]->(p:Product) return p",{
+      grName
+    })
+    const product = resultProduct.records[0].get('p').properties;
+    console.log("ddddd",product);
+    const priceId = await getPriceId(amount,product.productId);
+    console.log(`${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`);
     const session = await stripe.checkout.sessions.create({
-      success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName}`,
-      cancel_url: `${process.env.DOMAINFront}/circleLanding:${grName}`,
+      success_url: `${process.env.DOMAINBack}/success?session_id={CHECKOUT_SESSION_ID}&grName=${grName.replace(/ /g,"%20")}`,
+      cancel_url: `${process.env.DOMAINFront}/circleLanding:${grName.replace(/ /g,"%20")}`,
       line_items: [{
         price:priceId,
         quantity:1
@@ -139,11 +146,12 @@ exports.successPage = async (req, res) => {
     tr:false,
     in:ind
   });
-  const resul = await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date}]->(g) return c",{
+  const resul = await session.run("match(c:Customer{CustomerId:$ci})match(g:Groupe{Name:$grName}) merge(c)-[:JOINED{amount:$amount,date:$date,subscription:$subscriptionId}]->(g) return c",{
     ci:customer.id,
     grName,
     amount :sessione.amount_total,
-    date:moment().format()
+    date:moment().format(),
+    subscriptionId:sessione.subscription
   })
   const supporter = resul.records[0].get("c").properties;
   await session.run("match(h:Holder)set h.balance=h.balance+$amount,h.nTransactions=h.nTransactions	+1 with h as h match(t:Transaction{SentDay:$ed}) merge(h)-[:GOT]->(t)",{
@@ -271,6 +279,95 @@ exports.monthPay = async(req,res,next)=>{
   return res.status(200).json("EXcel file is ready !")
 }
 
+exports.cancelSubscription = async(req,res)=>{
+  try{
+    const {email,subscriptionId} = req.body;  
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: process.env.DBNAME ||'Hero'
+    }) ;
+    const result = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe) return j",{
+      email,
+      subscriptionId
+    }) 
+    if(result.records.length>0){
+      await stripe.subscriptions.del(
+          subscriptionId
+        );
+        const subscription = result.records[0].get("j").properties;
+        const subaftertax = subscription.amount -  ((subscription.amount*15)/100);
+      await session.run(" match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe)set g.balance=g.balance-$bwf detach delete j",{
+        email,
+        subscriptionId,
+        bwf:subaftertax
+      })
+      return res.status(200).json("Subscription canceled successfully !");
+    }else{
+      return res.status(401).json("Subscription dosen't exist !");
+    }
+  }catch(err){
+    return res.status(500).json(err);
+  }
+}
+
+exports.changePlan = async(req,res)=>{
+  try{
+    const {email,subscriptionId,newPriceId,amount} = req.body;  
+    await initDriver();
+    var driver = getdriver();
+    var session = driver.session({
+            database: process.env.DBNAME ||'Hero'
+    }) ;
+    const result = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId,amount:$amount}]->(g:Groupe) return j",{
+      email,
+      subscriptionId,
+      amount
+    }) 
+    
+    if(result.records.length == 0 ){
+      const oldSubscription = result.records[0].get("j").properties;
+      const resultGroupe = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId,amount:$amount}]->(g:Groupe) return g",{
+        email,
+        subscriptionId,
+        amount
+      }) 
+      const cercle = resultGroupe.records[0].get("g").properties;
+      
+      const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+      stripe.subscriptions.update(subscriptionId, {
+      cancel_at_period_end: false,
+      proration_behavior: 'create_prorations',
+      items: [{
+        id: subscription.items.data[0].id,
+        price: newPriceId,
+        }]
+      });
+      const newGroupeBalance = (cercle.balance - (oldSubscription.amount - ((oldSubscription.amount*15)/100) ))+(amount - ((amount*15)/100));
+      await session.run("match(g:Groupe{Name:$name})set g.balance = $calc",{
+        name:cercle.Name,
+        calc:newGroupeBalance
+      });
+      // await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId,amount:$amount}]->(g:Groupe) set j.amount=$Newamount",{
+      //   email,
+      // subscriptionId,
+      // amount,
+      // new
+      // })
+      
+
+      return res.status(200).json("Plan updated !")
+    }else{
+      return res.status(400).json("Already subscribed to this plan !")
+    }
+
+
+
+    
+  }catch(err){
+    return res.status(500).json(err);
+  }
+}
 
 // exports.handleWebhooks= async(request,response)=>{
 //   const sig = request.headers['stripe-signature'];

@@ -153,7 +153,8 @@ exports.getSubscription = async(req,res)=>{
                 amount:record.get(1).properties.amount || 0,
                 dateJoined:record.get(1).properties.date || "",
                 grName:record.get(0).properties.Name,
-                grDescription:record.get(0).properties.Description
+                grDescription:record.get(0).properties.Description,
+                subscription:record.get(1).properties.subscription
             })
         })
         return res.status(200).json(subscriptions)

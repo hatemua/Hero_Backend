@@ -7,6 +7,8 @@ router.post("/create-checkout",payementController.createSession);
 // router.post("/save-card",payementController.saveCard);
 router.get('/success',payementController.successPage);
 router.get("/monthly-payment",payementController.monthPay);
+router.post("/cancel-subscription",payementController.cancelSubscription);
+router.post("/change-plan",payementController.changePlan);
 // router.post("/webhook",bodyParser.raw({type:"application/json"}),payementController.handleWebhooks);
 // router.get("/data/:type",payementController.getData);
 module.exports = router;

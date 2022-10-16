@@ -181,31 +181,28 @@ sendEmail({
 
 }
 
-// exports.createPortalSession =  async (req, res) => {
-//     // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
-//     // Typically this is stored alongside the authenticated user in your database.
-//     try {
-//       const session_id= req.body.sessionId;
-//       const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
-//       console.log(checkoutSession)
-//     // This is the url to which the customer will be redirected when they are done
-//     // managing their billing with the portal.
+exports.createPortalSession =  async (req, res) => {
+    // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+    // Typically this is stored alongside the authenticated user in your database.
+    try {
+    // This is the url to which the customer will be redirected when they are done
+    // managing their billing with the portal.
   
-//       const portalSession = await stripe.billingPortal.sessions.create({
-//         customer: checkoutSession.customer,
-//         return_url: `${process.env.DOMAIN}${process.env.PORT}`,
-//       });
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: req.body.customer,
+        return_url: `${process.env.DOMAIN}${process.env.PORT}`,
+      });
   
-//       return res.status(200).json(portalSession)
-//       } catch (err) {
-//         if (!err.statusCode) {
-//           err.statusCode = 500;
-//         }
-//         return res.status(500).json(err)
-//     }
+      return res.status(200).json(portalSession)
+      } catch (err) {
+        if (!err.statusCode) {
+          err.statusCode = 500;
+        }
+        return res.status(500).json(err)
+    }
     
 
-// };   
+};   
 
 
 exports.monthPay = async(req,res,next)=>{
@@ -321,15 +318,22 @@ exports.changePlan = async(req,res)=>{
     if(result.records.length == 0 ){
       const result1 = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe) return j",{
         email,
-        subscriptionId,
-        amount
+        subscriptionId
       }) 
+      console.log(result1)
       const oldSubscription = result1.records[0].get("j").properties;
-      const resultGroupe = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe) return g",{
+      const resultGroupe = await session.run("match(c:Customer{email:$email})-[j:JOINED{subscription:$subscriptionId}]->(g:Groupe) return g,c",{
         email,
         subscriptionId
       }) 
       const cercle = resultGroupe.records[0].get("g").properties;
+      const customer = resultGroupe.records[0].get("c").properties;
+      await session.run("match(t:Transaction{From:$customerId,Amount:$oldAmount})set t.Amount= $newAmount",{
+        customerId:customer.CustomerId,
+        oldAmount: oldSubscription.amount,
+        newAmount : amount
+      });
+
       const newPriceId = await getPriceId(amount);
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
       stripe.subscriptions.update(subscriptionId, {
@@ -341,6 +345,7 @@ exports.changePlan = async(req,res)=>{
         }]
       });
       const newGroupeBalance = (cercle.balance - (oldSubscription.amount - ((oldSubscription.amount*15)/100) ))+(amount - ((amount*15)/100));
+      console.log(newGroupeBalance)
       await session.run("match(g:Groupe{Name:$name})set g.balance = $calc",{
         name:cercle.Name,
         calc:newGroupeBalance
@@ -349,7 +354,7 @@ exports.changePlan = async(req,res)=>{
         email,
       subscriptionId,
       amount
-      })
+      }) 
       
 
       return res.status(200).json("Plan updated !")
